@@ -1,7 +1,7 @@
-# Petr-Platformer — Game Design Document (v0.1)
+# Petr-Platformer — Game Design Document (v0.2)
 
 **Working title:** *Gorgon's Garden* (placeholder)
-**Genre:** 2D puzzle-platformer
+**Genre:** 2D puzzle-platformer / Metroidvania
 **Platform:** PC (Windows/Linux, Steam-first)
 **Team assumption:** solo/small team, programmer-led, art produced primarily with AI assistance
 
@@ -9,258 +9,294 @@
 
 ## 1. High Concept
 
-You play **Petra**, a young stonemason's apprentice in a kingdom slowly turning to
-stone. A gorgon-like calamity has petrified most of the population — including
-Petra's mentor and friends. Petra carries a cursed chisel-amulet that lets her
-**partially reverse, redirect, and even invoke petrification**. The petrified
-people of the kingdom are not obstacles or set dressing: **they are your tools,
-your platforms, your shields — and your responsibility.**
+You play **Petra**, a young stonemason's apprentice in a kingdom turned to
+stone by a gorgon-like calamity. Petra was spared, and she carries her
+mentor's chisel-amulet — a relic that can **revert petrification, but only
+briefly and only barely**. From the very first minute her goal is stated
+plainly: *save everyone*. But her power is nowhere near enough. A softened
+friend returns to flesh for mere seconds before the curse reclaims her.
 
-The emotional hook: every statue you climb on, push into a pit, or use to block
-a laser is *a person you intend to save*. The mechanical hook and the narrative
-hook are the same object.
+So Petra does the only thing she can: she **uses her petrified friends as
+tools** — climbs them, topples them, drops them onto switches — whispering
+the same promise each time: *"I'll come back for you."* The game's structure
+makes that promise real: as Petra's power grows, she physically returns to
+earlier regions and permanently restores the people she once had to use.
+
+**The mechanical hook and the narrative hook are the same object**, and now
+the *progression system* is the same object too: ability-gated backtracking
+(the Metroidvania loop) is literally the act of keeping her promise.
 
 ---
 
 ## 2. Why Petrification? (The Distinguishing Pillar)
 
-Most platformers treat NPCs as dialogue vendors and enemies as obstacles.
-Here, **solidification converts characters between two ontologies**:
+Solidification converts characters between two ontologies:
 
 | State | Behaves like | Used for |
 |-------|--------------|----------|
 | Flesh (animate) | AI agent — walks, follows, panics, helps | Escort, cooperation, lure |
 | Stone (solid) | Physics object — heavy, rigid, durable | Platform, weight, shield, plug, projectile |
 
-Every core mechanic derives from moving things (and yourself) across that line
-at the right moment and place. This gives a large puzzle vocabulary from one
-single, easily-communicated rule — the mark of a strong puzzle game.
+Every mechanic derives from moving things (and Petra herself) across that
+line at the right moment and place — one easily-communicated rule generating
+a large puzzle vocabulary.
+
+**The emotional engine:** early on, the fiction *forces* the player to be
+expedient with people they care about. The game then spends its whole
+runtime letting the player undo that — at a price, and by choice. Guilt →
+power → redemption, expressed entirely through mechanics.
 
 ---
 
-## 3. Core Mechanics
+## 3. World Structure
 
-### 3.1 Petra's abilities (gained progressively)
+### 3.1 Overview
 
-1. **Soften (De-petrify, partial)** — Petra can temporarily soften a petrified
-   NPC back to flesh for ~10 seconds (upgradeable). The NPC resumes whatever
-   they were doing when petrified — mid-run, mid-jump, mid-lever-pull. When the
-   timer ends they re-freeze **in their new pose and position**. This is the
-   central puzzle verb: *"where and in what pose do I want this statue to be?"*
-2. **Harden (Petrify)** — Later, Petra can petrify a willing NPC or a
-   (humanoid) enemy on demand. Petrifying an enemy mid-leap turns it into a
-   falling boulder; petrifying it on a bridge overloads the bridge.
-3. **Self-Petrification** — Petra can turn herself to stone (limited stamina):
-   - **Invulnerable** to hits, fire, and petrifying gazes while stone.
-   - **Heavy**: she sinks in water (walk along the bottom), holds down pressure
-     plates, isn't pushed by wind or conveyors, and can smash through cracked
-     floors by petrifying mid-fall.
-   - **Helpless**: she cannot move while stone; petrify at the wrong moment on
-     a slope and she slides/rolls as a physics object — which is *also* a
-     mechanic (statue-rolling down ramps to cross spike fields).
-4. **Chisel Dash** (mid-game) — a short dash that shatters *cracked* stone
-   barriers but would shatter a fragile statue too — introducing "don't hit the
-   wrong target" precision puzzles.
+- **7 regions**: 1 hub + 5 major themed areas ("wings," each ~1.5–2 h first
+  visit) + 1 final area. Target ~12 h main path, ~16–18 h for full rescue
+  (100%).
+- **Topology:** Metroidvania — one interconnected map, each wing built
+  around one new ability and one Sanctuary. Wings contain authored
+  shrine-style puzzle chambers (Zelda-shrine tightness) connected by
+  traversal/exploration tissue.
+- **Sanctuaries:** each wing has a dormant Sanctuary. Clearing the wing's
+  boss/trial **relights it**, which (a) unlocks that wing's permanent-rescue
+  capability and (b) grants Petra's next ability — so power and redemption
+  always arrive together.
+- **Rescue ledger:** a diegetic notebook lists every petrified person Petra
+  has *used*, where she left them, and what she'd need to reach/restore
+  them. It is the quest log, the 100% tracker, and the emotional core in one
+  UI element.
 
-### 3.2 Petrified NPCs as puzzle objects
+### 3.2 The seven regions
 
-The statue-people (all female villagers, guards, priestesses — see §5) come in
-**pose archetypes** that define their physical affordances:
+| # | Region | Theme / mechanics | Ability gained here | Signature puzzle flavor |
+|---|--------|-------------------|--------------------|------------------------|
+| 0 | **Petrified Village** (hub) | Tutorial; statue-as-object basics | **Soften I** (~8 s) | Learn the guilt loop: use your neighbor as a step, promise to return |
+| 1 | **The Quarry** | Cracked stone, ramps, rolling physics, cranes | **Chisel Dash** | Break brittle barriers; don't shatter fragile statues; statue-rolling |
+| 2 | **Sunken Baths** | Water, buoyancy, weight | **Self-Petrification** | Flesh floats, stone sinks; walk lakebeds; statue stepping-stones |
+| 3 | **Gorgon Gardens** | Gaze-cones, mirrors, stealth, hedge mazes | **Harden** (petrify enemies/volunteers) | Reflect gazes back at acolytes; freeze enemies mid-leap as platforms |
+| 4 | **Crystal Undercroft** | Darkness, crystal resonance, precision timing | **Remote Soften** (soften at range, mid-air re-freeze) | Freeze a runner at the apex of her jump; chain-soften relays |
+| 5 | **Marble Palace** | All systems combined; the Curator's domain | **Soften III / Sustain** (~60 s, multiple targets) | Multi-statue choreography; escort softened NPCs through gauntlets |
+| 6 | **The Heart of Stone** (final) | Source of the calamity | **True Restoration** (story) | Final gauntlet remixes every wing's signature puzzle |
 
-- **The Reacher** — arms outstretched: her hands are a grab-ledge / monkey bar.
-- **The Kneeler** — low and stable: a stepping block, fits under low gaps when
-  pushed.
-- **The Runner** — frozen mid-stride, off-balance: tips over when nudged,
-  becoming a ramp or a bridge across a gap.
-- **The Shieldmaiden** — guard with raised shield: blocks projectiles and
-  petrifying gaze-beams; soften her and she *walks forward while blocking*,
-  becoming a mobile cover escort segment.
-- **The Dancer** — frozen mid-spin on one toe: rotates when pushed, redirecting
-  things that bounce off her (light beams, thrown objects).
-
-Statues can be **pushed, toppled, rotated, softened-and-repositioned, dropped,
-floated (on rafts), and weighed**. Water interactions matter: statues sink and
-become underwater stepping stones; flesh NPCs float and can swim.
-
-### 3.3 Enemy design
-
-- **Humanoid (female):** Gorgon acolytes with **petrifying gaze cones** —
-  line-of-sight stealth/mirror puzzles (reflect the gaze back to petrify *them*,
-  then use their statue). Stone-wardens who *repair/re-petrify* NPCs you've
-  softened, creating time pressure.
-- **Genderless monsters:** Basilisk hounds (gaze on a patrol timer), living
-  mortar-slimes that *glue* statues in place, crystal wasps whose sting
-  petrifies Petra's limbs one at a time (partial petrification debuff: stone
-  arm = can't grab ledges but punches break walls; stone legs = can't jump
-  but immune to knockback). Partial petrification as a *debuff that is also a
-  buff* is a signature system few games attempt.
-
-### 3.4 The permanence dial (risk/reward)
-
-Softening an NPC costs **Chisel Light**, a resource found in levels. You can
-finish a level using statues purely as objects (cheap, expedient) or spend
-extra light and effort to walk each NPC to the level's **Sanctuary**, where
-they're permanently restored. Restored NPCs repopulate the hub town, open
-shops/upgrades, and change the ending. **The game never forces kindness — it
-prices it.** That choice architecture is the memorable, talked-about feature.
+Hub placement: the Village sits centrally with shortcut connections opening
+back to it from every wing (Dark Souls-style loops), because Petra escorts
+rescued NPCs home and the village visibly repopulating *is* the progress bar.
 
 ---
 
-## 4. Level & Puzzle Design Structure
+## 4. Ability Progression (the Castlevania ladder)
 
-- **Structure:** Metroidvania-lite — an interconnected kingdom (5 biomes) with
-  ability-gated backtracking, but each "shrine" area is a contained puzzle
-  chamber (Zelda-shrine style) so puzzles stay authored and tight.
-- **Biomes:** Petrified Village (tutorial), Sunken Baths (water/weight),
-  Gorgon Gardens (gaze/stealth/mirrors), The Quarry (physics: ramps, cranes,
-  rolling), Marble Palace (all systems combined + partial-petrification
-  gauntlets).
-- **Puzzle escalation example (Softening):**
-  1. Soften a Runner so she stumbles forward two steps → re-freezes as a bridge.
-  2. Soften her *while a wind fan blows* → she's pushed further than she'd walk.
-  3. Soften her mid-air after toppling her off a ledge → she lands, runs, and
-     you must re-freeze her (ability #2) at the apex of her jump to make a
-     high platform.
-- **Boss concept:** *The Curator* — a gorgon who petrifies waves of her own
-  minions to build walls; you soften specific "bricks" to collapse her
-  architecture on her.
+### 4.1 Design rule
+
+Every ability must do double duty: **open new terrain** (Metroidvania gate)
+and **expand the puzzle vocabulary** (new verb or a power-up of an old
+verb). Softening upgrades are deliberately spread across the whole game —
+the *duration of mercy* is the central progression stat.
+
+### 4.2 The ladder, in order
+
+1. **Soften I — "A Few Seconds"** (Village, from the start)
+   Revert one petrified NPC to flesh for ~8 s; she resumes exactly what she
+   was doing (mid-run, mid-pull, mid-jump), then re-freezes **in her new
+   pose and position**. The core puzzle verb: *where, and in what pose, do I
+   want this statue?* 8 s is enough to reposition someone — never enough to
+   free them. That limit is the story.
+   *Gate:* lever-pulls, repositioned platforms.
+
+2. **Chisel Dash** (Quarry Sanctuary)
+   Short air-capable dash that shatters *cracked* stone — walls, floors,
+   and, tragically, fragile statues if you're careless (they reform at the
+   wing's Sanctuary, so no permanent loss, but a fail-forward penalty).
+   *Gate:* cracked barriers everywhere; standard dash-gaps.
+
+3. **Self-Petrification** (Baths Sanctuary)
+   Petra turns to stone at will (stamina-limited, shown by the marble veins
+   on her arm): invulnerable, heavy (sinks, holds plates, immune to wind and
+   knockback), can smash cracked floors by petrifying mid-fall — and
+   helpless, sliding on slopes as a physics object (which is also a verb:
+   statue-toboggan across spike fields).
+   *Gate:* underwater walks, pressure plates, wind corridors, crush traps.
+
+4. **Soften II — "Half a Minute"** (mini-Sanctuary, Baths depths, optional-ish)
+   Duration → ~25 s. NPCs can now walk *with* you briefly: micro-escorts,
+   two-person switch puzzles, a softened guard blocking projectiles as
+   mobile cover. First taste of "she's almost back" — and then she isn't.
+   Designed as the game's mid-point gut-punch.
+
+5. **Harden** (Gardens Sanctuary)
+   Petrify a humanoid enemy or a *consenting* NPC on demand. Enemies become
+   physics objects (mid-leap = falling boulder; on a bridge = overload).
+   Reflected gorgon gazes count as Harden for puzzle purposes.
+   *Gate:* enemy-as-platform gaps; weight puzzles with no statues nearby.
+
+6. **Remote Soften** (Undercroft Sanctuary)
+   Soften/re-freeze at range with a thrown chisel-spark, including
+   **mid-air re-freeze**: topple a Runner off a ledge, soften her as she
+   falls, re-freeze at the apex of her recovery jump — a high platform where
+   none existed. Opens the game's hardest optional puzzles.
+   *Gate:* out-of-reach statues, timing chambers.
+
+7. **Soften III / Sustain** (Palace Sanctuary)
+   ~60 s, up to three simultaneous targets. Full escort choreography;
+   softened friends actively help (boost-jumps, lever teams). By now the
+   player is powerful enough that using people as objects is a *choice*,
+   not a necessity — the game quietly asks whether your habits changed.
+
+8. **True Restoration** (Heart of Stone, endgame/story)
+   Break the curse at the source. Everyone still on the rescue ledger can
+   now be freed — but reaching many of them requires the full ability kit,
+   sending the player on a victory-lap cleanup of every region they once
+   moved through as a desperate beginner. Endings tier on rescue count
+   (everyone / most / few), with named-NPC vignettes for each rescue.
+
+### 4.3 Backtracking rewards (why re-enter old wings)
+
+- **People, not chests.** The primary collectible is *NPCs you previously
+  used*, reachable/restorable only with later abilities — the promise made
+  mechanical. (Conventional pickups — Chisel Light capacity, stamina veins,
+  outfit palettes — exist as secondary seasoning.)
+- Each restored NPC returns to the Village: shops, upgrades, side-vignettes,
+  and visible crowd growth.
+- Wings get **one new enemy variant** on revisit (stone-wardens re-petrify
+  softened NPCs, adding time pressure to old puzzle spaces).
 
 ---
 
-## 5. Characters & Tone
+## 5. Supporting Mechanics (unchanged from v0.1, summarized)
 
-- **Petra (player):** early-20s stonemason apprentice; practical, kind, wry.
-  Visual signature: chalk-dust hair, glowing chisel-amulet, one permanently
-  marble-veined arm (from her first accident) — a built-in UI: the veins glow
-  as self-petrify stamina.
-- **NPCs:** all female — villagers, guards, priestesses, Petra's mentor
-  **Master Ida** (the final rescue). Each rescued NPC has a name and a short
-  memory-vignette (frozen moments: what were they doing when the wave hit?),
-  which makes the "statue = person" theme land.
-- **Tone:** melancholy-but-warm fairy tale (think *Ori* meets *The Swapper*'s
-  quiet unease). Petrification is portrayed as tragic stillness, not body
-  horror and not titillation — poses are dignified/human (reaching for a door,
-  shielding a child-doll, mid-dance). This keeps ratings friendly (aim: E10+/T)
-  and keeps the emotional register coherent.
+- **Statue pose archetypes** define affordances: Reacher (grab-ledge),
+  Kneeler (step/block), Runner (tips into ramp), Shieldmaiden (mobile
+  cover), Dancer (rotatable deflector).
+- **Enemies:** female humanoids (gorgon acolytes with gaze cones,
+  stone-wardens) and genderless monsters (basilisk hounds, mortar-slimes
+  that glue statues, crystal wasps inflicting **partial petrification** —
+  stone arm: no ledge-grabs but wall-breaking punches; stone legs: no jump
+  but knockback-immune. A debuff that is also a buff).
+- **Chisel Light economy:** softening costs a renewable resource; expedient
+  play is cheap, merciful play costs effort. The game prices kindness, never
+  forces it.
+- **Boss concept — The Curator** (Palace): petrifies her own minions to
+  build walls; you soften specific "bricks" to collapse her architecture.
 
 ---
 
-## 6. Tech Stack Recommendation
+## 6. Characters & Tone
+
+- **Petra:** early-20s stonemason apprentice; practical, kind, wry. Marble-
+  veined arm doubles as the self-petrify stamina UI. Her arc: from "I'm
+  sorry, I need your shoulders" to keeping every promise.
+- **NPCs:** all female — villagers, guards, priestesses; mentor **Master
+  Ida** is the final rescue, petrified mid-gesture of shielding Petra.
+  Every named NPC has a frozen-moment vignette (what was she doing when the
+  wave hit?) revealed on rescue.
+- **Tone:** melancholy-but-warm fairy tale (*Ori* × *The Swapper*).
+  Petrification is tragic stillness — dignified poses, no body horror, no
+  titillation. Target rating E10+/T.
+
+---
+
+## 7. Tech Stack Recommendation
 
 ### Engine: **Godot 4.x** (recommended)
 
 | Need | Why Godot fits |
 |------|----------------|
-| 2D platformer + physics objects | First-class 2D engine; `RigidBody2D`/`CharacterBody2D` switching maps directly onto flesh↔stone state changes |
-| Statue/flesh visual swap | 2D shaders (petrify = desaturate + stone-noise + rim light on the *same sprite*) are trivial in Godot's shader language — see §7, this halves the art budget |
-| Solo/AI-assisted dev | GDScript is fast to iterate; excellent for programmer-led teams; Claude/LLMs write competent GDScript |
-| PC/Steam export | One-click Windows/Linux export, Steamworks via GodotSteam |
-| Cost | Free, MIT license, no revenue share |
+| 2D platformer + physics objects | First-class 2D; `RigidBody2D`/`CharacterBody2D` switching maps directly onto flesh↔stone |
+| Statue/flesh visual swap | 2D shaders (petrify = desaturate + stone-noise + rim light on the *same sprite*) are trivial — halves the art budget (§8) |
+| Metroidvania map | TileMap + LDtk importer; mature open-source map/minimap addons |
+| Solo/AI-assisted dev | GDScript iterates fast; LLMs write competent GDScript |
+| PC/Steam | One-click export; Steamworks via GodotSteam; free, MIT, no rev share |
 
-**Alternatives considered:**
-- **Unity (C#):** viable, bigger asset store, but heavier, licensing churn, and
-  overkill for 2D. Choose it only if you already know C# well.
-- **GameMaker:** great pure-2D platformer feel, but weaker physics-object story
-  and paid export licenses.
-- **Unreal:** not recommended — 3D-first, huge overhead for this scope.
+Alternatives: **Unity/C#** viable if you already know C# (heavier, licensing
+churn); **GameMaker** fine for pure 2D but weaker physics-object story and
+paid exports; **Unreal** not recommended at this scope.
 
-### Supporting tools
-
-- **Level editing:** Godot's built-in TileMap **+ LDtk** (free, excellent for
-  metroidvania layouts, has a Godot importer).
-- **Sprite/animation:** **Aseprite** (pixel art) or **Krita** (painted), plus
-  AI generation pipeline (§7). If using skeletal animation: **Spine** (paid) or
-  Godot's built-in `Skeleton2D` (free, adequate).
-- **Audio:** Godot's built-in audio; SFX via **jsfxr/ChipTone** + freesound;
-  music via AI (Suno/Udio) or licensed packs. Stone SFX (grinding, cracking,
-  chiming) are cheap to source and *hugely* carry the petrification fantasy.
-- **Version control:** Git + Git LFS for art (already in place).
+Supporting tools: **LDtk** (levels), **Aseprite/Krita** (+ AI pipeline, §8),
+Godot `Skeleton2D` or Spine (skeletal anim), jsfxr/freesound + AI music
+(Suno/Udio-class), Git + Git LFS.
 
 ---
 
-## 7. AI Art Feasibility — the honest assessment
+## 8. AI Art Feasibility — the honest assessment
 
-This decision matters more than the engine. Ranked by achievability today:
+### 8.1 Go **2D**, not 3D. Strongly.
 
-### 7.1 Go **2D**, not 3D. Strongly.
+AI 3D pipelines (text/image-to-3D) still output meshes needing manual
+retopo, rigging, and animation cleanup — exactly the artist skills you
+lack. 3D puts the hardest art problem at the center of the game; 2D puts
+AI's *strongest* capability (stylized stills) there instead.
 
-AI-generating a coherent, rigged, animated **3D** female character (plus stone
-variants, plus enemies) is still the weakest AI pipeline: current
-image-to-3D/text-to-3D tools (TripoSR/Meshy/Tripo-class) produce meshes needing
-manual retopo, rigging, and animation cleanup — exactly the artist skills you
-lack. **3D would put the hardest art problem at the center of your game.**
-2D puts AI's *strongest* capability (stylized still images) at the center.
+### 8.2 The theme is an art-budget gift — twice
 
-### 7.2 The petrification mechanic is an art-budget *gift*
+1. **Petrified variants are shaders, not art**: one stone shader applied to
+   existing sprites gives every character a petrified form for free, with
+   guaranteed consistency, plus a gorgeous animated petrification wipe.
+2. **Statues don't animate.** Your most numerous unique assets (posed
+   statue NPCs) sidestep AI's weakest area — frame-to-frame animation
+   consistency — entirely.
 
-Petrified variants should be **shaders, not new art**: one stone shader
-(desaturate → marble-noise overlay → cracked normal lines → cold rim light)
-applied to the *existing* sprite gives every NPC, enemy, and Petra a
-petrified form for free, guarantees visual consistency, and lets you animate
-the petrification sweep (a mask wipe) — which looks fantastic and costs zero
-art. This single decision roughly halves the character art budget.
+### 8.3 Difficulty map for AI-generated 2D assets
 
-### 7.3 Difficulty map for AI-generated 2D assets
-
-| Asset type | AI difficulty | Pipeline notes |
+| Asset type | AI difficulty | Notes |
 |---|---|---|
-| Backgrounds, parallax layers | **Easy** | Best-case AI use. Generate large paintings, slice into layers. |
-| Tilesets | **Medium** | AI drafts → manual cleanup for seamless tiling (few hours/biome in Aseprite). Tools like PixelLab help. |
-| Static statue poses | **Easy-Medium** | Statues don't animate — AI's weakness (temporal consistency) doesn't apply. Your most numerous unique asset is also the easiest. Another gift of the theme. |
-| Character *design* (concept sheets) | **Easy** | AI excels at concepting Petra, enemies, NPCs. |
-| Character *animation* (run/jump/climb cycles) | **HARD — the one real risk** | Frame-to-frame consistency is AI's weakest 2D area. Mitigations below. |
-| UI, icons, item art | **Easy** | |
-| Music/ambience | **Easy** | Suno/Udio-class output is genre-adequate for a melancholy piano/strings score. |
-| SFX | **Easy** | Libraries + light editing. |
-| Voice (if any) | **Medium** | Recommend no VO; text + vignettes fit the tone and budget. |
+| Backgrounds / parallax | **Easy** | Generate paintings, slice into layers |
+| Tilesets | **Medium** | AI drafts → manual seamless-tiling cleanup (~hours/biome) |
+| Static statue poses | **Easy-Medium** | No animation needed — the workhorse asset is the easy one |
+| Character concept sheets | **Easy** | |
+| Character animation cycles | **HARD — the one real risk** | Mitigations in §8.4 |
+| UI / icons / items | **Easy** | |
+| Music / ambience | **Easy** | Melancholy piano/strings is well within AI range |
+| SFX | **Easy** | Stone SFX (grind/crack/chime) carry the fantasy cheaply |
+| Voice | **Medium** | Recommend no VO; text vignettes fit tone and budget |
 
-### 7.4 Mitigating the animation problem (pick one style early)
+### 8.4 Mitigating the animation problem
 
-1. **Low-res pixel art (recommended): 32–48 px characters.** At this
-   resolution a run cycle is 6–8 small frames; imperfections read as charm, and
-   AI pixel tools (PixelLab, Retro Diffusion) plus a weekend of Aseprite
-   tweaking per character gets shippable results. *Celeste* proves small
-   sprites + strong shaders + good backgrounds = beautiful.
-2. **Cut-out/skeletal (fallback):** AI generates one high-quality character
-   sheet → you cut into parts → rig in Godot `Skeleton2D`. No per-frame art at
-   all; slightly "paper-doll" motion, fixable with squash/stretch. Best option
-   if you want painted *Hollow Knight*-ish fidelity without frame animation.
-3. **Avoid:** high-res hand-drawn frame animation (Cuphead-style). Not
-   achievable with AI + non-artist cleanup.
+1. **Low-res pixel art (recommended): 32–48 px characters.** Run cycles are
+   6–8 small frames; AI pixel tools (PixelLab, Retro Diffusion) + Aseprite
+   cleanup reach shippable quality. *Celeste* proves small sprites + strong
+   shaders + painted backgrounds = beautiful.
+2. **Cut-out/skeletal (fallback):** AI generates one character sheet → cut
+   into parts → rig in Godot `Skeleton2D`. Zero per-frame art; paper-doll
+   stiffness fixable with squash/stretch.
+3. **Avoid** high-res hand-drawn frame animation (Cuphead-style).
 
-**Scope control:** Petra needs ~10 animation sets; each NPC archetype needs
-only *idle/walk/run/panic* (4 sets, shared skeleton, palette-swapped outfits);
-statues need **zero**. Enemies: 3 humanoid + 4 monster types is enough for a
-10-hour game.
+**Scope control:** Petra ~10 animation sets; NPC archetypes share one
+skeleton with 4 sets (idle/walk/run/panic) and palette-swapped outfits;
+statues need zero; 3 humanoid + 4 monster enemy types suffice.
 
-### 7.5 Consistency workflow
+### 8.5 Consistency workflow
 
-- Lock a **style bible** first: one AI-assisted key image of Petra in the
-  village, chosen palette (cold marble whites/teals vs. warm flesh/lantern
-  ambers — the palette itself encodes the flesh/stone theme), then condition
-  all further generation on it (reference images / LoRA fine-tune on your
-  accepted assets).
-- Budget ~20–30% of asset time for manual cleanup in Aseprite/Krita. AI gets
-  you 80% of the way; the last 20% is what makes it not look AI-generated.
+Lock a **style bible** first (one key image of Petra in the Village; cold
+marble whites/teals vs. warm flesh/lantern ambers — the palette encodes the
+theme), condition all generation on it (reference images / LoRA on accepted
+assets). Budget 20–30% of asset time for manual cleanup — that last 20% is
+what makes it not look AI-generated.
 
 ---
 
-## 8. Suggested Milestones
+## 9. Milestones
 
-1. **M0 — Mechanic prototype (graybox, 2–4 wks):** Petra move/jump,
-   self-petrify physics, one soften-and-reposition puzzle, stone shader on
-   placeholder squares. *Validate the fun before any art.*
-2. **M1 — Vertical slice (6–8 wks):** Petrified Village tutorial with final
-   pipeline art for Petra + 2 NPC archetypes + 1 enemy, sanctuary/rescue loop.
-3. **M2 — Systems complete:** all abilities, all enemy types, 2 biomes.
+1. **M0 — Mechanic prototype (graybox, 2–4 wks):** move/jump, Soften I
+   reposition puzzle, self-petrify physics, stone shader on placeholders.
+   *Validate the fun before any art.*
+2. **M1 — Vertical slice (6–8 wks):** Village + Quarry entrance with final
+   pipeline art: Petra, 2 NPC archetypes, 1 enemy, rescue-ledger UI,
+   first Sanctuary relight.
+3. **M2 — Systems complete:** full ability ladder, all enemy types, 3 wings.
 4. **M3 — Content complete → polish → Steam Next Fest demo.**
 
 ---
 
-## 9. Open Questions
+## 10. Open Questions
 
-- Metroidvania interconnection vs. pure level-select (affects scope ±30%).
-- Should enemy petrification of Petra ever be *permanent* (roguelite death) or
-  always checkpoint-recoverable? (Recommend recoverable; permanence stays a
-  thematic threat via NPCs, not a player punishment.)
+- Exact Soften durations/costs need prototyping — 8 s is a guess; the right
+  number is "just too short to feel like freedom."
+- Should any rescue be missable/failable, or is everyone always eventually
+  savable? (Recommend: always savable — the promise must be keepable; tiered
+  endings come from *how many you bothered to go back for*, not permadeath.)
+- Fast travel: none / Sanctuary-to-Sanctuary / late unlock? (Leaning
+  Sanctuary-to-Sanctuary after each relight — escorting rescued NPCs home
+  shouldn't be tedious.)
 - Name/branding pass on the title.
