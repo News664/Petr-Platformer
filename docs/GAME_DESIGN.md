@@ -1,4 +1,4 @@
-# Petr-Platformer — Game Design Document (v0.2)
+# Petr-Platformer — Game Design Document (v0.3)
 
 **Working title:** *Gorgon's Garden* (placeholder)
 **Genre:** 2D puzzle-platformer / Metroidvania
@@ -60,9 +60,10 @@ power → redemption, expressed entirely through mechanics.
   shrine-style puzzle chambers (Zelda-shrine tightness) connected by
   traversal/exploration tissue.
 - **Sanctuaries:** each wing has a dormant Sanctuary. Clearing the wing's
-  boss/trial **relights it**, which (a) unlocks that wing's permanent-rescue
-  capability and (b) grants Petra's next ability — so power and redemption
-  always arrive together.
+  boss/trial **relights it**, which grants Petra's next ability and opens a
+  safe route home — but it never frees anyone by itself. **Rescue is always
+  an act the player performs, one person at a time** (see §4.3). Area
+  clearance gives you the *means*; the mercy stays yours to do.
 - **Rescue ledger:** a diegetic notebook lists every petrified person Petra
   has *used*, where she left them, and what she'd need to reach/restore
   them. It is the quest log, the 100% tracker, and the emotional core in one
@@ -78,7 +79,7 @@ power → redemption, expressed entirely through mechanics.
 | 3 | **Gorgon Gardens** | Gaze-cones, mirrors, stealth, hedge mazes | **Harden** (petrify enemies/volunteers) | Reflect gazes back at acolytes; freeze enemies mid-leap as platforms |
 | 4 | **Crystal Undercroft** | Darkness, crystal resonance, precision timing | **Remote Soften** (soften at range, mid-air re-freeze) | Freeze a runner at the apex of her jump; chain-soften relays |
 | 5 | **Marble Palace** | All systems combined; the Curator's domain | **Soften III / Sustain** (~60 s, multiple targets) | Multi-statue choreography; escort softened NPCs through gauntlets |
-| 6 | **The Heart of Stone** (final) | Source of the calamity | **True Restoration** (story) | Final gauntlet remixes every wing's signature puzzle |
+| 6 | **The Heart of Stone** (final) | Source of the calamity | — (finale; outcome varies, §4.5) | Final gauntlet remixes every wing's signature puzzle |
 
 Hub placement: the Village sits centrally with shortcut connections opening
 back to it from every wing (Dark Souls-style loops), because Petra escorts
@@ -144,23 +145,72 @@ the *duration of mercy* is the central progression stat.
    player is powerful enough that using people as objects is a *choice*,
    not a necessity — the game quietly asks whether your habits changed.
 
-8. **True Restoration** (Heart of Stone, endgame/story)
-   Break the curse at the source. Everyone still on the rescue ledger can
-   now be freed — but reaching many of them requires the full ability kit,
-   sending the player on a victory-lap cleanup of every region they once
-   moved through as a desperate beginner. Endings tier on rescue count
-   (everyone / most / few), with named-NPC vignettes for each rescue.
+8. **The Finale** (Heart of Stone, endgame/story)
+   Confront the curse at its source. What happens there — and to the
+   Anchored, the unrescued, and Petra herself — depends on the Rescue and
+   Truth counters (§4.5). The point of no return is clearly marked, and the
+   game invites a final victory-lap of unfinished rescues before it.
 
-### 4.3 Backtracking rewards (why re-enter old wings)
+### 4.3 Rescue mechanics — how someone actually gets saved
 
-- **People, not chests.** The primary collectible is *NPCs you previously
-  used*, reachable/restorable only with later abilities — the promise made
-  mechanical. (Conventional pickups — Chisel Light capacity, stamina veins,
-  outfit palettes — exist as secondary seasoning.)
-- Each restored NPC returns to the Village: shops, upgrades, side-vignettes,
-  and visible crowd growth.
-- Wings get **one new enemy variant** on revisit (stone-wardens re-petrify
-  softened NPCs, adding time pressure to old puzzle spaces).
+Rescue is never automatic and never a menu action. To save someone, Petra
+must **soften her and get her to safety within the soften window**:
+
+- Every wing has **Waystones** (small shrine exits, plus the Sanctuary
+  itself). A softened NPC who reaches a Waystone before re-freezing is
+  **teleported safely to the Village** — permanently saved.
+- Early Soften windows (8 s) make this impossible; that's the point. As
+  windows grow (25 s → 60 s), rescues become *escort puzzles*: the player
+  must first clear and prepare the route (open gates, remove wardens,
+  pre-position other statues as steps for the running NPC), then soften and
+  shepherd her home. **Preparing a rescue is the puzzle; the run itself is
+  the payoff.**
+- NPC ledger classification:
+  - **Walkers** (~majority): rescuable by escort once the player has enough
+    Soften duration and has solved the route. These are the Metroidvania
+    backtracking content — the promise made mechanical.
+  - **Anchored** (~a quarter, marked by curse-light veins): their
+    petrification is bound directly to the curse's source. **No soften
+    window frees them — ever — until the curse itself is wiped in the
+    finale.** Deliberately, these are the statues the level design makes
+    you *use* the most (bridges, weights, shields), so the people you owe
+    the greatest debt are precisely the ones you cannot save early. The
+    ledger shows them with an unbreakable chain icon leading to the Heart
+    of Stone.
+  - **Witnesses** (~6 named Walkers): each holds a fragment of the truth
+    about the calamity. Their testimony is only heard if they're rescued
+    (flesh, in the Village) — the currency of the true ending (§4.5).
+
+Secondary backtracking seasoning: Chisel Light capacity, stamina veins,
+outfit palettes; wings gain one new enemy variant on revisit (stone-wardens
+re-petrify softened NPCs, adding time pressure to rescue runs).
+
+### 4.4 The Village as living progress bar
+
+Each rescued NPC appears in the Village: shops, upgrades, side-vignettes,
+visible crowd growth — and Witnesses add entries to a **Fresco Hall** where
+the true history of the calamity is assembled piece by piece.
+
+### 4.5 Endings
+
+Ending selection is driven by two independent counters — **Rescue count**
+(Walkers saved) and **Truth count** (Witness testimonies heard) — plus the
+player's conduct in the final confrontation. All routes are visible in the
+ledger before the point of no return, and the game warns clearly at the
+final door.
+
+| Ending | Conditions | Outcome |
+|---|---|---|
+| **Bad — "The Last Statue"** | Enter the finale badly under-prepared (few rescues, no truths) *or* fail/choose the sacrifice at the climax | Petra's amulet cannot contain the curse's rebound; she seals it **by petrifying herself around it, permanently**. The Village survivors she did save hold a vigil at her statue. Not a game-over screen — a full, scored ending with credits. |
+| **Mediocre — "A Quieter Kingdom"** | Beat the finale with partial rescues; truth incomplete | The curse's source is destroyed but its residue never lifts: all un-rescued Walkers and **all Anchored NPCs remain stone forever**, weathering in the epilogue montage. The Village lives, diminished. The ledger's unfilled pages turn in the wind. |
+| **Good — "Everyone Comes Home"** | **All Walkers rescued** before the finale, then win | The curse is **fully wiped out at the source** — the only force that can free the Anchored. Epilogue: every Anchored statue wakes where she stood; Petra walks each old route one last time as they stream home. |
+| **True — "The First Statue"** | Good-ending conditions **+ all 6 Witness truths** | The truths reveal the curse's origin — the gorgon was herself the *first* victim, a priestess petrified from the inside out. Armed with the whole story, Petra gets a different final confrontation: instead of destroying the source, she performs the game's final Soften on the gorgon herself. Everyone is saved — **including the monster.** Post-credits: the ledger's last page, every name crossed out, one name added. |
+
+Design rules: the bad ending is authored content (poignant, not punitive) so
+even "failure" is worth seeing; mediocre is the natural first-playthrough
+result and doubles as NG+ motivation; good is 100% rescue; true is good +
+paying attention to *people* rather than just collecting them — which is
+the game's whole argument.
 
 ---
 
@@ -266,7 +316,51 @@ AI's *strongest* capability (stylized stills) there instead.
 skeleton with 4 sets (idle/walk/run/panic) and palette-swapped outfits;
 statues need zero; 3 humanoid + 4 monster enemy types suffice.
 
-### 8.5 Consistency workflow
+### 8.5 Event art: portraits, avatars, and CGs — quantified workload
+
+With named NPCs, Witness testimonies, rescue vignettes, and four endings,
+the game needs **narrative art** beyond sprites. This is static, single-image
+work — squarely in AI's comfort zone — but volume and *cross-image character
+consistency* must be budgeted deliberately.
+
+**Inventory (target scope):**
+
+| Asset | Count | AI difficulty | Notes |
+|---|---|---|---|
+| Petra dialogue bust + expressions | 1 base × ~8 expressions | Medium | Main character: train a LoRA on her accepted key art first; expressions via inpainting the face region only |
+| Named-NPC dialogue busts | ~24 characters × 3 expressions ≈ 72 | Medium | One base per character, 2 extra expressions by face-inpaint. Shared body templates with outfit/palette variation keep them cheap and coherent |
+| **Petrified bust variants** | **0 new images** | Free | The stone shader applies to busts exactly as to sprites — every portrait gets a petrified version at zero art cost, and dialogue with a statue (Petra talking *at* her frozen friend) becomes a signature scene type |
+| Major-character full-body art | ~8 (Petra, Ida, Curator, gorgon, 4 Witnesses) | Medium | Used in key events and the ledger's character pages |
+| Event CGs (full-scene illustrations) | ~14–18 | Easy-Medium | Opening calamity (2–3), first forced "use" of a friend (1), Soften II gut-punch (1), Sanctuary relights (reuse 1 template × palette, 1–2), ending sets: bad 2, mediocre 2, good 3, true 3–4 |
+| Rescue vignettes (per named NPC) | ~24 | Easy | **Do these as fresco/stained-glass panels**, not realistic scenes: a stylized "frozen moment" format is thematically perfect (stone imagery), hides AI's consistency weaknesses, and one strong style prompt makes all 24 feel like a set |
+| Fresco Hall truth panels | 6 | Easy | Same fresco pipeline as vignettes |
+
+**Total: roughly 120–140 unique AI-generated images**, of which ~100 are
+busts/vignettes produced by repeatable pipelines. At a realistic AI-assisted
+rate for a non-artist (generate → select → inpaint fixes → cleanup ≈ 0.5–2 h
+per accepted image once the pipeline is dialed in), this is **4–8 weeks of
+part-time work** — very feasible, but it should be treated as a real
+milestone, not an afterthought.
+
+**Consistency tactics (the actual risk, and its mitigations):**
+
+1. **LoRA per major character** (Petra + ~4 story-critical faces), trained
+   on their accepted key art. Minor NPCs don't need LoRAs — they appear in
+   few images, and their bust *is* their canonical look.
+2. **Expressions by inpainting, never regeneration**: keep the bust fixed,
+   repaint only eyes/mouth. This is the single biggest consistency win.
+3. **Design for consistency**: give every named NPC one high-contrast
+   identifier (hair silhouette, headscarf, guard pauldron) that survives
+   AI drift; the eye forgives a changed face far more than a changed
+   silhouette.
+4. **Stylize the hard cases**: anything requiring multiple characters
+   interacting in one frame (the classic AI failure) goes to the fresco
+   format or to sprite-based in-engine cutscenes instead of CGs.
+5. Sprite-based cutscenes are the default storytelling mode; CGs are
+   reserved for the ~18 moments listed. Keeping CG count disciplined is
+   what keeps the 4–8 week estimate honest.
+
+### 8.6 Consistency workflow
 
 Lock a **style bible** first (one key image of Petra in the Village; cold
 marble whites/teals vs. warm flesh/lantern ambers — the palette encodes the
@@ -293,10 +387,15 @@ what makes it not look AI-generated.
 
 - Exact Soften durations/costs need prototyping — 8 s is a guess; the right
   number is "just too short to feel like freedom."
-- Should any rescue be missable/failable, or is everyone always eventually
-  savable? (Recommend: always savable — the promise must be keepable; tiered
-  endings come from *how many you bothered to go back for*, not permadeath.)
-- Fast travel: none / Sanctuary-to-Sanctuary / late unlock? (Leaning
-  Sanctuary-to-Sanctuary after each relight — escorting rescued NPCs home
-  shouldn't be tedious.)
+- Within a playthrough, no Walker rescue is permanently missable before the
+  point of no return (a botched escort just re-freezes her in place, ledger
+  updated). Confirm there's no level-design state that can strand a Walker
+  unreachably.
+- Should the bad ending be reachable *only* by explicit choice at the
+  climax, or also by failing the final gauntlet? (Leaning: both funnel into
+  the same authored scene, so failure is never a cheap game-over.)
+- Fast travel: Waystone-to-Waystone after each Sanctuary relight — rescue
+  escorts must stay tense, but *reaching* the escort shouldn't be tedious.
+- NG+ carry-over (keep abilities, reset rescues?) to make true-ending runs
+  pleasant.
 - Name/branding pass on the title.
