@@ -9,17 +9,17 @@
 
 ## 1. High Concept
 
-You play **Petra**, a young stonemason's apprentice in a kingdom turned to
-stone by a gorgon-like calamity. Petra was spared, and she carries her
+You play **Iolite**, a young stonemason's apprentice in a kingdom turned to
+stone by a gorgon-like calamity. Iolite was spared, and she carries her
 mentor's chisel-amulet — a relic that can **revert petrification, but only
 briefly and only barely**. From the very first minute her goal is stated
 plainly: *save everyone*. But her power is nowhere near enough. A softened
 friend returns to flesh for mere seconds before the curse reclaims her.
 
-So Petra does the only thing she can: she **uses her petrified friends as
+So Iolite does the only thing she can: she **uses her petrified friends as
 tools** — climbs them, topples them, drops them onto switches — whispering
 the same promise each time: *"I'll come back for you."* The game's structure
-makes that promise real: as Petra's power grows, she physically returns to
+makes that promise real: as Iolite's power grows, she physically returns to
 earlier regions and permanently restores the people she once had to use.
 
 **The mechanical hook and the narrative hook are the same object**, and now
@@ -37,7 +37,7 @@ Solidification converts characters between two ontologies:
 | Flesh (animate) | AI agent — walks, follows, panics, helps | Escort, cooperation, lure |
 | Stone (solid) | Physics object — heavy, rigid, durable | Platform, weight, shield, plug, projectile |
 
-Every mechanic derives from moving things (and Petra herself) across that
+Every mechanic derives from moving things (and Iolite herself) across that
 line at the right moment and place — one easily-communicated rule generating
 a large puzzle vocabulary.
 
@@ -60,11 +60,11 @@ power → redemption, expressed entirely through mechanics.
   shrine-style puzzle chambers (Zelda-shrine tightness) connected by
   traversal/exploration tissue.
 - **Sanctuaries:** each wing has a dormant Sanctuary. Clearing the wing's
-  boss/trial **relights it**, which grants Petra's next ability and opens a
+  boss/trial **relights it**, which grants Iolite's next ability and opens a
   safe route home — but it never frees anyone by itself. **Rescue is always
   an act the player performs, one person at a time** (see §4.3). Area
   clearance gives you the *means*; the mercy stays yours to do.
-- **Rescue ledger:** a diegetic notebook lists every petrified person Petra
+- **Rescue ledger:** a diegetic notebook lists every petrified person Iolite
   has *used*, where she left them, and what she'd need to reach/restore
   them. It is the quest log, the 100% tracker, and the emotional core in one
   UI element.
@@ -82,7 +82,7 @@ power → redemption, expressed entirely through mechanics.
 | 6 | **The Heart of Stone** (final) | Source of the calamity | — (finale; outcome varies, §4.5) | Final gauntlet remixes every wing's signature puzzle |
 
 Hub placement: the Village sits centrally with shortcut connections opening
-back to it from every wing (Dark Souls-style loops), because Petra escorts
+back to it from every wing (Dark Souls-style loops), because Iolite escorts
 rescued NPCs home and the village visibly repopulating *is* the progress bar.
 
 ---
@@ -113,7 +113,7 @@ the *duration of mercy* is the central progression stat.
    *Gate:* cracked barriers everywhere; standard dash-gaps.
 
 3. **Self-Petrification** (Baths Sanctuary)
-   Petra turns to stone at will (stamina-limited, shown by the marble veins
+   Iolite turns to stone at will (stamina-limited, shown by the marble veins
    on her arm): invulnerable, heavy (sinks, holds plates, immune to wind and
    knockback), can smash cracked floors by petrifying mid-fall — and
    helpless, sliding on slopes as a physics object (which is also a verb:
@@ -147,13 +147,13 @@ the *duration of mercy* is the central progression stat.
 
 8. **The Finale** (Heart of Stone, endgame/story)
    Confront the curse at its source. What happens there — and to the
-   Anchored, the unrescued, and Petra herself — depends on the Rescue and
+   Anchored, the unrescued, and Iolite herself — depends on the Rescue and
    Truth counters (§4.5). The point of no return is clearly marked, and the
    game invites a final victory-lap of unfinished rescues before it.
 
 ### 4.3 Rescue mechanics — how someone actually gets saved
 
-Rescue is never automatic and never a menu action. To save someone, Petra
+Rescue is never automatic and never a menu action. To save someone, Iolite
 must **soften her and get her to safety within the soften window**:
 
 - Every wing has **Waystones** (small shrine exits, plus the Sanctuary
@@ -190,7 +190,7 @@ consecutive Soften on the same person **halves the duration and doubles the
 Chisel Light cost** (8 s → 4 s → 2 s → the amulet refuses). The chain
 collapses geometrically, so early-game chain-escorts stall after a couple
 of links — mechanically enforcing "I can move you, but I cannot free you."
-Heat dissipates when Petra attunes at any Waystone or Sanctuary (or after a
+Heat dissipates when Iolite attunes at any Waystone or Sanctuary (or after a
 long in-game cooldown), resetting the chain. Late game, this same rule
 becomes an *expert tool*: Soften III durations plus a deep Chisel Light
 reserve make deliberate two- or three-link chains viable, letting skilled
@@ -228,10 +228,10 @@ final door.
 
 | Ending | Conditions | Outcome |
 |---|---|---|
-| **Bad — "The Last Statue"** | Enter the finale badly under-prepared (few rescues, no truths) *or* fail/choose the sacrifice at the climax | Petra's amulet cannot contain the curse's rebound; she seals it **by petrifying herself around it, permanently**. The Village survivors she did save hold a vigil at her statue. Not a game-over screen — a full, scored ending with credits. |
+| **Bad — "The Last Statue"** | Enter the finale badly under-prepared (few rescues, no truths) *or* fail/choose the sacrifice at the climax | Iolite's amulet cannot contain the curse's rebound; she seals it **by petrifying herself around it, permanently**. The Village survivors she did save hold a vigil at her statue. Not a game-over screen — a full, scored ending with credits. |
 | **Mediocre — "A Quieter Kingdom"** | Beat the finale with partial rescues; truth incomplete | The curse's source is destroyed but its residue never lifts: all un-rescued Walkers and **all Anchored NPCs remain stone forever**, weathering in the epilogue montage. The Village lives, diminished. The ledger's unfilled pages turn in the wind. |
-| **Good — "Everyone Comes Home"** | **All Walkers rescued** before the finale, then win | The curse is **fully wiped out at the source** — the only force that can free the Anchored. Epilogue: every Anchored statue wakes where she stood; Petra walks each old route one last time as they stream home. |
-| **True — "The First Statue"** | Good-ending conditions **+ all 6 Witness truths** | The truths reveal the curse's origin — the gorgon was herself the *first* victim, a priestess petrified from the inside out. Armed with the whole story, Petra gets a different final confrontation: instead of destroying the source, she performs the game's final Soften on the gorgon herself. Everyone is saved — **including the monster.** Post-credits: the ledger's last page, every name crossed out, one name added. |
+| **Good — "Everyone Comes Home"** | **All Walkers rescued** before the finale, then win | The curse is **fully wiped out at the source** — the only force that can free the Anchored. Epilogue: every Anchored statue wakes where she stood; Iolite walks each old route one last time as they stream home. |
+| **True — "The First Statue"** | Good-ending conditions **+ all 6 Witness truths** | The truths reveal the curse's origin — the gorgon was herself the *first* victim, a priestess petrified from the inside out. Armed with the whole story, Iolite gets a different final confrontation: instead of destroying the source, she performs the game's final Soften on the gorgon herself. Everyone is saved — **including the monster.** Post-credits: the ledger's last page, every name crossed out, one name added. |
 
 Design rules: the bad ending is authored content (poignant, not punitive) so
 even "failure" is worth seeing; mediocre is the natural first-playthrough
@@ -261,11 +261,12 @@ the game's whole argument.
 
 ## 6. Characters & Tone
 
-- **Petra:** early-20s stonemason apprentice; practical, kind, wry. Marble-
-  veined arm doubles as the self-petrify stamina UI. Her arc: from "I'm
-  sorry, I need your shoulders" to keeping every promise.
+- **Iolite** (nick. *Io*): early-20s stonemason apprentice; practical, kind,
+  wry. Long purple hair — her visual signature — plus a marble-veined arm
+  that doubles as the self-petrify stamina UI. Her arc: from "I'm sorry, I
+  need your shoulders" to keeping every promise.
 - **NPCs:** all female — villagers, guards, priestesses; mentor **Master
-  Ida** is the final rescue, petrified mid-gesture of shielding Petra.
+  Ida** is the final rescue, petrified mid-gesture of shielding Iolite.
   Every named NPC has a frozen-moment vignette (what was she doing when the
   wave hit?) revealed on rescue.
 - **Tone:** melancholy-but-warm fairy tale (*Ori* × *The Swapper*).
@@ -341,7 +342,7 @@ AI's *strongest* capability (stylized stills) there instead.
    stiffness fixable with squash/stretch.
 3. **Avoid** high-res hand-drawn frame animation (Cuphead-style).
 
-**Scope control:** Petra ~10 animation sets; NPC archetypes share one
+**Scope control:** Iolite ~10 animation sets; NPC archetypes share one
 skeleton with 4 sets (idle/walk/run/panic) and palette-swapped outfits;
 statues need zero; 3 humanoid + 4 monster enemy types suffice.
 
@@ -356,10 +357,10 @@ consistency* must be budgeted deliberately.
 
 | Asset | Count | AI difficulty | Notes |
 |---|---|---|---|
-| Petra dialogue bust + expressions | 1 base × ~8 expressions | Medium | Main character: train a LoRA on her accepted key art first; expressions via inpainting the face region only |
+| Iolite dialogue bust + expressions | 1 base × ~8 expressions | Medium | Main character: train a LoRA on her accepted key art first; expressions via inpainting the face region only |
 | Named-NPC dialogue busts | ~24 characters × 3 expressions ≈ 72 | Medium | One base per character, 2 extra expressions by face-inpaint. Shared body templates with outfit/palette variation keep them cheap and coherent |
-| **Petrified bust variants** | ~25 (named NPCs) | Easy-Medium | A gray shader is *not* good enough at portrait scale — statues need carved-surface reading: unified marble/granite material, chiseled hair masses, blank or veined eyes, drapery-like clothing folds, cracks and weathering. These are **dedicated images derived from the flesh bust** via structure-preserving image-to-image (same lineart/pose via ControlNet-lineart or an image-edit API, restyled coloring) — far cheaper than from-scratch art (~15–30 min each once dialed in) while keeping the two versions recognizably *the same person*, which is the emotional point. Dialogue with a statue (Petra talking at her frozen friend) is a signature scene type |
-| Major-character full-body art | ~8 (Petra, Ida, Curator, gorgon, 4 Witnesses) | Medium | Used in key events and the ledger's character pages |
+| **Petrified bust variants** | ~25 (named NPCs) | Easy-Medium | A gray shader is *not* good enough at portrait scale — statues need carved-surface reading: unified marble/granite material, chiseled hair masses, blank or veined eyes, drapery-like clothing folds, cracks and weathering. These are **dedicated images derived from the flesh bust** via structure-preserving image-to-image (same lineart/pose via ControlNet-lineart or an image-edit API, restyled coloring) — far cheaper than from-scratch art (~15–30 min each once dialed in) while keeping the two versions recognizably *the same person*, which is the emotional point. Dialogue with a statue (Iolite talking at her frozen friend) is a signature scene type |
+| Major-character full-body art | ~8 (Iolite, Ida, Curator, gorgon, 4 Witnesses) | Medium | Used in key events and the ledger's character pages |
 | Event CGs (full-scene illustrations) | ~14–18 | Easy-Medium | Opening calamity (2–3), first forced "use" of a friend (1), Soften II gut-punch (1), Sanctuary relights (reuse 1 template × palette, 1–2), ending sets: bad 2, mediocre 2, good 3, true 3–4 |
 | Rescue vignettes (per named NPC) | ~24 | Easy | **Do these as fresco/stained-glass panels**, not realistic scenes: a stylized "frozen moment" format is thematically perfect (stone imagery), hides AI's consistency weaknesses, and one strong style prompt makes all 24 feel like a set |
 | Fresco Hall truth panels | 6 | Easy | Same fresco pipeline as vignettes |
@@ -373,7 +374,7 @@ milestone, not an afterthought.
 
 **Consistency tactics (the actual risk, and its mitigations):**
 
-1. **LoRA per major character** (Petra + ~4 story-critical faces), trained
+1. **LoRA per major character** (Iolite + ~4 story-critical faces), trained
    on their accepted key art. Minor NPCs don't need LoRAs — they appear in
    few images, and their bust *is* their canonical look.
 2. **Expressions by inpainting, never regeneration**: keep the bust fixed,
@@ -409,7 +410,7 @@ for ControlNet workflows):
 
 ### 8.7 Consistency workflow
 
-Lock a **style bible** first (one key image of Petra in the Village; cold
+Lock a **style bible** first (one key image of Iolite in the Village; cold
 marble whites/teals vs. warm flesh/lantern ambers — the palette encodes the
 theme), condition all generation on it (reference images / LoRA on accepted
 assets). Budget 20–30% of asset time for manual cleanup — that last 20% is
@@ -423,7 +424,7 @@ what makes it not look AI-generated.
    reposition puzzle, self-petrify physics, stone shader on placeholders.
    *Validate the fun before any art.*
 2. **M1 — Vertical slice (6–8 wks):** Village + Quarry entrance with final
-   pipeline art: Petra, 2 NPC archetypes, 1 enemy, rescue-ledger UI,
+   pipeline art: Iolite, 2 NPC archetypes, 1 enemy, rescue-ledger UI,
    first Sanctuary relight.
 3. **M2 — Systems complete:** full ability ladder, all enemy types, 3 wings.
 4. **M3 — Content complete → polish → Steam Next Fest demo.**
@@ -445,11 +446,6 @@ what makes it not look AI-generated.
   escorts must stay tense, but *reaching* the escort shouldn't be tedious.
 - NG+ carry-over (keep abilities, reset rescues?) to make true-ending runs
   pleasant.
-- **Heroine rename** (replacing "Petra"; she has long purple hair, so a
-  purple-stone name keeps the theme). Shortlist: **Amethyst** (nick. *Amé*
-  or *Tess*) — literally the violet quartz; **Iolite** (nick. *Io*) — the
-  violet "water-sapphire," short and modern; **Ianthe** — Greek "violet
-  flower," elegant/mythic; **Tanza** — from tanzanite, unusual and cute;
-  **Charoite** (nick. *Charra*) — lilac mineral; **Wisteria** (nick. *Wis*).
-  Doc keeps "Petra" as placeholder until chosen.
+- ~~Heroine rename~~ **Resolved:** the heroine is **Iolite** (nick. *Io*),
+  after the violet gemstone — matching her long purple hair.
 - Name/branding pass on the title.

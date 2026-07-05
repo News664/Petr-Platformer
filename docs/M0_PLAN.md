@@ -19,7 +19,7 @@ no speculative systems (no save/load, no ledger UI, no enemies, no audio).
    sticking on walls; jump feels responsive at 60 fps).
 3. **Self-petrification** — swap `CharacterBody2D` → `RigidBody2D` stone
    form: invulnerable flag, high mass (holds a pressure plate a crate
-   can't), slides on slopes, sinks in a water volume flesh-Petra floats in,
+   can't), slides on slopes, sinks in a water volume flesh-Iolite floats in,
    petrify-mid-fall breaks a cracked floor. Stamina bar drains/regens.
    → verify: one test room exercising all five behaviors.
 4. **Statue NPCs as objects** — pushable `RigidBody2D` statues; two pose
@@ -45,6 +45,21 @@ no speculative systems (no save/load, no ledger UI, no enemies, no audio).
 8. **Playtest build** — export a Windows/Linux build.
    → verify: a first-time player clears the chamber in ~10 min and can
    answer: “did using a person as a bridge feel bad in the right way?”
+
+## Implementation notes (deviations discovered while building)
+
+- **Softened NPCs follow Iolite** instead of resuming a pre-scripted action.
+  Following makes both puzzle positioning (lure her to where you want the
+  statue) and rescue escorts (lead her to the Waystone) fall out of one
+  behavior, and it reads better ("she's conscious, she trusts you"). If M0
+  playtests support it, fold this into `GAME_DESIGN.md` §4.2 (Soften I).
+- **Early re-freeze on demand** (press E again while softened) is enabled in
+  the prototype for usability — canonically this arrives later on the
+  ability ladder, so decide after playtesting whether Soften I keeps it.
+- No engine binary was available in the dev environment; all scripts are
+  parse/lint-verified with gdtoolkit (`gdparse`/`gdlint`), but **runtime
+  behavior and physics tuning (impulses, pit/statue dimensions, water feel)
+  still need a human run in the Godot 4.3+ editor.**
 
 ## Out of scope for M0
 
