@@ -1,4 +1,4 @@
-# Petr-Platformer — Game Design Document (v0.3)
+# Petr-Platformer — Game Design Document (v0.4)
 
 **Working title:** *Gorgon's Garden* (placeholder)
 **Genre:** 2D puzzle-platformer / Metroidvania
@@ -181,6 +181,33 @@ must **soften her and get her to safety within the soften window**:
     about the calamity. Their testimony is only heard if they're rescued
     (flesh, in the Village) — the currency of the true ending (§4.5).
 
+**Chained Soften and the Stone-Heat rule.** Movement is continuous across
+softens: re-softening a re-petrified NPC resumes her exactly from her
+current pose and position — there is no rewind. That would allow escorting
+anyone with repeated low-level Softens, so the curse is defined as
+*reactive*: freshly re-petrified stone is **curse-hot**, and each
+consecutive Soften on the same person **halves the duration and doubles the
+Chisel Light cost** (8 s → 4 s → 2 s → the amulet refuses). The chain
+collapses geometrically, so early-game chain-escorts stall after a couple
+of links — mechanically enforcing "I can move you, but I cannot free you."
+Heat dissipates when Petra attunes at any Waystone or Sanctuary (or after a
+long in-game cooldown), resetting the chain. Late game, this same rule
+becomes an *expert tool*: Soften III durations plus a deep Chisel Light
+reserve make deliberate two- or three-link chains viable, letting skilled
+players pull off rescues slightly "before" the intended duration tier —
+paid for, not free.
+
+**Position persistence.** In the open world, statue positions **persist**
+across room transitions and save/load — the ledger records where you left
+each person, and finding her exactly there (even awkwardly mid-stride where
+your puzzle needed her) is the guilt made spatial. Authored puzzle chambers
+are the exception: each has a **reset chime** that returns that chamber's
+statues to their original stations (softlock insurance). Fiction: shrine
+chambers were built by the Sanctuary priestesses as warded training halls —
+within the ward, the curse snaps its victims back to their "frozen moment"
+when it re-asserts. This also explains why chamber NPCs can't simply be
+walked out the door: only a Waystone's teleport breaks the ward's pull.
+
 Secondary backtracking seasoning: Chisel Light capacity, stamina veins,
 outfit palettes; wings gain one new enemy variant on revisit (stone-wardens
 re-petrify softened NPCs, adding time pressure to rescue runs).
@@ -280,9 +307,11 @@ AI's *strongest* capability (stylized stills) there instead.
 
 ### 8.2 The theme is an art-budget gift — twice
 
-1. **Petrified variants are shaders, not art**: one stone shader applied to
-   existing sprites gives every character a petrified form for free, with
-   guaranteed consistency, plus a gorgeous animated petrification wipe.
+1. **Petrified *sprite* variants are shaders, not art**: at 32–48 px, one
+   stone shader applied to existing sprites gives every character a
+   petrified form for free, with guaranteed consistency, plus an animated
+   petrification wipe. (Narrative art — busts and CGs — is held to a higher
+   standard; petrified versions there are dedicated images, see §8.5.)
 2. **Statues don't animate.** Your most numerous unique assets (posed
    statue NPCs) sidestep AI's weakest area — frame-to-frame animation
    consistency — entirely.
@@ -329,13 +358,13 @@ consistency* must be budgeted deliberately.
 |---|---|---|---|
 | Petra dialogue bust + expressions | 1 base × ~8 expressions | Medium | Main character: train a LoRA on her accepted key art first; expressions via inpainting the face region only |
 | Named-NPC dialogue busts | ~24 characters × 3 expressions ≈ 72 | Medium | One base per character, 2 extra expressions by face-inpaint. Shared body templates with outfit/palette variation keep them cheap and coherent |
-| **Petrified bust variants** | **0 new images** | Free | The stone shader applies to busts exactly as to sprites — every portrait gets a petrified version at zero art cost, and dialogue with a statue (Petra talking *at* her frozen friend) becomes a signature scene type |
+| **Petrified bust variants** | ~25 (named NPCs) | Easy-Medium | A gray shader is *not* good enough at portrait scale — statues need carved-surface reading: unified marble/granite material, chiseled hair masses, blank or veined eyes, drapery-like clothing folds, cracks and weathering. These are **dedicated images derived from the flesh bust** via structure-preserving image-to-image (same lineart/pose via ControlNet-lineart or an image-edit API, restyled coloring) — far cheaper than from-scratch art (~15–30 min each once dialed in) while keeping the two versions recognizably *the same person*, which is the emotional point. Dialogue with a statue (Petra talking at her frozen friend) is a signature scene type |
 | Major-character full-body art | ~8 (Petra, Ida, Curator, gorgon, 4 Witnesses) | Medium | Used in key events and the ledger's character pages |
 | Event CGs (full-scene illustrations) | ~14–18 | Easy-Medium | Opening calamity (2–3), first forced "use" of a friend (1), Soften II gut-punch (1), Sanctuary relights (reuse 1 template × palette, 1–2), ending sets: bad 2, mediocre 2, good 3, true 3–4 |
 | Rescue vignettes (per named NPC) | ~24 | Easy | **Do these as fresco/stained-glass panels**, not realistic scenes: a stylized "frozen moment" format is thematically perfect (stone imagery), hides AI's consistency weaknesses, and one strong style prompt makes all 24 feel like a set |
 | Fresco Hall truth panels | 6 | Easy | Same fresco pipeline as vignettes |
 
-**Total: roughly 120–140 unique AI-generated images**, of which ~100 are
+**Total: roughly 145–170 unique AI-generated images**, of which ~120 are
 busts/vignettes produced by repeatable pipelines. At a realistic AI-assisted
 rate for a non-artist (generate → select → inpaint fixes → cleanup ≈ 0.5–2 h
 per accepted image once the pipeline is dialed in), this is **4–8 weeks of
@@ -360,7 +389,25 @@ milestone, not an afterthought.
    reserved for the ~18 moments listed. Keeping CG count disciplined is
    what keeps the 4–8 week estimate honest.
 
-### 8.6 Consistency workflow
+### 8.6 Generation pipeline integration
+
+The coding assistant (a text model) cannot generate images itself; it
+writes and maintains the **generation tooling** instead. Plan: a small
+`tools/artgen/` Python package driving whatever image API is available
+(OpenAI-style `images/generations` + `images/edits`, or a local ComfyUI
+for ControlNet workflows):
+
+- `characters/*.yaml` — one sheet per character (appearance tags, palette,
+  identifier feature, LoRA/reference-image pointer) → prompt templates.
+- `generate.py` — batch text-to-image for new assets (N candidates per
+  slot, saved under `art/candidates/` for human selection).
+- `derive.py` — structure-preserving image-to-image: petrified bust from
+  flesh bust, expression variants by face-region inpaint.
+- API key from an environment variable; keys never committed. Accepted
+  images move to `art/final/` with their generation metadata sidecar
+  (prompt, seed, source) so any asset can be regenerated or restyled later.
+
+### 8.7 Consistency workflow
 
 Lock a **style bible** first (one key image of Petra in the Village; cold
 marble whites/teals vs. warm flesh/lantern ambers — the palette encodes the
@@ -398,4 +445,11 @@ what makes it not look AI-generated.
   escorts must stay tense, but *reaching* the escort shouldn't be tedious.
 - NG+ carry-over (keep abilities, reset rescues?) to make true-ending runs
   pleasant.
+- **Heroine rename** (replacing "Petra"; she has long purple hair, so a
+  purple-stone name keeps the theme). Shortlist: **Amethyst** (nick. *Amé*
+  or *Tess*) — literally the violet quartz; **Iolite** (nick. *Io*) — the
+  violet "water-sapphire," short and modern; **Ianthe** — Greek "violet
+  flower," elegant/mythic; **Tanza** — from tanzanite, unusual and cute;
+  **Charoite** (nick. *Charra*) — lilac mineral; **Wisteria** (nick. *Wis*).
+  Doc keeps "Petra" as placeholder until chosen.
 - Name/branding pass on the title.
