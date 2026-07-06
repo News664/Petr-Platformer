@@ -270,7 +270,8 @@ the game's whole argument.
 
 ## 6. Characters & Tone
 
-- **Amethyst** (nick. *Amé*): early-20s stonemason apprentice; practical, kind,
+- **Amethyst** (full name always — no nickname): early-20s stonemason
+  apprentice; practical, kind,
   wry. Long purple hair — her visual signature — plus a marble-veined arm
   that doubles as the self-petrify stamina UI. Her arc: from "I'm sorry, I
   need your shoulders" to keeping every promise.
@@ -462,6 +463,7 @@ what makes it not look AI-generated.
   escorts must stay tense, but *reaching* the escort shouldn't be tedious.
 - NG+ carry-over (keep abilities, reset rescues?) to make true-ending runs
   pleasant.
-- ~~Heroine rename~~ **Resolved:** the heroine is **Amethyst** (nick. *Amé*),
-  after the violet quartz — matching her long purple hair.
+- ~~Heroine rename~~ **Resolved:** the heroine is **Amethyst**, after the
+  violet quartz — matching her long purple hair. Full name used
+  everywhere; nicknames dropped as awkward to pronounce/type.
 - Name/branding pass on the title.

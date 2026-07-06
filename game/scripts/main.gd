@@ -53,7 +53,7 @@ func _process(delta: float) -> void:
 		var target := level.player.focus_position()
 		camera.position = camera.position.lerp(target, minf(10.0 * delta, 1.0))
 		_stamina_fill.size.x = 120.0 * (level.player.stamina / Player.STAMINA_MAX)
-		# the little Amé in the corner turns to stone when you do
+		# the little Amethyst in the corner turns to stone when you do
 		var goal := 1.0 if level.player.is_stone else 0.0
 		_figure_petrify = move_toward(_figure_petrify, goal, 4.0 * delta)
 		Dialogue.set_figure_petrify(_status_figure, _figure_petrify)

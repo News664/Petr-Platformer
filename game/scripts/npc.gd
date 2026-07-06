@@ -46,7 +46,7 @@ func _ready() -> void:
 		center_of_mass_mode = RigidBody2D.CENTER_OF_MASS_MODE_CUSTOM
 		center_of_mass = Vector2(0, -body_size.y * 0.25)
 	var pm := PhysicsMaterial.new()
-	pm.friction = 0.5
+	pm.friction = 0.75
 	physics_material_override = pm
 	angular_damp = 1.0
 	var shape := CollisionShape2D.new()
@@ -103,8 +103,6 @@ func try_soften() -> void:
 	_barked = false
 	freeze_mode = RigidBody2D.FREEZE_MODE_KINEMATIC
 	freeze = true
-	var tw := create_tween()
-	tw.tween_property(self, "rotation", 0.0, 0.35)
 	Util.animate_petrify(_sprite, 1.0, 0.0, 0.3)
 	G.say("%s softens — %.0f seconds. She dreams toward your light." % [npc_name, dur])
 
@@ -122,10 +120,15 @@ func _refreeze() -> void:
 
 
 func _physics_process(delta: float) -> void:
+	# name tags only when Amethyst is close — keeps the screen quiet
+	_tag.visible = G.player_focus().distance_to(global_position) < 140.0
 	if not soft:
 		# keep the tag readable even when the rigid body rotates
 		_tag.rotation = -rotation
 		return
+	# straighten continuously while soft (a tween can leave her tilted if
+	# she was leaning on something when the soften began)
+	rotation = move_toward(rotation, 0.0, 3.0 * delta)
 	_soften_timer -= delta
 	if not G.debug_soften:
 		grace_left = maxf(grace_left - delta, 0.0)

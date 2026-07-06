@@ -6,7 +6,7 @@ extends CanvasLayer
 # portrait variant for free.
 
 const CHARS := {
-	"ame": {"name": "Amé", "skin": Color(0.95, 0.78, 0.62),
+	"ame": {"name": "Amethyst", "skin": Color(0.95, 0.78, 0.62),
 			"hair": Color(0.55, 0.3, 0.75), "dress": Color(0.42, 0.36, 0.52)},
 	"lina": {"name": "Lina", "skin": Color(0.93, 0.75, 0.6),
 			"hair": Color(0.85, 0.68, 0.3), "dress": Color(0.35, 0.5, 0.45)},

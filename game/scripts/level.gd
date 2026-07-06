@@ -1,7 +1,7 @@
 class_name Level
 extends Node2D
-# Builds the two graybox rooms in code. Room 1: mechanics test yard.
-# Room 2: the Runner puzzle chamber (expedient exit vs. Waystone rescue).
+# Builds the graybox rooms in code. Rooms 1-2 are dev test rooms; rooms
+# 3-5 are the Petrified Village story slice (see docs/AREA_VILLAGE.md).
 
 const ROOM_W := 1280.0
 const ROOM_H := 720.0
@@ -201,10 +201,10 @@ func _build_test_yard() -> void:
 	var odessa := _make_npc(Vector2(940, 460), "kneeler", "Odessa")
 	odessa.stone_lines = [
 		"Odessa knelt to pick up her daughter's doll when the wave came.",
-		"Amé: \"I'll come back for you, Odessa. I promise.\"",
+		"Amethyst: \"I'll come back for you, Odessa. I promise.\"",
 	]
 	odessa.soft_lines = [
-		"Odessa murmurs: \"...Amé? The light... it's warm here...\"",
+		"Odessa murmurs: \"...Amethyst? The light... it's warm here...\"",
 	]
 	Util.label(self, Vector2(1010, 380), "stone sinks, flesh floats —\npush something in to cross")
 	_make_chime(Vector2(880, 480))
@@ -214,22 +214,30 @@ func _build_test_yard() -> void:
 
 # --------------------------------------------------- room 3: village street
 func _build_village_street() -> void:
-	Util.label(self, Vector2(60, 200), "PETRIFIED VILLAGE — the street where it happened")
-	Util.block(self, Rect2(0, 480, 900, 240))
+	# ground, with the sealed cellar under a cracked patch: nothing in the
+	# village can break it — it waits for Self-Petrification (the tutorial's
+	# visible "come back later" promise)
+	Util.block(self, Rect2(0, 480, 150, 240))
+	_make_cracked(Rect2(150, 480, 80, 16))
+	Util.block(self, Rect2(150, 624, 80, 96))      # cellar floor
+	Util.block(self, Rect2(155, 584, 26, 10))      # cellar steps back out
+	Util.block(self, Rect2(196, 540, 26, 10))
+	_make_chisel_mote(Vector2(190, 608))
+	Util.block(self, Rect2(230, 480, 670, 240))
 	Util.block(self, Rect2(900, 400, 380, 320))    # raised lane out of the square
 	var petra := _make_npc(Vector2(300, 464), "kneeler", "Petra")
 	petra.anchored = true
 	petra.stone_lines = [
 		"Petra the Mason, kneeling at her whetstone. The wave took her mid-sharpen.",
-		"Amé: \"Master Petra taught me to read the grain of marble. Her stone is... deep.\"",
-		"Amé: \"I can't reach her. Not yet. Not with this little light.\"",
+		"Amethyst: \"Master Petra taught me to read the grain of marble. Her stone is... deep.\"",
+		"Amethyst: \"I can't reach her. Not yet. Not with this little light.\"",
 	]
 	var lina := _make_npc(Vector2(600, 452), "runner", "Lina")
 	lina.stone_lines = [
-		"Lina. Her best friend. Caught running toward Amé's cellar door, arm outstretched.",
-		"Amé: \"You were coming to warn me. Weren't you.\"",
+		"Lina. Her best friend. Caught running toward Amethyst's cellar door, arm outstretched.",
+		"Amethyst: \"You were coming to warn me. Weren't you.\"",
 	]
-	lina.soft_lines = ["Lina murmurs: \"...run, Amé... it's coming... run...\""]
+	lina.soft_lines = ["Lina murmurs: \"...run, Amethyst... it's coming... run...\""]
 	lina.refrozen.connect(func(_npc: StatueNPC) -> void:
 		_skit_once("v1_first_refreeze", [
 			{"who": "ame", "text": "I'm sorry, Lina. I need your shoulders."},
@@ -243,7 +251,7 @@ func _build_village_street() -> void:
 			body.soften_enabled = true
 			amulet.queue_free()
 			_skit_once("v1_amulet", [
-				{"who": "narrator", "text": "Master Ida's chisel-amulet hums against Amé's "
+				{"who": "narrator", "text": "Master Ida's chisel-amulet hums against Amethyst's "
 						+ "palm, warm as a kept coal."},
 				{"who": "ame", "text": "It's warm. Like her hands were."},
 				{"who": "narrator", "text": "Near a statue, press E: the amulet can soften "
@@ -271,24 +279,24 @@ func _build_village_street() -> void:
 
 # ------------------------------------------------------ room 4: well yard
 func _build_well_yard() -> void:
-	Util.label(self, Vector2(60, 200), "THE WELL YARD — the first Waystone still glows")
-	Util.label(self, Vector2(60, 230), "(stuck in the pit alone? press R)")
+	G.say("— The Well Yard —")
 	Util.block(self, Rect2(0, 480, 700, 240))
 	Util.block(self, Rect2(840, 480, 440, 240))
 	Util.block(self, Rect2(686, 496, 14, 224))     # pit wall left
 	Util.block(self, Rect2(840, 496, 14, 224))     # pit wall right
 	Util.block(self, Rect2(700, 590, 140, 130))    # pit floor
+	Util.label(self, Vector2(730, 560), "stuck? R")
 	_make_waystone(Vector2(140, 480))
 	var marla := _make_npc(Vector2(380, 464), "kneeler", "Marla")
 	marla.stone_lines = [
 		"Marla the baker, kneeling over a dropped basket. Flour, fossilized mid-spill.",
-		"Amé: \"The Waystone still glows. If she could just reach it...\"",
+		"Amethyst: \"The Waystone still glows. If she could just reach it...\"",
 	]
 	marla.soft_lines = ["Marla murmurs: \"...the bread... I can smell it burning...\""]
 	marla.was_rescued.connect(func(_npc: StatueNPC) -> void:
 		_skit_once("v2_rescue", [
 			{"who": "marla", "text": "—flour. I was carrying flour, and then... "
-					+ "Amé? Why are you crying?"},
+					+ "Amethyst? Why are you crying?"},
 			{"who": "ame", "text": "Welcome back, Marla. Go home. Bake something. "
 					+ "Don't look at the square."},
 			{"who": "narrator", "text": "First rescue. The ledger's first name, crossed out."},
@@ -297,7 +305,7 @@ func _build_well_yard() -> void:
 	var sena := _make_npc(Vector2(560, 452), "runner", "Sena")
 	sena.stone_lines = [
 		"Sena, the well-keeper's daughter, frozen sprinting for the yard gate.",
-		"Amé: \"The pit's too wide to jump, too deep to climb. But if she follows me down...\"",
+		"Amethyst: \"The pit's too wide to jump, too deep to climb. But if she follows me down...\"",
 	]
 	sena.soft_lines = ["Sena whispers: \"...keep going... I'll follow the light...\""]
 	var thesis := Util.area(self, Rect2(1040, 400, 30, 80), Color(0, 0, 0, 0))
@@ -335,7 +343,7 @@ func _make_chisel_mote(pos: Vector2) -> void:
 
 
 func _build_sanctuary_steps() -> void:
-	Util.label(self, Vector2(60, 200), "SANCTUARY STEPS — the broken stair to the dark chapel")
+	G.say("— The Sanctuary Steps —")
 	# the climb occupies the right half; the left ground stays a clear
 	# corridor so a softened NPC can be walked to the Waystone
 	Util.block(self, Rect2(0, 480, 1280, 240))      # ground
@@ -352,14 +360,14 @@ func _build_sanctuary_steps() -> void:
 	aldith.anchored = true
 	aldith.stone_lines = [
 		"Sister Aldith of the Sanctuary, kneeling in prayer atop the stair pillar.",
-		"Amé: \"Anchored, like Master Petra. The curse holds the pious hardest.\"",
-		"Amé: \"...I'm going to step on a nun. Forgive me twice, Sister.\"",
+		"Amethyst: \"Anchored, like Master Petra. The curse holds the pious hardest.\"",
+		"Amethyst: \"...I'm going to step on a nun. Forgive me twice, Sister.\"",
 	]
 	# Odile — not needed for the climb; she is only there to be saved (or not)
 	var odile := _make_npc(Vector2(550, 452), "runner", "Odile")
 	odile.stone_lines = [
 		"Odile the bell-ringer, frozen sprinting from the chapel, hands over her ears.",
-		"Amé: \"The Waystone is a long, long walk from here. Her grace might just cover it.\"",
+		"Amethyst: \"The Waystone is a long, long walk from here. Her grace might just cover it.\"",
 	]
 	odile.soft_lines = ["Odile whispers: \"...the bells... did the bells stop?...\""]
 	odile.was_rescued.connect(func(_npc: StatueNPC) -> void:
@@ -402,7 +410,7 @@ func _build_chamber() -> void:
 	var maren := _make_npc(Vector2(340, 452), "runner", "Maren")
 	maren.stone_lines = [
 		"Maren was running for the bridge when the wave caught her mid-stride.",
-		"Amé: \"Forgive me, Maren. I need your shoulders.\"",
+		"Amethyst: \"Forgive me, Maren. I need your shoulders.\"",
 	]
 	maren.soft_lines = [
 		"Maren whispers: \"...keep going... I'll follow the light...\"",

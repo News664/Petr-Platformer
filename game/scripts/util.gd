@@ -62,11 +62,13 @@ static func area(parent: Node, rect: Rect2, color: Color) -> Area2D:
 
 
 static func label(parent: Node, pos: Vector2, text: String) -> Label:
+	# world labels stay small and quiet; anything important should be a
+	# message, an inspect line, or a skit instead
 	var l := Label.new()
 	l.text = text
-	l.scale = Vector2(0.75, 0.75)
+	l.scale = Vector2(0.6, 0.6)
 	l.position = pos
-	l.modulate = Color(1, 1, 1, 0.8)
+	l.modulate = Color(1, 1, 1, 0.55)
 	parent.add_child(l)
 	return l
 

@@ -13,8 +13,9 @@ const STAMINA_REGEN := 30.0
 const MIN_PETRIFY_STAMINA := 25.0
 const SWIM_JUMP_VELOCITY := -260.0
 const SOFTEN_RANGE := 80.0
-const PUSH_FORCE := 9000.0     # per second, must beat statue static friction
-const PUSH_TORQUE := 90000.0   # per second, below the statues' restoring torque
+# push: per-second force just above static friction, so statues start
+# moving slowly and feel heavy
+const PUSH_FORCE := 13000.0
 
 var soften_enabled := true
 var petrify_enabled := true
@@ -120,11 +121,10 @@ func _push_bodies() -> void:
 		if body is RigidBody2D and not body.freeze:
 			var n := col.get_normal()
 			if absf(n.x) > 0.5:
-				# strong central push (beats friction, slides the statue) plus a
-				# capped lean torque: statues stay upright on flat ground but
-				# tip over once support is lost at an edge
+				# central push only — no lean torque, so a flat-ground push can
+				# never topple a statue; toppling happens only deliberately
+				# (edges, slopes, drops)
 				body.apply_central_impulse(Vector2(-n.x * PUSH_FORCE * delta, 0))
-				body.apply_torque_impulse(-n.x * PUSH_TORQUE * delta)
 
 
 func _try_soften_nearest() -> void:

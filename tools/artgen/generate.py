@@ -6,7 +6,7 @@ other OpenAI-compatible endpoint to switch. The API key is read from
 ARTGEN_API_KEY (or LABNANA_API_KEY) and is never written to disk.
 
 Examples:
-  # 4 bust candidates of Amé, flesh
+  # 4 bust candidates of Amethyst, flesh
   python generate.py --char ame --shot bust
 
   # her petrified full-body variant prompt
