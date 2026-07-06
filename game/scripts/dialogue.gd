@@ -90,6 +90,10 @@ func _ready() -> void:
 	visible = false
 
 
+func is_active() -> bool:
+	return _active
+
+
 func skit(lines: Array) -> void:
 	_queue.append_array(lines)
 	if not _active:

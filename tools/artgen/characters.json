@@ -1,0 +1,42 @@
+{
+  "ame": {
+    "name": "Amethyst (Amé)",
+    "desc": "young woman in her early 20s, very long straight purple hair, violet eyes, warm light-brown skin dusted with chalk, practical slate-blue stonemason's dress with leather apron, faint white marble veins tracing her left arm, a small brass chisel-amulet at her throat, kind tired expression",
+    "identifier": "long purple hair + marble-veined left arm"
+  },
+  "lina": {
+    "name": "Lina",
+    "desc": "young woman, wavy honey-blonde hair in a loose braid, freckles, teal shawl over a cream dress, caught mid-run with an arm outstretched",
+    "identifier": "honey braid + teal shawl"
+  },
+  "petra": {
+    "name": "Petra the Mason",
+    "desc": "older sturdy woman in her 60s, short iron-gray hair, weathered face, heavy canvas mason's smock with stone dust, whetstone in hand",
+    "identifier": "iron-gray crop + mason's smock"
+  },
+  "marla": {
+    "name": "Marla",
+    "desc": "plump warm-faced baker in her 40s, brown hair in a flour-dusted kerchief, rolled sleeves, ochre apron over a homespun dress",
+    "identifier": "flour-dusted kerchief"
+  },
+  "sena": {
+    "name": "Sena",
+    "desc": "wiry young woman, short black hair, rope belt with a well-hook, oxblood-red vest, frozen sprinting",
+    "identifier": "short black hair + oxblood vest"
+  },
+  "odile": {
+    "name": "Odile",
+    "desc": "slight young bell-ringer, ash-brown hair escaping a novice's coif, gray-and-white habit, hands pressed over her ears",
+    "identifier": "novice coif + covered ears"
+  },
+  "aldith": {
+    "name": "Sister Aldith",
+    "desc": "serene middle-aged nun kneeling in prayer, deep indigo habit with white wimple, closed eyes, folded hands",
+    "identifier": "indigo habit + white wimple"
+  },
+  "ida": {
+    "name": "Master Ida",
+    "desc": "tall dignified stonemason master in her 50s, silver-streaked dark hair in a tight bun, fine chisel-scarred hands, deep green work coat, protective stance mid-gesture of shielding someone",
+    "identifier": "silver-streaked bun + green coat"
+  }
+}

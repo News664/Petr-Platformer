@@ -15,10 +15,19 @@ and promises to come back and save every one of them.
 
 Controls: **A/D** move · **W/Space** jump · **Q** petrify self ·
 **E** soften / re-freeze nearest statue (also advances dialogue) ·
-**F** look at / speak to a statue · **R** reset room (works anywhere) ·
-**1–4** switch rooms · **F1** toggle debug long soften.
+**F** look at / speak to a statue · **M** map · **R** reset room (works
+anywhere) · **1–5** switch rooms · **F1** toggle debug long soften.
 
 The game starts in the story slice: **room 3** (the village street —
-opening skit, the amulet, Lina) into **room 4** (the well yard — first
-Waystone rescue vs. spending Sena to cross the pit). Rooms **1/2** are the
-mechanics test yard and the original puzzle chamber.
+opening skit, the amulet, Lina) → **room 4** (the well yard — first
+Waystone rescue vs. spending Sena on the pit) → **room 5** (the sanctuary
+steps — climb over anchored Sister Aldith; Odile's long-walk rescue is
+optional). Rooms **1/2** are development test rooms, not part of the
+normal flow.
+
+## Art pipeline
+
+Asset folders and per-type size/prompt specs live under
+[`assets/`](assets/README.md); the generator script is
+[`tools/artgen/`](tools/artgen/README.md) (OpenAI-style API, labnana by
+default, key via `ARTGEN_API_KEY`).

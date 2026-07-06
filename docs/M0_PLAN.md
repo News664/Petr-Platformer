@@ -105,6 +105,24 @@ no speculative systems (no save/load, no ledger UI, no enemies, no audio).
   are free), advance with E/Space/F, one-shot story flags survive room
   resets. HUD shows a persistent Amé figure that petrifies with her.
 
+## Changes from the third round (post-merge to main)
+
+- **Room 5, Sanctuary Steps**: climbing puzzle over anchored Sister
+  Aldith (the Anchored as reliable terrain), Chisel Light motes, and
+  Odile — a purely optional rescue whose escort nearly exhausts her
+  Grace. Ends at the dark Sanctuary door: the M1 hook.
+- **Ledger Map (M)**: Castlevania-style pause map; visited rooms fill
+  in, neighboring major areas (Sanctuary, Quarry, Baths) show as sealed
+  stubs. Layout lives in `map.gd`.
+- **Asset structure**: `assets/` tree with per-type READMEs (sizes,
+  naming, counts, prompt templates) and the shared style tag; raw
+  generations land in gitignored `assets/candidates/`.
+- **artgen**: `tools/artgen/generate.py` (stdlib-only) drives any
+  OpenAI-style images API (labnana default) from `characters.json` +
+  `shots.json` templates; `--dry-run` verified.
+- Rooms 1/2 confirmed as dev-only test rooms; the normal game starts in
+  room 3.
+
 ## Out of scope for M0
 
 Art beyond the shader, audio, world map, rescue ledger UI, enemies,

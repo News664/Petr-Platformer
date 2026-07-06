@@ -27,8 +27,10 @@ func _ready() -> void:
 			_build_chamber()
 		3:
 			_build_village_street()
-		_:
+		4:
 			_build_well_yard()
+		_:
+			_build_sanctuary_steps()
 
 
 func _skit_once(key: String, lines: Array) -> void:
@@ -310,7 +312,77 @@ func _build_well_yard() -> void:
 						+ "(Rooms: 1/2 test, 3 restarts the street.)"},
 			])
 	)
+	var exit := Util.area(self, Rect2(1240, 400, 40, 80), Color(0.9, 0.8, 0.3, 0.4))
+	Util.label(exit, Vector2(-56, -30), "to the sanctuary steps →")
+	exit.body_entered.connect(func(body: Node) -> void:
+		if body is Player:
+			_goto_room(5)
+	)
 	_spawn_player(Vector2(80, 440))
+	player.petrify_enabled = false
+
+
+# ------------------------------------------------ room 5: sanctuary steps
+func _make_chisel_mote(pos: Vector2) -> void:
+	var mote := Util.area(self, Rect2(pos.x - 8, pos.y - 8, 16, 16), Color(0.7, 0.9, 1.0))
+	Util.label(mote, Vector2(-36, -26), "chisel light")
+	mote.body_entered.connect(func(body: Node) -> void:
+		if body is Player:
+			G.chisel += 2
+			G.say("A mote of Chisel Light. (+2)")
+			mote.queue_free()
+	)
+
+
+func _build_sanctuary_steps() -> void:
+	Util.label(self, Vector2(60, 200), "SANCTUARY STEPS — the broken stair to the dark chapel")
+	# the climb occupies the right half; the left ground stays a clear
+	# corridor so a softened NPC can be walked to the Waystone
+	Util.block(self, Rect2(0, 480, 1280, 240))      # ground
+	Util.block(self, Rect2(700, 424, 60, 56))       # surviving step
+	Util.block(self, Rect2(820, 384, 110, 96))      # landing
+	Util.block(self, Rect2(990, 364, 44, 116))      # stair pillar
+	Util.block(self, Rect2(1090, 284, 190, 196))    # chapel porch
+	_make_chisel_mote(Vector2(860, 354))
+	_make_chisel_mote(Vector2(1060, 300))
+	_make_chisel_mote(Vector2(1140, 254))
+	_make_waystone(Vector2(80, 480))
+	# Sister Aldith, anchored atop the pillar — the stair's missing step, forever
+	var aldith := _make_npc(Vector2(1012, 348), "kneeler", "Sister Aldith")
+	aldith.anchored = true
+	aldith.stone_lines = [
+		"Sister Aldith of the Sanctuary, kneeling in prayer atop the stair pillar.",
+		"Amé: \"Anchored, like Master Petra. The curse holds the pious hardest.\"",
+		"Amé: \"...I'm going to step on a nun. Forgive me twice, Sister.\"",
+	]
+	# Odile — not needed for the climb; she is only there to be saved (or not)
+	var odile := _make_npc(Vector2(550, 452), "runner", "Odile")
+	odile.stone_lines = [
+		"Odile the bell-ringer, frozen sprinting from the chapel, hands over her ears.",
+		"Amé: \"The Waystone is a long, long walk from here. Her grace might just cover it.\"",
+	]
+	odile.soft_lines = ["Odile whispers: \"...the bells... did the bells stop?...\""]
+	odile.was_rescued.connect(func(_npc: StatueNPC) -> void:
+		_skit_once("v3_rescue", [
+			{"who": "ame", "text": "Every step of that walk, I was sure the light would "
+					+ "run out. Go home, Odile. Ring nothing."},
+		])
+	)
+	var door := Util.area(self, Rect2(1200, 204, 48, 80), Color(0.3, 0.25, 0.4))
+	Util.label(door, Vector2(-52, -30), "Sanctuary door [F]... (dark)")
+	door.body_entered.connect(func(body: Node) -> void:
+		if body is Player:
+			_skit_once("v3_door", [
+				{"who": "narrator", "text": "The Sanctuary door is cold. Behind it, "
+						+ "something vast is holding its breath."},
+				{"who": "ame", "text": "Dark. The whole Sanctuary, dark. The amulet flickers "
+						+ "toward it like it wants to go home."},
+				{"who": "ame", "text": "I'll need more light than this. A lot more."},
+				{"who": "narrator", "text": "End of the village slice. The Quarry lies "
+						+ "beyond the square. (M: map · 3: restart the street)"},
+			])
+	)
+	_spawn_player(Vector2(60, 440))
 	player.petrify_enabled = false
 
 

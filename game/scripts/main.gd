@@ -6,6 +6,7 @@ const ROOM_COUNT := 2
 var current_room := 1
 var level: Level = null
 var camera: Camera2D = null
+var map: MapOverlay = null
 
 var _msg_label: Label = null
 var _stats_label: Label = null
@@ -29,10 +30,12 @@ func _ready() -> void:
 	var dlg := Dialogue.new()
 	add_child(dlg)
 	G.dialogue = dlg
+	map = MapOverlay.new()
+	add_child(map)
 	G.message.connect(_on_message)
 	load_room(3)
 	G.say("A/D move · W/Space jump · E soften · F look/speak · Q petrify · "
-			+ "R reset room · rooms 1-4 · F1 debug-soften")
+			+ "M map · R reset room · rooms 1-5 · F1 debug-soften")
 
 
 func load_room(n: int) -> void:
@@ -40,6 +43,7 @@ func load_room(n: int) -> void:
 		level.queue_free()
 	current_room = n
 	G.chisel = 9  # test-mode: every room (re)load restores the budget
+	G.visited[n] = true
 	level = Level.new(n)
 	add_child(level)
 
@@ -64,6 +68,12 @@ func _process(delta: float) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("map"):
+		if not G.dialogue.is_active():
+			map.toggle(current_room)
+		return
+	if map.open:
+		return
 	if event.is_action_pressed("restart"):
 		load_room(current_room)
 		G.say("Room reset.")
@@ -75,6 +85,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		load_room(3)
 	elif event.is_action_pressed("room_4"):
 		load_room(4)
+	elif event.is_action_pressed("room_5"):
+		load_room(5)
 	elif event.is_action_pressed("debug_soften"):
 		G.debug_soften = not G.debug_soften
 		G.say("Debug long soften: %s" % ("ON (60 s)" if G.debug_soften else "off"))
@@ -145,6 +157,8 @@ func _setup_input() -> void:
 	_add_key_action("room_2", [KEY_2])
 	_add_key_action("room_3", [KEY_3])
 	_add_key_action("room_4", [KEY_4])
+	_add_key_action("room_5", [KEY_5])
+	_add_key_action("map", [KEY_M])
 	_add_key_action("debug_soften", [KEY_F1])
 
 

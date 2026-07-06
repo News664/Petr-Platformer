@@ -1,0 +1,30 @@
+{
+  "style_tag": "painted storybook illustration, melancholy fairy tale, soft volumetric light, muted palette of cold marble whites and teals against warm lantern ambers, gentle linework, dignified and tender mood, no gore, no text, no watermark",
+  "stone_clause": "as a weathered marble statue, single unified stone material, chiseled hair masses, blank softly-veined eyes, drapery-like stone clothing folds, fine cracks and weathering, cold rim light",
+  "shots": {
+    "bust": {
+      "size": "1024x1024",
+      "template": "{style}, bust portrait of {desc}{stone}, head and shoulders, three-quarter view facing left, neutral expression, plain dark background"
+    },
+    "full": {
+      "size": "1024x1536",
+      "template": "{style}, full body character art of {desc}{stone}, standing, relaxed pose, full figure visible head to feet, three-quarter view, plain background"
+    },
+    "fresco": {
+      "size": "1024x1024",
+      "template": "{style}, carved stone fresco panel in shallow relief, muted mineral pigments, gold leaf accents, stained-glass composition, {desc}, ornamental stone border, flat iconic perspective"
+    },
+    "cg": {
+      "size": "1536x1024",
+      "template": "{style}, wide establishing illustration, {desc}, cinematic composition, painterly depth, characters small in frame"
+    },
+    "background": {
+      "size": "1536x1024",
+      "template": "{style}, distant background layer for a 2D platformer, {desc}, layered silhouettes, atmospheric perspective, empty foreground, no characters"
+    },
+    "ui": {
+      "size": "1024x1024",
+      "template": "{style}, game UI icon of {desc}, centered, simple bold silhouette, carved stone and gold leaf motif, plain background"
+    }
+  }
+}
