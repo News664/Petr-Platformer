@@ -123,6 +123,25 @@ no speculative systems (no save/load, no ledger UI, no enemies, no audio).
 - Rooms 1/2 confirmed as dev-only test rooms; the normal game starts in
   room 3.
 
+## Changes from the fourth round
+
+- **Push physics rewritten as velocity clamp**: pushing sets the statue
+  to a constant slow crawl (45 px/s) while contact lasts — zero
+  acceleration, no more bullet launches (impulses stacked across
+  contacts/frames and blew up). Still no torque from pushes.
+- **Cracked cellar floor now signals its intent**: one-shot message on
+  first walk-over ("Nothing she can do about it. Yet.") — it is the
+  deliberate locked-hidden-room promise, opened by a later ability.
+- **Room 6, The Square**: breather hub with the anchored tableau
+  (dancer, sisters, mercer), rescued villagers appearing at the
+  fountain, and four branches — Steps (west ledge), Bell Tower (west
+  door), sealed Quarry gate (east), flooded Baths stair. First room
+  with multiple exits; map shows the branching.
+- **Room 7, Bell Tower**: optional vertical climb, mote cache, and the
+  gorgon-foreshadow view skit at the gallery.
+- Known limitation recorded: fixed spawn per room regardless of entry
+  door; a `from_door` spawn system is the next engine task.
+
 ## Out of scope for M0
 
 Art beyond the shader, audio, world map, rescue ledger UI, enemies,

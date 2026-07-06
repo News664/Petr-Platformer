@@ -14,14 +14,14 @@ const ROOMS := {
 	3: {"rect": Rect2i(0, 2, 2, 1), "label": "The Street"},
 	4: {"rect": Rect2i(2, 2, 2, 1), "label": "Well Yard"},
 	5: {"rect": Rect2i(4, 1, 1, 2), "label": "Sanctuary\nSteps"},
+	6: {"rect": Rect2i(5, 1, 2, 2), "label": "The Square"},
+	7: {"rect": Rect2i(6, 0, 1, 1), "label": "Bell Tower"},
 	1: {"rect": Rect2i(0, 0, 1, 1), "label": "dev 1"},
 	2: {"rect": Rect2i(1, 0, 1, 1), "label": "dev 2"},
 }
-# unexplored neighbors: sealed major areas and planned village rooms
+# unexplored neighbors: sealed major areas
 const STUBS := [
 	{"rect": Rect2i(4, 0, 1, 1), "label": "Sanctuary (dark)"},
-	{"rect": Rect2i(5, 1, 2, 2), "label": "The Square (rubble)"},
-	{"rect": Rect2i(6, 0, 1, 1), "label": "Bell Tower"},
 	{"rect": Rect2i(7, 1, 2, 1), "label": "Quarry (sealed)"},
 	{"rect": Rect2i(5, 3, 2, 1), "label": "Baths (flooded)"},
 ]

@@ -29,8 +29,12 @@ func _ready() -> void:
 			_build_village_street()
 		4:
 			_build_well_yard()
-		_:
+		5:
 			_build_sanctuary_steps()
+		6:
+			_build_square()
+		_:
+			_build_bell_tower()
 
 
 func _skit_once(key: String, lines: Array) -> void:
@@ -223,6 +227,13 @@ func _build_village_street() -> void:
 	Util.block(self, Rect2(155, 584, 26, 10))      # cellar steps back out
 	Util.block(self, Rect2(196, 540, 26, 10))
 	_make_chisel_mote(Vector2(190, 608))
+	var crack_hint := Util.area(self, Rect2(150, 440, 80, 40), Color(0, 0, 0, 0))
+	crack_hint.body_entered.connect(func(body: Node) -> void:
+		if body is Player and not G.seen.get("v1_crack", false):
+			G.seen["v1_crack"] = true
+			G.say("The flagstones are cracked — something hollow below. "
+					+ "Nothing she can do about it. Yet.")
+	)
 	Util.block(self, Rect2(230, 480, 670, 240))
 	Util.block(self, Rect2(900, 400, 380, 320))    # raised lane out of the square
 	var petra := _make_npc(Vector2(300, 464), "kneeler", "Petra")
@@ -390,7 +401,124 @@ func _build_sanctuary_steps() -> void:
 						+ "beyond the square. (M: map · 3: restart the street)"},
 			])
 	)
+	var to_square := Util.area(self, Rect2(1246, 184, 20, 96), Color(0.9, 0.8, 0.3, 0.4))
+	Util.label(to_square, Vector2(-52, -30), "the square →")
+	to_square.body_entered.connect(func(body: Node) -> void:
+		if body is Player:
+			_goto_room(6)
+	)
 	_spawn_player(Vector2(60, 440))
+	player.petrify_enabled = false
+
+
+# ------------------------------------------------- room 6: the square (hub)
+func _build_square() -> void:
+	G.say("— The Square —")
+	# breather room: no puzzle, no skit — the tableau speaks for itself.
+	# Branches: west ledge back to the Steps, ground west door to the Bell
+	# Tower, east the sealed Quarry gate, and the flooded Baths stair.
+	Util.block(self, Rect2(0, 480, 900, 240))       # plaza, west of the stair
+	Util.block(self, Rect2(980, 480, 300, 240))     # plaza, east of the stair
+	# the drowned stair: shallow enough to stand up and climb back out
+	Util.block(self, Rect2(900, 516, 80, 204))
+	_make_water(Rect2(900, 496, 80, 20))
+	Util.block(self, Rect2(0, 320, 160, 16))        # raised entry from the Steps
+	Util.block(self, Rect2(160, 380, 60, 12))
+	Util.block(self, Rect2(230, 424, 60, 12))       # high enough to walk under
+	Util.block(self, Rect2(600, 420, 120, 60), Color(0.45, 0.5, 0.55))  # fountain
+	# the tableau — the moment of the wave, held
+	var dancer := _make_npc(Vector2(420, 452), "runner", "a dancer")
+	dancer.anchored = true
+	dancer.stone_lines = [
+		"She was mid-turn when it came. Weeks on, her skirt still swings.",
+	]
+	var sisters := _make_npc(Vector2(790, 464), "kneeler", "two sisters")
+	sisters.anchored = true
+	sisters.stone_lines = [
+		"Two sisters, huddled over a game of knucklebones. The pieces never fell.",
+	]
+	var mercer := _make_npc(Vector2(1060, 452), "runner", "the mercer")
+	mercer.anchored = true
+	mercer.stone_lines = [
+		"The mercer, scales still in her hand, mid-argument with nobody now.",
+	]
+	# rescued villagers gather at the fountain as the ledger fills
+	for i in range(mini(G.rescued, 6)):
+		var v := Util.make_sprite(Vector2(18, 40), Color(0.85, 0.7, 0.55))
+		v.position = Vector2(610 + (i % 3) * 34, 398 - float(i / 3) * 4)
+		add_child(v)
+	# west, on the ledge: back to the Sanctuary Steps
+	var to_steps := Util.area(self, Rect2(0, 240, 20, 80), Color(0.9, 0.8, 0.3, 0.4))
+	Util.label(to_steps, Vector2(6, -26), "← steps")
+	to_steps.body_entered.connect(func(body: Node) -> void:
+		if body is Player:
+			_goto_room(5)
+	)
+	# west, on the ground: the bell tower door
+	var to_tower := Util.area(self, Rect2(20, 420, 24, 60), Color(0.5, 0.4, 0.3, 0.6))
+	Util.label(to_tower, Vector2(-14, -26), "bell tower")
+	to_tower.body_entered.connect(func(body: Node) -> void:
+		if body is Player:
+			_goto_room(7)
+	)
+	# east: the sealed Quarry gate
+	Util.block(self, Rect2(1240, 360, 40, 120), Color(0.4, 0.36, 0.32))
+	var gate := Util.area(self, Rect2(1216, 400, 24, 80), Color(0, 0, 0, 0))
+	gate.body_entered.connect(func(body: Node) -> void:
+		if body is Player and not G.seen.get("v4_gate", false):
+			G.seen["v4_gate"] = true
+			G.say("The Quarry gate, buried under half its own arch. "
+					+ "(Sealed — end of the current slice.)")
+	)
+	# the flooded stair announces itself once
+	var stair_hint := Util.area(self, Rect2(900, 460, 80, 40), Color(0, 0, 0, 0))
+	stair_hint.body_entered.connect(func(body: Node) -> void:
+		if body is Player and not G.seen.get("v4_stair", false):
+			G.seen["v4_stair"] = true
+			G.say("The stair to the Sunken Baths drowns in black water. Not yet.")
+	)
+	_spawn_player(Vector2(300, 440))
+	player.petrify_enabled = false
+
+
+# --------------------------------------------- room 7: bell tower (optional)
+func _build_bell_tower() -> void:
+	G.say("— The Bell Tower —")
+	# optional vertical challenge: nothing new to learn, just climbing.
+	Util.block(self, Rect2(0, 480, 1280, 240))      # ground
+	Util.block(self, Rect2(480, -200, 20, 700))     # shaft walls
+	Util.block(self, Rect2(780, -200, 20, 700))
+	var rungs := [
+		Rect2(540, 420, 60, 12), Rect2(660, 360, 60, 12),
+		Rect2(540, 300, 60, 12), Rect2(660, 240, 60, 12),
+		Rect2(540, 180, 60, 12), Rect2(660, 120, 60, 12),
+		Rect2(540, 60, 60, 12), Rect2(660, 0, 60, 12),
+		Rect2(540, -60, 60, 12),
+	]
+	for r in rungs:
+		Util.block(self, r)
+	Util.block(self, Rect2(560, -120, 160, 16))     # bell gallery
+	Util.block(self, Rect2(620, -170, 40, 50), Color(0.6, 0.45, 0.2))  # the bell
+	_make_chisel_mote(Vector2(590, -140))
+	_make_chisel_mote(Vector2(700, -140))
+	var view := Util.area(self, Rect2(560, -180, 160, 60), Color(0, 0, 0, 0))
+	view.body_entered.connect(func(body: Node) -> void:
+		if body is Player:
+			_skit_once("v5_view", [
+				{"who": "narrator", "text": "From the bell gallery, the whole kingdom "
+						+ "lies still and white under the morning."},
+				{"who": "ame", "text": "The quarry cliffs... there's something on them. "
+						+ "Coiled. Still as stone — but nothing that big should look "
+						+ "like it's breathing."},
+			])
+	)
+	var to_square := Util.area(self, Rect2(504, 420, 20, 60), Color(0.9, 0.8, 0.3, 0.4))
+	Util.label(to_square, Vector2(-10, -26), "← square")
+	to_square.body_entered.connect(func(body: Node) -> void:
+		if body is Player:
+			_goto_room(6)
+	)
+	_spawn_player(Vector2(640, 440))
 	player.petrify_enabled = false
 
 

@@ -28,13 +28,22 @@ the map hints at hidden space without confirming it.
 | **V0 The Cellar** | small, hidden | "come back later" — a cracked floor nothing in the Village can break; opens only with Self-Petrification (Baths ability) | Where Amethyst survived; Master Ida's workshop, her absence | stub built under V1 |
 | **V2 Well Yard** | wide, one pit | Waystone rescue vs. spending a person; Grace is finite | Marla (hope: rescue works); Sena (the cost); the thesis: *save one, use one* | built (room 4) |
 | **V3 Sanctuary Steps** | tall climb | Anchored statues as permanent terrain; Chisel Light motes; optional rescue (Odile's long walk) | The dark Sanctuary — the wing's goal made visible and locked | built (room 5) |
-| **V4 The Square** | large, open | nothing — a breather | The tableau of the wave's moment (a dozen statues mid-life); exits to Quarry/Baths/Bell Tower; rescued NPCs gather here over time | planned |
-| **V5 Bell Tower** | narrow, vertical | nothing new — optional platforming test | View of where the wave came from (gorgon foreshadow); mote cache | planned |
+| **V4 The Square** | large, open | nothing — a breather | The tableau of the wave's moment (anchored statues mid-life); four branches: Steps, Bell Tower, sealed Quarry gate, flooded Baths stair; rescued NPCs gather at the fountain | built (room 6) |
+| **V5 Bell Tower** | narrow, vertical | nothing new — optional platforming test | View of where the wave came from (gorgon foreshadow, 2-line skit); mote cache | built (room 7) |
 
 Progression: V1 → V2 → V3 → V4 (wing complete; Quarry gate is the next
 region, Baths stair floods until its ability matters). V0 and V5 are
 optional. The Sanctuary above V3 relights at the wing's end (M1 content)
 and grants the next ability.
+
+## Known prototype limitations
+
+- Rooms use one fixed spawn point regardless of which door the player
+  entered by. Once rooms have 3+ doors this needs a proper entry-point
+  system (`load_room(n, from_door)`) — noted for the next engine pass.
+- The cellar's cracked floor is intentionally unbreakable in the Village
+  slice (Self-Petrification is a later ability); a one-shot message now
+  tells the player so ("Nothing she can do about it. Yet.").
 
 ## Pacing rules (apply to every future area)
 

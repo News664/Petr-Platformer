@@ -13,9 +13,8 @@ const STAMINA_REGEN := 30.0
 const MIN_PETRIFY_STAMINA := 25.0
 const SWIM_JUMP_VELOCITY := -260.0
 const SOFTEN_RANGE := 80.0
-# push: per-second force just above static friction, so statues start
-# moving slowly and feel heavy
-const PUSH_FORCE := 13000.0
+# pushing sets a constant slow speed — never a force, so no acceleration
+const PUSH_SPEED := 45.0
 
 var soften_enabled := true
 var petrify_enabled := true
@@ -114,17 +113,17 @@ func _physics_process(delta: float) -> void:
 
 
 func _push_bodies() -> void:
-	var delta := get_physics_process_delta_time()
 	for i in get_slide_collision_count():
 		var col := get_slide_collision(i)
 		var body := col.get_collider()
 		if body is RigidBody2D and not body.freeze:
 			var n := col.get_normal()
 			if absf(n.x) > 0.5:
-				# central push only — no lean torque, so a flat-ground push can
-				# never topple a statue; toppling happens only deliberately
-				# (edges, slopes, drops)
-				body.apply_central_impulse(Vector2(-n.x * PUSH_FORCE * delta, 0))
+				# a slow, stable shove: clamp the statue to a constant crawl
+				# while contact lasts (impulses stack across contacts and
+				# frames and launch it like a bullet). No torque — flat-ground
+				# pushes can never topple; edges, slopes, and drops still do.
+				body.linear_velocity.x = -n.x * PUSH_SPEED
 
 
 func _try_soften_nearest() -> void:

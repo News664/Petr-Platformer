@@ -22,8 +22,10 @@ The game starts in the story slice: **room 3** (the village street —
 opening skit, the amulet, Lina) → **room 4** (the well yard — first
 Waystone rescue vs. spending Sena on the pit) → **room 5** (the sanctuary
 steps — climb over anchored Sister Aldith; Odile's long-walk rescue is
-optional). Rooms **1/2** are development test rooms, not part of the
-normal flow.
+optional) → **room 6** (the square — a breather hub branching to the
+sealed Quarry gate, the flooded Baths stair, and **room 7**, the optional
+bell tower climb). Rooms **1/2** are development test rooms, not part of
+the normal flow. Area design: [`docs/AREA_VILLAGE.md`](docs/AREA_VILLAGE.md).
 
 ## Art pipeline
 
