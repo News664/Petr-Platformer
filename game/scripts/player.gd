@@ -1,6 +1,6 @@
 class_name Player
 extends CharacterBody2D
-# Iolite: flesh form (CharacterBody2D) with a spawnable rigid stone form.
+# Amethyst: flesh form (CharacterBody2D) with a spawnable rigid stone form.
 
 const SPEED := 160.0
 const JUMP_VELOCITY := -400.0

@@ -26,14 +26,15 @@ func _ready() -> void:
 	camera.make_current()
 	G.message.connect(_on_message)
 	load_room(1)
-	G.say("Welcome, Iolite. A/D move, W/Space jump, Q petrify self, E soften, "
-			+ "F chime, R restart, 1/2 rooms, F1 debug-soften.")
+	G.say("Welcome, Amethyst. A/D move, W/Space jump, Q petrify self, E soften, "
+			+ "F talk/inspect/chime, R restart, 1/2 rooms, F1 debug-soften.")
 
 
 func load_room(n: int) -> void:
 	if level != null:
 		level.queue_free()
 	current_room = n
+	G.chisel = 9  # test-mode: every room (re)load restores the budget
 	level = Level.new(n)
 	add_child(level)
 
@@ -65,17 +66,27 @@ func _unhandled_input(event: InputEvent) -> void:
 		G.debug_soften = not G.debug_soften
 		G.say("Debug long soften: %s" % ("ON (60 s)" if G.debug_soften else "off"))
 	elif event.is_action_pressed("interact"):
-		_try_chime()
+		_interact()
 
 
-func _try_chime() -> void:
+func _interact() -> void:
 	if level == null or level.player == null:
 		return
+	var ppos := level.player.global_position
 	for chime in get_tree().get_nodes_in_group("chime"):
-		if chime.global_position.distance_to(level.player.global_position) < 100.0:
+		if chime.global_position.distance_to(ppos) < 100.0:
 			load_room(current_room)
 			G.say("The chime rings — the ward pulls everyone back to her frozen moment.")
 			return
+	var best: StatueNPC = null
+	var best_d := 100.0
+	for npc in get_tree().get_nodes_in_group("npc"):
+		var d: float = npc.global_position.distance_to(ppos)
+		if d < best_d:
+			best_d = d
+			best = npc
+	if best != null:
+		best.talk()
 
 
 func _on_message(text: String) -> void:

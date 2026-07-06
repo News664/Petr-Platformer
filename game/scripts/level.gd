@@ -45,30 +45,12 @@ func _make_waystone(pos: Vector2) -> Area2D:
 
 
 func _on_waystone_body(body: Node, _ws: Area2D) -> void:
-	if body is Player:
-		var any := false
-		for npc in get_tree().get_nodes_in_group("npc"):
-			if npc.heat > 0:
-				any = true
-			npc.clear_heat()
-		if any:
-			G.say("The amulet attunes — stone-heat cleared.")
-	elif body is StatueNPC and body.soft:
+	if body is StatueNPC and body.soft:
 		G.rescued += 1
 		G.say("%s reaches the Waystone — she is safe in the Village now. (Rescued: %d)"
 				% [body.npc_name, G.rescued])
 		body.was_rescued.emit(body)
 		body.queue_free()
-
-
-func _make_hazard(rect: Rect2) -> void:
-	var hz := Util.area(self, rect, Color(0.7, 0.15, 0.15, 0.45))
-	hz.body_entered.connect(func(body: Node) -> void:
-		if body is Player:
-			body.respawn("The dark takes you back to the start.")
-		elif body is RigidBody2D and player != null and body == player.stone_form:
-			player.respawn("Your stone form drops into the dark. You wake at the start.")
-	)
 
 
 func _make_goal(rect: Rect2, text: String) -> void:
@@ -92,6 +74,11 @@ func _make_water(rect: Rect2) -> void:
 		if body is Player:
 			body.in_water = true
 			body.water_surface_y = rect.position.y + 6.0
+		elif body is StatueNPC:
+			body.linear_damp = 3.0
+			if body.soft:
+				G.say("%s follows the light into the water — and sinks. Stone dreams don't swim."
+						% body.npc_name)
 		elif body is RigidBody2D:
 			body.linear_damp = 3.0
 	)
@@ -190,7 +177,15 @@ func _build_test_yard() -> void:
 	Util.crate(self, Vector2(300, 440))
 	Util.label(self, Vector2(270, 420), "crate: too light")
 	# a kneeler to soften and to dunk
-	_make_npc(Vector2(940, 460), "kneeler", "Odessa")
+	var odessa := _make_npc(Vector2(940, 460), "kneeler", "Odessa")
+	odessa.stone_lines = [
+		"Odessa knelt to pick up her daughter's doll when the wave came.",
+		"Amé: \"I'll come back for you, Odessa. I promise.\"",
+	]
+	odessa.soft_lines = [
+		"Odessa murmurs: \"...Amé? The light... it's warm here...\"",
+	]
+	_make_chime(Vector2(880, 480))
 	_make_waystone(Vector2(1220, 480))
 	_spawn_player(Vector2(250, 440))
 
@@ -198,19 +193,27 @@ func _build_test_yard() -> void:
 # ------------------------------------------------------------------ room 2
 func _build_chamber() -> void:
 	Util.label(self, Vector2(60, 120),
-			"CHAMBER — the pit is too wide to jump. She is not. (E soften, walk, E re-freeze, push)")
+			"CHAMBER — the pit is too wide to jump, too deep to climb. "
+			+ "She follows your light — even over an edge.")
+	Util.label(self, Vector2(60, 150), "(stuck in the pit alone? press R)")
 	Util.block(self, Rect2(0, 480, 500, 240))       # start side
 	Util.block(self, Rect2(640, 480, 640, 240))     # far side
-	# pit: 140 px wide, hazard above a solid floor
+	# pit: 140 px wide, 110 px deep — she is the missing step
 	Util.block(self, Rect2(486, 496, 14, 224))      # pit wall left
 	Util.block(self, Rect2(640, 496, 14, 224))      # pit wall right
-	Util.block(self, Rect2(500, 700, 140, 20))      # pit floor
-	_make_hazard(Rect2(500, 660, 140, 40))
+	Util.block(self, Rect2(500, 590, 140, 130))     # pit floor
 	# Maren the Runner, frozen mid-stride, facing the pit
-	_make_npc(Vector2(340, 384), "runner", "Maren")
+	var maren := _make_npc(Vector2(340, 452), "runner", "Maren")
+	maren.stone_lines = [
+		"Maren was running for the bridge when the wave caught her mid-stride.",
+		"Amé: \"Forgive me, Maren. I need your shoulders.\"",
+	]
+	maren.soft_lines = [
+		"Maren whispers: \"...keep going... I'll follow the light...\"",
+	]
 	_make_waystone(Vector2(100, 480))
 	_make_chime(Vector2(200, 480))
 	_make_goal(Rect2(1180, 400, 60, 80),
-			"Chamber complete. You crossed on her back. The ledger remembers. " +
-			"(Or: F1 debug-soften and walk her home to the Waystone.)")
+			"Chamber complete. You left her standing at the bottom of the pit. "
+			+ "The ledger remembers. (Or: F1 debug-soften and walk her to the Waystone.)")
 	_spawn_player(Vector2(80, 440))

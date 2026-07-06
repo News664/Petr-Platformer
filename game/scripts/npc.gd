@@ -1,28 +1,35 @@
 class_name StatueNPC
 extends RigidBody2D
 # A petrified friend. Rigid statue by default; Soften makes her briefly
-# kinematic — she follows Iolite until the window closes, then re-freezes
-# wherever (and however) she ended up. Stone-Heat: each consecutive soften
-# halves duration and doubles cost until cleared at a Waystone.
+# kinematic. Softened people are stone-dreamers: not truly awake, they
+# follow the amulet's light (Amethyst) blindly — off ledges, into water.
+# Grace: the amulet can hold the curse off each person for only a fixed
+# total time per Soften tier. When her Grace is spent, she cannot be
+# softened again until Amethyst's amulet grows stronger.
 
 signal was_rescued(npc: StatueNPC)
 
-const BASE_DURATION := 8.0
-const MAX_HEAT := 3
+const WINDOW := 8.0          # max seconds per single soften at Soften I
+const GRACE_MAX := 12.0      # total soften seconds per person at Soften I
+const CHISEL_COST := 1
 const FOLLOW_STOP := 34.0
 const GRAVITY := 980.0
 
 var npc_name := "Friend"
 var kind := "runner"  # "runner" | "kneeler"
 var soft := false
-var heat := 0
+var grace_left := GRACE_MAX
 var walk_speed := 90.0
-var body_size := Vector2(20, 190)
+var body_size := Vector2(26, 55)
+var stone_lines: Array[String] = []
+var soft_lines: Array[String] = []
 
 var _soften_timer := 0.0
 var _vy := 0.0
 var _sprite: Sprite2D = null
 var _tag: Label = null
+var _line_index := 0
+var _barked := false
 
 
 func _ready() -> void:
@@ -31,7 +38,7 @@ func _ready() -> void:
 		walk_speed = 60.0
 		mass = 12.0
 	else:
-		body_size = Vector2(20, 190)
+		body_size = Vector2(26, 55)
 		walk_speed = 110.0
 		mass = 15.0
 		center_of_mass_mode = RigidBody2D.CENTER_OF_MASS_MODE_CUSTOM
@@ -48,14 +55,23 @@ func _ready() -> void:
 	_sprite = Util.make_sprite(body_size, Color(0.8, 0.7, 0.6), true)
 	add_child(_sprite)
 	Util.set_petrify(_sprite, 1.0)
-	_tag = Util.label(self, Vector2(-30, -body_size.y / 2.0 - 26), "")
+	_tag = Util.label(self, Vector2(-34, -body_size.y / 2.0 - 26), "")
 	_update_tag()
 	add_to_group("npc")
 
 
 func _update_tag() -> void:
 	var state := "soft %ds" % int(ceilf(_soften_timer)) if soft else "stone"
-	_tag.text = "%s (%s, heat %d)" % [npc_name, state, heat]
+	_tag.text = "%s (%s, grace %ds)" % [npc_name, state, int(ceilf(grace_left))]
+
+
+func talk() -> void:
+	var lines := soft_lines if soft else stone_lines
+	if lines.is_empty():
+		G.say("She is somewhere far away, behind the stone.")
+		return
+	G.say(lines[_line_index % lines.size()])
+	_line_index += 1
 
 
 func try_soften() -> void:
@@ -63,41 +79,36 @@ func try_soften() -> void:
 		_refreeze()
 		G.say("%s re-freezes at your word." % npc_name)
 		return
-	if heat >= MAX_HEAT:
-		G.say("%s's stone is curse-hot — the amulet refuses. Attune at a Waystone." % npc_name)
+	if grace_left < 0.5 and not G.debug_soften:
+		G.say("%s's grace is spent — the amulet cannot reach her again. Not yet." % npc_name)
 		return
-	var cost := 1 << heat
-	if G.chisel < cost:
-		G.say("Not enough Chisel Light (need %d, have %d)." % [cost, G.chisel])
+	if G.chisel < CHISEL_COST:
+		G.say("Not enough Chisel Light (need %d, have %d)." % [CHISEL_COST, G.chisel])
 		return
-	G.chisel -= cost
-	var dur := BASE_DURATION / float(1 << heat)
+	G.chisel -= CHISEL_COST
+	var dur := minf(WINDOW, grace_left)
 	if G.debug_soften:
 		dur = 60.0
-	heat += 1
 	soft = true
 	_soften_timer = dur
 	_vy = 0.0
+	_barked = false
 	freeze_mode = RigidBody2D.FREEZE_MODE_KINEMATIC
 	freeze = true
 	var tw := create_tween()
 	tw.tween_property(self, "rotation", 0.0, 0.35)
 	Util.animate_petrify(_sprite, 1.0, 0.0, 0.3)
-	G.say("%s softens — %.0f seconds." % [npc_name, dur])
+	G.say("%s softens — %.0f seconds. She dreams toward your light." % [npc_name, dur])
 
 
 func _refreeze() -> void:
 	soft = false
 	_soften_timer = 0.0
+	_sprite.self_modulate.a = 1.0
 	Util.animate_petrify(_sprite, 0.0, 1.0, 0.3)
 	freeze = false
 	linear_velocity = Vector2.ZERO
 	angular_velocity = 0.0
-	_update_tag()
-
-
-func clear_heat() -> void:
-	heat = 0
 	_update_tag()
 
 
@@ -107,9 +118,14 @@ func _physics_process(delta: float) -> void:
 		_tag.rotation = -rotation
 		return
 	_soften_timer -= delta
-	if _soften_timer <= 0.0:
+	if not G.debug_soften:
+		grace_left = maxf(grace_left - delta, 0.0)
+	if _soften_timer <= 0.0 or (grace_left <= 0.0 and not G.debug_soften):
 		_refreeze()
-		G.say("%s turns back to stone." % npc_name)
+		if grace_left <= 0.0:
+			G.say("%s turns back to stone. Her grace is spent." % npc_name)
+		else:
+			G.say("%s turns back to stone." % npc_name)
 		return
 	# flash warning in the last 2 seconds
 	if _soften_timer < 2.0:
@@ -122,8 +138,11 @@ func _physics_process(delta: float) -> void:
 	if absf(dx) > FOLLOW_STOP:
 		vx = signf(dx) * walk_speed
 	_vy += GRAVITY * delta
-	move_and_collide(Vector2(vx * delta, 0))
-	var col := move_and_collide(Vector2(0, _vy * delta))
-	if col:
+	var col_x := move_and_collide(Vector2(vx * delta, 0))
+	if col_x and col_x.get_collider() is Player and not _barked:
+		_barked = true
+		G.say("%s sways against you, eyes half-shut, dreaming of stone." % npc_name)
+	var col_y := move_and_collide(Vector2(0, _vy * delta))
+	if col_y:
 		_vy = 0.0
 	_update_tag()

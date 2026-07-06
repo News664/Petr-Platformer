@@ -19,36 +19,38 @@ no speculative systems (no save/load, no ledger UI, no enemies, no audio).
    sticking on walls; jump feels responsive at 60 fps).
 3. **Self-petrification** — swap `CharacterBody2D` → `RigidBody2D` stone
    form: invulnerable flag, high mass (holds a pressure plate a crate
-   can't), slides on slopes, sinks in a water volume flesh-Iolite floats in,
+   can't), slides on slopes, sinks in a water volume flesh-Amethyst floats in,
    petrify-mid-fall breaks a cracked floor. Stamina bar drains/regens.
    → verify: one test room exercising all five behaviors.
 4. **Statue NPCs as objects** — pushable `RigidBody2D` statues; two pose
    archetypes as shapes: Kneeler (stable block) and Runner (top-heavy,
    tips into a ramp when nudged).
    → verify: push, topple, stand on; Runner tips predictably.
-5. **Soften I + Stone-Heat** — NPC state machine: frozen → soften (resumes
-   a scripted walk/run behavior for 8 s) → re-freeze in new pose/position.
-   Consecutive re-softens halve duration and double cost (8→4→2→refuse);
-   heat clears at a Waystone marker.
-   → verify: a corridor where chained softening provably stalls before the
-   exit, but a single well-planned soften crosses the gap that matters.
+5. **Soften I + Grace** — NPC state machine: frozen → soften (follows the
+   player, 8 s window) → re-freeze in new pose/position. Each NPC has a
+   finite Grace reserve (12 s total at tier I) consumed while soft; at 0
+   she cannot be softened again this tier.
+   → verify: total escort distance per NPC is provably bounded; a single
+   well-planned soften still crosses the gap that matters.
 6. **Stone shader** — desaturate + noise + rim light, with an animated
    petrification wipe, applied to player and NPC placeholder sprites.
    → verify: visually distinct flesh/stone states; wipe plays both ways.
-7. **Graybox puzzle chamber** — one authored room: reach an exit that
-   requires toppling the Runner across a gap, softening her so she stumbles
-   two steps, and re-freezing her as a bridge. Include a reset chime.
-   Include a Waystone so that (with a debug-extended soften) she can
-   instead be escorted out — the rescue teleport stub.
+7. **Graybox puzzle chamber** — one authored room: a pit too wide to jump
+   and too deep to climb out of. Drop in; the softened Runner follows your
+   light over the edge; re-freeze her at the bottom and use her as the
+   missing step out the far side — leaving her standing in the pit.
+   Include a reset chime, and a Waystone so that (with debug-extended
+   soften) she can instead be escorted home — the rescue teleport stub.
    → verify: completable via the expedient route; rescue route works with
-   debug duration; reset chime restores the room.
+   debug duration; reset chime restores the room; pushing her in as a
+   rigid statue (Sokoban route) still leaves the room solvable.
 8. **Playtest build** — export a Windows/Linux build.
    → verify: a first-time player clears the chamber in ~10 min and can
    answer: “did using a person as a bridge feel bad in the right way?”
 
 ## Implementation notes (deviations discovered while building)
 
-- **Softened NPCs follow Iolite** instead of resuming a pre-scripted action.
+- **Softened NPCs follow Amethyst** instead of resuming a pre-scripted action.
   Following makes both puzzle positioning (lure her to where you want the
   statue) and rescue escorts (lead her to the Waystone) fall out of one
   behavior, and it reads better ("she's conscious, she trusts you"). If M0
@@ -59,7 +61,27 @@ no speculative systems (no save/load, no ledger UI, no enemies, no audio).
 - No engine binary was available in the dev environment; all scripts are
   parse/lint-verified with gdtoolkit (`gdparse`/`gdlint`), but **runtime
   behavior and physics tuning (impulses, pit/statue dimensions, water feel)
-  still need a human run in the Godot 4.3+ editor.**
+  still need a human run in the Godot editor** (playtested on 4.7).
+
+## Changes from the first playtest round
+
+- **Stone-Heat replaced by Grace** (finite total soften time per NPC per
+  tier) — heat only slowed chain-escorts; Grace bounds them absolutely.
+  Folded into `GAME_DESIGN.md` §4.3.
+- **Statues stay pushable** (the Sokoban feel is intended); softlocks are
+  covered by the reset chime (now also in room 1) and R, and pushing the
+  Runner into the chamber pit unsoftened still leaves it solvable via a
+  soften inside the pit.
+- **Stone-dreaming lore** explains blind following (into water, off
+  ledges): a softened person is a sleepwalker following the amulet's
+  light. Body-blocking her is intended and now triggers a bark line.
+- **Chisel Light refills on every room (re)load** — test-mode fix for
+  arriving in room 2 with an empty budget.
+- **Runner resized to human proportions** (26×55 vs. the old 20×190
+  stick); the chamber puzzle changed from statue-as-bridge to
+  statue-as-step-in-the-pit, which reads better and hurts more.
+- **Talk/inspect on F**: statues have frozen-moment lines and Amé
+  monologue; softened NPCs murmur. First pass of the narrative voice.
 
 ## Out of scope for M0
 
