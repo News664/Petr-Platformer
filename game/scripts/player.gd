@@ -18,6 +18,7 @@ const PUSH_SPEED := 45.0
 
 var soften_enabled := true
 var petrify_enabled := true
+var push_enabled := false  # Mason's Grip: unlocked at the Village Sanctuary
 var stamina := STAMINA_MAX
 var is_stone := false
 var stone_form: RigidBody2D = null
@@ -119,6 +120,11 @@ func _push_bodies() -> void:
 		if body is RigidBody2D and not body.freeze:
 			var n := col.get_normal()
 			if absf(n.x) > 0.5:
+				if not push_enabled:
+					if body is StatueNPC and not G.seen.get("push_hint", false):
+						G.seen["push_hint"] = true
+						G.say("She sets her shoulder against the stone. It does not care.")
+					continue
 				# a slow, stable shove: clamp the statue to a constant crawl
 				# while contact lasts (impulses stack across contacts and
 				# frames and launch it like a bullet). No torque — flat-ground

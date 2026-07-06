@@ -16,7 +16,8 @@ and promises to come back and save every one of them.
 Controls: **A/D** move · **W/Space** jump · **Q** petrify self ·
 **E** soften / re-freeze nearest statue (also advances dialogue) ·
 **F** look at / speak to a statue · **M** map · **R** reset room (works
-anywhere) · **1–5** switch rooms · **F1** toggle debug long soften.
+anywhere) · **1–7** switch rooms · **F1** debug long soften ·
+**F2** new game (wipes the autosave; progress saves on every room change).
 
 The game starts in the story slice: **room 3** (the village street —
 opening skit, the amulet, Lina) → **room 4** (the well yard — first
@@ -25,7 +26,8 @@ steps — climb over anchored Sister Aldith; Odile's long-walk rescue is
 optional) → **room 6** (the square — a breather hub branching to the
 sealed Quarry gate, the flooded Baths stair, and **room 7**, the optional
 bell tower climb). Rooms **1/2** are development test rooms, not part of
-the normal flow. Area design: [`docs/AREA_VILLAGE.md`](docs/AREA_VILLAGE.md).
+the normal flow. Area design: [`docs/AREA_VILLAGE.md`](docs/AREA_VILLAGE.md);
+all seven region themes: [`docs/AREAS.md`](docs/AREAS.md).
 
 ## Art pipeline
 

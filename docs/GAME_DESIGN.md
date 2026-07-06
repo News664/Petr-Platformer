@@ -73,7 +73,7 @@ power → redemption, expressed entirely through mechanics.
 
 | # | Region | Theme / mechanics | Ability gained here | Signature puzzle flavor |
 |---|--------|-------------------|--------------------|------------------------|
-| 0 | **Petrified Village** (hub) | Tutorial; statue-as-object basics | **Soften I** (~8 s) | Learn the guilt loop: use your neighbor as a step, promise to return |
+| 0 | **Petrified Village** (hub) | Tutorial; statue-as-object basics | **Soften I** (start); **Mason's Grip** (Sanctuary) | Learn the guilt loop: use your neighbor as a step, promise to return |
 | 1 | **The Quarry** | Cracked stone, ramps, rolling physics, cranes | **Chisel Dash** | Break brittle barriers; don't shatter fragile statues; statue-rolling |
 | 2 | **Sunken Baths** | Water, buoyancy, weight | **Self-Petrification** | Flesh floats, stone sinks; walk lakebeds; statue stepping-stones |
 | 3 | **Gorgon Gardens** | Gaze-cones, mirrors, stealth, hedge mazes | **Harden** (petrify enemies/volunteers) | Reflect gazes back at acolytes; freeze enemies mid-leap as platforms |
@@ -106,13 +106,20 @@ the *duration of mercy* is the central progression stat.
    free them. That limit is the story.
    *Gate:* lever-pulls, repositioned platforms.
 
-2. **Chisel Dash** (Quarry Sanctuary)
+2. **Mason's Grip** (Village Sanctuary relight)
+   Statues become pushable — a slow, heavy, constant-speed shove (never
+   an acceleration). Until this unlock, statue positioning is Soften-only,
+   which keeps the tutorial honest; afterwards every early room gains a
+   second solution layer, teaching that abilities re-open old ground.
+   *Gate:* weight puzzles, block-position puzzles, statue-into-water.
+
+3. **Chisel Dash** (Quarry Sanctuary)
    Short air-capable dash that shatters *cracked* stone — walls, floors,
    and, tragically, fragile statues if you're careless (they reform at the
    wing's Sanctuary, so no permanent loss, but a fail-forward penalty).
    *Gate:* cracked barriers everywhere; standard dash-gaps.
 
-3. **Self-Petrification** (Baths Sanctuary)
+4. **Self-Petrification** (Baths Sanctuary)
    Amethyst turns to stone at will (stamina-limited, shown by the marble veins
    on her arm): invulnerable, heavy (sinks, holds plates, immune to wind and
    knockback), can smash cracked floors by petrifying mid-fall — and
@@ -120,32 +127,32 @@ the *duration of mercy* is the central progression stat.
    statue-toboggan across spike fields).
    *Gate:* underwater walks, pressure plates, wind corridors, crush traps.
 
-4. **Soften II — "Half a Minute"** (mini-Sanctuary, Baths depths, optional-ish)
+5. **Soften II — "Half a Minute"** (mini-Sanctuary, Baths depths, optional-ish)
    Duration → ~25 s. NPCs can now walk *with* you briefly: micro-escorts,
    two-person switch puzzles, a softened guard blocking projectiles as
    mobile cover. First taste of "she's almost back" — and then she isn't.
    Designed as the game's mid-point gut-punch.
 
-5. **Harden** (Gardens Sanctuary)
+6. **Harden** (Gardens Sanctuary)
    Petrify a humanoid enemy or a *consenting* NPC on demand. Enemies become
    physics objects (mid-leap = falling boulder; on a bridge = overload).
    Reflected gorgon gazes count as Harden for puzzle purposes.
    *Gate:* enemy-as-platform gaps; weight puzzles with no statues nearby.
 
-6. **Remote Soften** (Undercroft Sanctuary)
+7. **Remote Soften** (Undercroft Sanctuary)
    Soften/re-freeze at range with a thrown chisel-spark, including
    **mid-air re-freeze**: topple a Runner off a ledge, soften her as she
    falls, re-freeze at the apex of her recovery jump — a high platform where
    none existed. Opens the game's hardest optional puzzles.
    *Gate:* out-of-reach statues, timing chambers.
 
-7. **Soften III / Sustain** (Palace Sanctuary)
+8. **Soften III / Sustain** (Palace Sanctuary)
    ~60 s, up to three simultaneous targets. Full escort choreography;
    softened friends actively help (boost-jumps, lever teams). By now the
    player is powerful enough that using people as objects is a *choice*,
    not a necessity — the game quietly asks whether your habits changed.
 
-8. **The Finale** (Heart of Stone, endgame/story)
+9. **The Finale** (Heart of Stone, endgame/story)
    Confront the curse at its source. What happens there — and to the
    Anchored, the unrescued, and Amethyst herself — depends on the Rescue and
    Truth counters (§4.5). The point of no return is clearly marked, and the

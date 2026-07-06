@@ -142,6 +142,27 @@ no speculative systems (no save/load, no ledger UI, no enemies, no audio).
 - Known limitation recorded: fixed spawn per room regardless of entry
   door; a `from_door` spawn system is the next engine task.
 
+## Changes from the fifth round
+
+- **Toppling truly fixed**: statues use `lock_rotation` while grounded
+  (the velocity-clamp push still torqued them over via base friction);
+  rotation unlocks only while falling, so edge-pushes and drops topple
+  but flat-ground shoves never do. A toppled statue still rights itself
+  when softened.
+- **Pushing is now an unlockable — Mason's Grip** (Village Sanctuary
+  reward, GDD ladder #2): playtests showed pushing bypassed every
+  Soften puzzle. Until the unlock, statues ignore shoves ("She sets her
+  shoulder against the stone. It does not care."). Dev rooms keep it on.
+- **Door-based spawns + two-way travel**: `load_room(n, entry)`; every
+  door declares its target entry; all village rooms connect both ways.
+- **Save/load**: autosave (room, rescues, story flags, visited, key
+  items) on room change; resume on boot; F2 = new game.
+- **Key items persist**: the amulet and motes can never be re-obtained
+  via reset.
+- Dev-facing message text removed from story skits.
+- `docs/AREAS.md` added: unified theme sheets (aesthetic, enemy family,
+  puzzle verb, boss, ability) for all seven regions.
+
 ## Out of scope for M0
 
 Art beyond the shader, audio, world map, rescue ledger UI, enemies,

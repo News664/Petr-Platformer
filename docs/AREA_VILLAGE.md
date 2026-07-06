@@ -36,13 +36,21 @@ region, Baths stair floods until its ability matters). V0 and V5 are
 optional. The Sanctuary above V3 relights at the wing's end (M1 content)
 and grants the next ability.
 
-## Known prototype limitations
+## Engine status
 
-- Rooms use one fixed spawn point regardless of which door the player
-  entered by. Once rooms have 3+ doors this needs a proper entry-point
-  system (`load_room(n, from_door)`) — noted for the next engine pass.
+- ~~Fixed spawn per room~~ **Done:** doors carry a target entry id and
+  every room spawns the player at the matching entry point; all village
+  connections are two-way (3⇄4⇄5⇄6⇄7).
+- **Save/load:** rescues, story flags, visited rooms, and key items
+  autosave to `user://petr_save.json` on every room change; the game
+  resumes in the saved room. F2 wipes the save (new game).
+- **Key items persist** (amulet, motes) across resets and saves.
+- **Pushing is gated** behind Mason's Grip (Village Sanctuary reward,
+  not yet obtainable in the slice) so the tutorial stays Soften-pure;
+  dev rooms 1/2 have it enabled for testing. First blocked shove gives
+  a one-line message.
 - The cellar's cracked floor is intentionally unbreakable in the Village
-  slice (Self-Petrification is a later ability); a one-shot message now
+  slice (Self-Petrification is a later ability); a one-shot message
   tells the player so ("Nothing she can do about it. Yet.").
 
 ## Pacing rules (apply to every future area)

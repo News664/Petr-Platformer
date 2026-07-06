@@ -31,18 +31,20 @@ func _ready() -> void:
 	map = MapOverlay.new()
 	add_child(map)
 	G.message.connect(_on_message)
-	load_room(3)
+	var saved_room := G.load_state()
+	load_room(saved_room if saved_room > 0 else 3)
 	G.say("A/D move · W/Space jump · E soften · F look/speak · Q petrify · "
-			+ "M map · R reset room · rooms 1-5 · F1 debug-soften")
+			+ "M map · R reset room · F2 new game")
 
 
-func load_room(n: int) -> void:
+func load_room(n: int, entry := "default") -> void:
 	if level != null:
 		level.queue_free()
 	current_room = n
 	G.chisel = 9  # test-mode: every room (re)load restores the budget
 	G.visited[n] = true
-	level = Level.new(n)
+	G.save_state(n)
+	level = Level.new(n, entry)
 	add_child(level)
 
 
@@ -92,6 +94,10 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event.is_action_pressed("debug_soften"):
 		G.debug_soften = not G.debug_soften
 		G.say("Debug long soften: %s" % ("ON (60 s)" if G.debug_soften else "off"))
+	elif event.is_action_pressed("new_game"):
+		G.wipe_save()
+		load_room(3)
+		G.say("New game — the save is wiped.")
 	elif event.is_action_pressed("interact"):
 		_interact()
 
@@ -164,6 +170,7 @@ func _setup_input() -> void:
 	_add_key_action("room_7", [KEY_7])
 	_add_key_action("map", [KEY_M])
 	_add_key_action("debug_soften", [KEY_F1])
+	_add_key_action("new_game", [KEY_F2])
 
 
 func _add_key_action(action: String, keys: Array) -> void:

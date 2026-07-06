@@ -49,6 +49,9 @@ func _ready() -> void:
 	pm.friction = 0.75
 	physics_material_override = pm
 	angular_damp = 1.0
+	# upright while grounded: pushing drags the base against friction and
+	# the torque would tip her over. Rotation unlocks only while falling.
+	lock_rotation = true
 	var shape := CollisionShape2D.new()
 	var rs := RectangleShape2D.new()
 	rs.size = body_size
@@ -123,6 +126,9 @@ func _physics_process(delta: float) -> void:
 	# name tags only when Amethyst is close — keeps the screen quiet
 	_tag.visible = G.player_focus().distance_to(global_position) < 140.0
 	if not soft:
+		# free rotation only while falling, so drops and edge-pushes topple
+		# but flat-ground shoves never do
+		lock_rotation = absf(linear_velocity.y) < 60.0
 		# keep the tag readable even when the rigid body rotates
 		_tag.rotation = -rotation
 		return

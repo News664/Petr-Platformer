@@ -7,6 +7,7 @@ const ROOM_W := 1280.0
 const ROOM_H := 720.0
 
 var room := 1
+var entry := "default"
 var player: Player = null
 
 var _plate_door: StaticBody2D = null
@@ -14,8 +15,9 @@ var _door_closed_pos := Vector2.ZERO
 var _door_open := false
 
 
-func _init(room_index: int) -> void:
+func _init(room_index: int, entry_id := "default") -> void:
 	room = room_index
+	entry = entry_id
 
 
 func _ready() -> void:
@@ -44,14 +46,41 @@ func _skit_once(key: String, lines: Array) -> void:
 	G.dialogue.skit(lines)
 
 
-func _goto_room(n: int) -> void:
-	(get_parent() as Node).call_deferred("load_room", n)
+func _goto_room(n: int, entry_id := "default") -> void:
+	(get_parent() as Node).call_deferred("load_room", n, entry_id)
 
 
-func _spawn_player(pos: Vector2) -> void:
+func _make_door(rect: Rect2, text: String, target: int, target_entry: String) -> void:
+	var door := Util.area(self, rect, Color(0.9, 0.8, 0.3, 0.4))
+	if text != "":
+		Util.label(door, Vector2(-30, -26), text)
+	door.body_entered.connect(func(body: Node) -> void:
+		if body is Player:
+			_goto_room(target, target_entry)
+	)
+
+
+func _spawn_player(entries: Dictionary) -> void:
+	# spawn at the entry point matching the door the player came through
 	player = Player.new()
-	player.position = pos
+	player.position = entries.get(entry, entries.get("default", Vector2(80, 440)))
 	add_child(player)
+
+
+func _make_chisel_mote(pos: Vector2) -> void:
+	# motes are collected once and for all; the key survives resets and saves
+	var key := "mote_%d_%d_%d" % [room, int(pos.x), int(pos.y)]
+	if G.seen.get(key, false):
+		return
+	var mote := Util.area(self, Rect2(pos.x - 8, pos.y - 8, 16, 16), Color(0.7, 0.9, 1.0))
+	Util.label(mote, Vector2(-36, -26), "chisel light")
+	mote.body_entered.connect(func(body: Node) -> void:
+		if body is Player:
+			G.seen[key] = true
+			G.chisel += 2
+			G.say("A mote of Chisel Light. (+2)")
+			mote.queue_free()
+	)
 
 
 func _build_bounds() -> void:
@@ -213,7 +242,8 @@ func _build_test_yard() -> void:
 	Util.label(self, Vector2(1010, 380), "stone sinks, flesh floats —\npush something in to cross")
 	_make_chime(Vector2(880, 480))
 	_make_waystone(Vector2(1220, 480))
-	_spawn_player(Vector2(250, 440))
+	_spawn_player({"default": Vector2(250, 440)})
+	player.push_enabled = true
 
 
 # --------------------------------------------------- room 3: village street
@@ -255,29 +285,27 @@ func _build_village_street() -> void:
 			{"who": "ame", "text": "I'll come back for you. I promise. I promise."},
 		])
 	)
-	var amulet := Util.area(self, Rect2(708, 440, 24, 24), Color(0.95, 0.85, 0.4))
-	Util.label(amulet, Vector2(-56, -30), "the chisel-amulet")
-	amulet.body_entered.connect(func(body: Node) -> void:
-		if body is Player and not body.soften_enabled:
-			body.soften_enabled = true
-			amulet.queue_free()
-			_skit_once("v1_amulet", [
-				{"who": "narrator", "text": "Master Ida's chisel-amulet hums against Amethyst's "
-						+ "palm, warm as a kept coal."},
-				{"who": "ame", "text": "It's warm. Like her hands were."},
-				{"who": "narrator", "text": "Near a statue, press E: the amulet can soften "
-						+ "stone — for a few breaths, no more. The softened dream, and "
-						+ "follow its light. F lets you look closer, or speak."},
-			])
-	)
-	var exit := Util.area(self, Rect2(1220, 320, 40, 80), Color(0.9, 0.8, 0.3, 0.4))
-	Util.label(exit, Vector2(-40, -30), "to the well yard →")
-	exit.body_entered.connect(func(body: Node) -> void:
-		if body is Player:
-			_goto_room(4)
-	)
-	_spawn_player(Vector2(80, 440))
-	player.soften_enabled = false
+	# the amulet is a key item: taken once, forever (survives resets and saves)
+	if not G.seen.get("v1_amulet_taken", false):
+		var amulet := Util.area(self, Rect2(708, 440, 24, 24), Color(0.95, 0.85, 0.4))
+		Util.label(amulet, Vector2(-56, -30), "the chisel-amulet")
+		amulet.body_entered.connect(func(body: Node) -> void:
+			if body is Player and not body.soften_enabled:
+				G.seen["v1_amulet_taken"] = true
+				body.soften_enabled = true
+				amulet.queue_free()
+				_skit_once("v1_amulet", [
+					{"who": "narrator", "text": "Master Ida's chisel-amulet hums against "
+							+ "Amethyst's palm, warm as a kept coal."},
+					{"who": "ame", "text": "It's warm. Like her hands were."},
+					{"who": "narrator", "text": "Near a statue, press E: the amulet can soften "
+							+ "stone — for a few breaths, no more. The softened dream, and "
+							+ "follow its light. F lets you look closer, or speak."},
+				])
+		)
+	_make_door(Rect2(1220, 320, 40, 80), "well yard →", 4, "west")
+	_spawn_player({"default": Vector2(80, 440), "east": Vector2(1160, 380)})
+	player.soften_enabled = G.seen.get("v1_amulet_taken", false)
 	player.petrify_enabled = false
 	_skit_once("v1_open", [
 		{"who": "ame", "text": "Dust. Why is everything white— why is everything so quiet?"},
@@ -327,32 +355,16 @@ func _build_well_yard() -> void:
 						+ "of a ditch."},
 				{"who": "ame", "text": "Is that what saving everyone looks like? ...It is. "
 						+ "For now. I'm coming back, Sena."},
-				{"who": "narrator", "text": "End of the M0 story slice. "
-						+ "(Rooms: 1/2 test, 3 restarts the street.)"},
 			])
 	)
-	var exit := Util.area(self, Rect2(1240, 400, 40, 80), Color(0.9, 0.8, 0.3, 0.4))
-	Util.label(exit, Vector2(-56, -30), "to the sanctuary steps →")
-	exit.body_entered.connect(func(body: Node) -> void:
-		if body is Player:
-			_goto_room(5)
-	)
-	_spawn_player(Vector2(80, 440))
+	_make_door(Rect2(0, 400, 20, 80), "", 3, "east")
+	_make_door(Rect2(1240, 400, 40, 80), "steps →", 5, "west")
+	_spawn_player({"default": Vector2(80, 440), "west": Vector2(60, 440),
+			"east": Vector2(1180, 440)})
 	player.petrify_enabled = false
 
 
 # ------------------------------------------------ room 5: sanctuary steps
-func _make_chisel_mote(pos: Vector2) -> void:
-	var mote := Util.area(self, Rect2(pos.x - 8, pos.y - 8, 16, 16), Color(0.7, 0.9, 1.0))
-	Util.label(mote, Vector2(-36, -26), "chisel light")
-	mote.body_entered.connect(func(body: Node) -> void:
-		if body is Player:
-			G.chisel += 2
-			G.say("A mote of Chisel Light. (+2)")
-			mote.queue_free()
-	)
-
-
 func _build_sanctuary_steps() -> void:
 	G.say("— The Sanctuary Steps —")
 	# the climb occupies the right half; the left ground stays a clear
@@ -397,17 +409,14 @@ func _build_sanctuary_steps() -> void:
 				{"who": "ame", "text": "Dark. The whole Sanctuary, dark. The amulet flickers "
 						+ "toward it like it wants to go home."},
 				{"who": "ame", "text": "I'll need more light than this. A lot more."},
-				{"who": "narrator", "text": "End of the village slice. The Quarry lies "
-						+ "beyond the square. (M: map · 3: restart the street)"},
+				{"who": "narrator", "text": "The Quarry lies beyond the square — if its "
+						+ "gate can ever be cleared."},
 			])
 	)
-	var to_square := Util.area(self, Rect2(1246, 184, 20, 96), Color(0.9, 0.8, 0.3, 0.4))
-	Util.label(to_square, Vector2(-52, -30), "the square →")
-	to_square.body_entered.connect(func(body: Node) -> void:
-		if body is Player:
-			_goto_room(6)
-	)
-	_spawn_player(Vector2(60, 440))
+	_make_door(Rect2(0, 400, 20, 80), "", 4, "east")
+	_make_door(Rect2(1246, 184, 20, 96), "square →", 6, "ledge")
+	_spawn_player({"default": Vector2(60, 440), "west": Vector2(60, 440),
+			"porch": Vector2(1180, 262)})
 	player.petrify_enabled = false
 
 
@@ -448,27 +457,16 @@ func _build_square() -> void:
 		v.position = Vector2(610 + (i % 3) * 34, 398 - float(i / 3) * 4)
 		add_child(v)
 	# west, on the ledge: back to the Sanctuary Steps
-	var to_steps := Util.area(self, Rect2(0, 240, 20, 80), Color(0.9, 0.8, 0.3, 0.4))
-	Util.label(to_steps, Vector2(6, -26), "← steps")
-	to_steps.body_entered.connect(func(body: Node) -> void:
-		if body is Player:
-			_goto_room(5)
-	)
+	_make_door(Rect2(0, 240, 20, 80), "← steps", 5, "porch")
 	# west, on the ground: the bell tower door
-	var to_tower := Util.area(self, Rect2(20, 420, 24, 60), Color(0.5, 0.4, 0.3, 0.6))
-	Util.label(to_tower, Vector2(-14, -26), "bell tower")
-	to_tower.body_entered.connect(func(body: Node) -> void:
-		if body is Player:
-			_goto_room(7)
-	)
+	_make_door(Rect2(20, 420, 24, 60), "bell tower", 7, "default")
 	# east: the sealed Quarry gate
 	Util.block(self, Rect2(1240, 360, 40, 120), Color(0.4, 0.36, 0.32))
 	var gate := Util.area(self, Rect2(1216, 400, 24, 80), Color(0, 0, 0, 0))
 	gate.body_entered.connect(func(body: Node) -> void:
 		if body is Player and not G.seen.get("v4_gate", false):
 			G.seen["v4_gate"] = true
-			G.say("The Quarry gate, buried under half its own arch. "
-					+ "(Sealed — end of the current slice.)")
+			G.say("The Quarry gate, buried under half its own arch. Sealed.")
 	)
 	# the flooded stair announces itself once
 	var stair_hint := Util.area(self, Rect2(900, 460, 80, 40), Color(0, 0, 0, 0))
@@ -477,7 +475,8 @@ func _build_square() -> void:
 			G.seen["v4_stair"] = true
 			G.say("The stair to the Sunken Baths drowns in black water. Not yet.")
 	)
-	_spawn_player(Vector2(300, 440))
+	_spawn_player({"default": Vector2(300, 440), "ledge": Vector2(80, 300),
+			"tower": Vector2(90, 440)})
 	player.petrify_enabled = false
 
 
@@ -512,13 +511,8 @@ func _build_bell_tower() -> void:
 						+ "like it's breathing."},
 			])
 	)
-	var to_square := Util.area(self, Rect2(504, 420, 20, 60), Color(0.9, 0.8, 0.3, 0.4))
-	Util.label(to_square, Vector2(-10, -26), "← square")
-	to_square.body_entered.connect(func(body: Node) -> void:
-		if body is Player:
-			_goto_room(6)
-	)
-	_spawn_player(Vector2(640, 440))
+	_make_door(Rect2(504, 420, 20, 60), "← square", 6, "tower")
+	_spawn_player({"default": Vector2(640, 440)})
 	player.petrify_enabled = false
 
 
