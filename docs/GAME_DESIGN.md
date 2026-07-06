@@ -281,6 +281,13 @@ the game's whole argument.
 - **Tone:** melancholy-but-warm fairy tale (*Ori* × *The Swapper*).
   Petrification is tragic stillness — dignified poses, no body horror, no
   titillation. Target rating E10+/T.
+- **Presentation:** two registers of storytelling. *Ambient* — inspect (F)
+  lines, Amé monologue, softened murmurs, delivered through the message
+  bar without stopping play. *Skits* — gameplay pauses for dialogue with
+  bust/full-body character art (petrified variants via the stone shader
+  in prototype; dedicated stone portraits in production, §8.5). The HUD
+  keeps a persistent full-body Amé figure that petrifies in sync with her
+  state — the normal/petrified pair every character's art already has.
 
 ---
 

@@ -11,6 +11,8 @@ var _msg_label: Label = null
 var _stats_label: Label = null
 var _stamina_fill: ColorRect = null
 var _msg_timer := 0.0
+var _status_figure: Control = null
+var _figure_petrify := 0.0
 
 
 func _ready() -> void:
@@ -24,10 +26,13 @@ func _ready() -> void:
 	camera.position_smoothing_enabled = true
 	add_child(camera)
 	camera.make_current()
+	var dlg := Dialogue.new()
+	add_child(dlg)
+	G.dialogue = dlg
 	G.message.connect(_on_message)
-	load_room(1)
-	G.say("Welcome, Amethyst. A/D move, W/Space jump, Q petrify self, E soften, "
-			+ "F talk/inspect/chime, R restart, 1/2 rooms, F1 debug-soften.")
+	load_room(3)
+	G.say("A/D move · W/Space jump · E soften · F look/speak · Q petrify · "
+			+ "R reset room · rooms 1-4 · F1 debug-soften")
 
 
 func load_room(n: int) -> void:
@@ -44,6 +49,10 @@ func _process(delta: float) -> void:
 		var target := level.player.focus_position()
 		camera.position = camera.position.lerp(target, minf(10.0 * delta, 1.0))
 		_stamina_fill.size.x = 120.0 * (level.player.stamina / Player.STAMINA_MAX)
+		# the little Amé in the corner turns to stone when you do
+		var goal := 1.0 if level.player.is_stone else 0.0
+		_figure_petrify = move_toward(_figure_petrify, goal, 4.0 * delta)
+		Dialogue.set_figure_petrify(_status_figure, _figure_petrify)
 	_stats_label.text = "Room %d · Chisel Light %d · Rescued %d%s" % [
 		current_room, G.chisel, G.rescued,
 		" · DEBUG SOFTEN" if G.debug_soften else "",
@@ -62,6 +71,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		load_room(1)
 	elif event.is_action_pressed("room_2"):
 		load_room(2)
+	elif event.is_action_pressed("room_3"):
+		load_room(3)
+	elif event.is_action_pressed("room_4"):
+		load_room(4)
 	elif event.is_action_pressed("debug_soften"):
 		G.debug_soften = not G.debug_soften
 		G.say("Debug long soften: %s" % ("ON (60 s)" if G.debug_soften else "off"))
@@ -73,11 +86,6 @@ func _interact() -> void:
 	if level == null or level.player == null:
 		return
 	var ppos := level.player.global_position
-	for chime in get_tree().get_nodes_in_group("chime"):
-		if chime.global_position.distance_to(ppos) < 100.0:
-			load_room(current_room)
-			G.say("The chime rings — the ward pulls everyone back to her frozen moment.")
-			return
 	var best: StatueNPC = null
 	var best_d := 100.0
 	for npc in get_tree().get_nodes_in_group("npc"):
@@ -115,9 +123,13 @@ func _build_hud() -> void:
 	stamina_tag.text = "stone stamina"
 	stamina_tag.scale = Vector2(0.7, 0.7)
 	hud.add_child(stamina_tag)
+	_status_figure = Dialogue.make_figure("ame", false)
+	_status_figure.scale = Vector2(0.5, 0.5)
+	_status_figure.position = Vector2(6, 412)
+	hud.add_child(_status_figure)
 	_msg_label = Label.new()
-	_msg_label.position = Vector2(16, 500)
-	_msg_label.size = Vector2(928, 30)
+	_msg_label.position = Vector2(80, 500)
+	_msg_label.size = Vector2(864, 30)
 	hud.add_child(_msg_label)
 
 
@@ -131,6 +143,8 @@ func _setup_input() -> void:
 	_add_key_action("restart", [KEY_R])
 	_add_key_action("room_1", [KEY_1])
 	_add_key_action("room_2", [KEY_2])
+	_add_key_action("room_3", [KEY_3])
+	_add_key_action("room_4", [KEY_4])
 	_add_key_action("debug_soften", [KEY_F1])
 
 

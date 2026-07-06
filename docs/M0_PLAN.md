@@ -83,6 +83,28 @@ no speculative systems (no save/load, no ledger UI, no enemies, no audio).
 - **Talk/inspect on F**: statues have frozen-moment lines and Amé
   monologue; softened NPCs murmur. First pass of the narrative voice.
 
+## Changes from the second playtest round
+
+- **Reset is global**: R anywhere; chimes are scenery. F no longer
+  double-books reset and talk.
+- **Water rework**: the pool is sunken 40 px below ground and flesh can
+  only weakly hop while treading water — the far lip is unreachable until
+  something solid (statue, crate, stone-Amé is too deep) is pushed in to
+  stand on. Entry-side shelf prevents softlock.
+- **Pushing actually works now**: the old per-frame impulse (12) could
+  never beat static friction (μ·m·g ≈ 7000+); pushes are now a central
+  force ~9000/s with friction 0.5, plus a torque capped below the statues'
+  restoring torque so they slide on flat ground and only topple at edges.
+- **Story slice added (rooms 3–4, game starts in 3)**: Petrified Village
+  street (opening skit, anchored Petra foreshadows the Anchored, amulet
+  pickup unlocks Soften, Lina-as-step with promise skit) and the Well Yard
+  (Marla's first rescue at the Waystone vs. Sena spent crossing the pit —
+  the thesis room: save one, use one).
+- **Dialogue/skit system**: pauses gameplay, placeholder full-body figures
+  (layered rects sharing the stone shader, so petrified portrait variants
+  are free), advance with E/Space/F, one-shot story flags survive room
+  resets. HUD shows a persistent Amé figure that petrifies with her.
+
 ## Out of scope for M0
 
 Art beyond the shader, audio, world map, rescue ledger UI, enemies,

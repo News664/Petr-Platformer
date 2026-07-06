@@ -14,11 +14,11 @@ and promises to come back and save every one of them.
    `godot --path game` from the command line).
 
 Controls: **A/D** move · **W/Space** jump · **Q** petrify self ·
-**E** soften / re-freeze nearest statue · **F** talk / inspect / ring chime ·
-**R** restart room · **1/2** switch rooms · **F1** toggle debug long soften.
+**E** soften / re-freeze nearest statue (also advances dialogue) ·
+**F** look at / speak to a statue · **R** reset room (works anywhere) ·
+**1–4** switch rooms · **F1** toggle debug long soften.
 
-Room 1 is the mechanics test yard (slope, water, pressure plate, cracked
-floor, Odessa the Kneeler). Room 2 is the puzzle chamber: the pit is too
-wide to jump and too deep to climb — drop in, let softened Maren follow
-your light over the edge, re-freeze her, and climb out on her shoulders…
-or turn on the debug soften and walk her home to the Waystone instead.
+The game starts in the story slice: **room 3** (the village street —
+opening skit, the amulet, Lina) into **room 4** (the well yard — first
+Waystone rescue vs. spending Sena to cross the pit). Rooms **1/2** are the
+mechanics test yard and the original puzzle chamber.

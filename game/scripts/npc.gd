@@ -8,6 +8,7 @@ extends RigidBody2D
 # softened again until Amethyst's amulet grows stronger.
 
 signal was_rescued(npc: StatueNPC)
+signal refrozen(npc: StatueNPC)
 
 const WINDOW := 8.0          # max seconds per single soften at Soften I
 const GRACE_MAX := 12.0      # total soften seconds per person at Soften I
@@ -18,6 +19,7 @@ const GRAVITY := 980.0
 var npc_name := "Friend"
 var kind := "runner"  # "runner" | "kneeler"
 var soft := false
+var anchored := false  # curse-bound: cannot be softened at all (yet)
 var grace_left := GRACE_MAX
 var walk_speed := 90.0
 var body_size := Vector2(26, 55)
@@ -44,7 +46,7 @@ func _ready() -> void:
 		center_of_mass_mode = RigidBody2D.CENTER_OF_MASS_MODE_CUSTOM
 		center_of_mass = Vector2(0, -body_size.y * 0.25)
 	var pm := PhysicsMaterial.new()
-	pm.friction = 1.0
+	pm.friction = 0.5
 	physics_material_override = pm
 	angular_damp = 1.0
 	var shape := CollisionShape2D.new()
@@ -61,6 +63,9 @@ func _ready() -> void:
 
 
 func _update_tag() -> void:
+	if anchored:
+		_tag.text = "%s (anchored)" % npc_name
+		return
 	var state := "soft %ds" % int(ceilf(_soften_timer)) if soft else "stone"
 	_tag.text = "%s (%s, grace %ds)" % [npc_name, state, int(ceilf(grace_left))]
 
@@ -78,6 +83,9 @@ func try_soften() -> void:
 	if soft:
 		_refreeze()
 		G.say("%s re-freezes at your word." % npc_name)
+		return
+	if anchored:
+		G.say("%s's stone is deep as bedrock — the amulet's light doesn't reach her." % npc_name)
 		return
 	if grace_left < 0.5 and not G.debug_soften:
 		G.say("%s's grace is spent — the amulet cannot reach her again. Not yet." % npc_name)
@@ -110,6 +118,7 @@ func _refreeze() -> void:
 	linear_velocity = Vector2.ZERO
 	angular_velocity = 0.0
 	_update_tag()
+	refrozen.emit(self)
 
 
 func _physics_process(delta: float) -> void:

@@ -20,10 +20,26 @@ func _init(room_index: int) -> void:
 
 func _ready() -> void:
 	_build_bounds()
-	if room == 1:
-		_build_test_yard()
-	else:
-		_build_chamber()
+	match room:
+		1:
+			_build_test_yard()
+		2:
+			_build_chamber()
+		3:
+			_build_village_street()
+		_:
+			_build_well_yard()
+
+
+func _skit_once(key: String, lines: Array) -> void:
+	if G.seen.get(key, false):
+		return
+	G.seen[key] = true
+	G.dialogue.skit(lines)
+
+
+func _goto_room(n: int) -> void:
+	(get_parent() as Node).call_deferred("load_room", n)
 
 
 func _spawn_player(pos: Vector2) -> void:
@@ -63,9 +79,9 @@ func _make_goal(rect: Rect2, text: String) -> void:
 
 
 func _make_chime(pos: Vector2) -> void:
+	# scenery only — the reset ward is rung with R from anywhere in the room
 	var chime := Util.area(self, Rect2(pos.x - 16, pos.y - 48, 32, 48), Color(0.85, 0.85, 0.4, 0.6))
-	Util.label(chime, Vector2(-40, -40), "Reset chime [F]")
-	chime.add_to_group("chime")
+	Util.label(chime, Vector2(-52, -40), "Reset ward (R)")
 
 
 func _make_water(rect: Rect2) -> void:
@@ -155,9 +171,12 @@ func _build_test_yard() -> void:
 	_make_cracked(Rect2(500, 480, 96, 16))          # cracked bridge
 	Util.block(self, Rect2(500, 640, 96, 80))       # cellar floor under it
 	Util.block(self, Rect2(596, 480, 404, 240))     # middle ground
-	Util.block(self, Rect2(1000, 600, 160, 120))    # water basin floor
+	Util.block(self, Rect2(1000, 560, 160, 160))    # water basin floor
 	Util.block(self, Rect2(1160, 480, 120, 240))    # right ground
-	_make_water(Rect2(1000, 440, 160, 160))
+	# sunken pool: surface 40 px below ground; flesh can only weakly hop from
+	# water, so the far lip needs a sunken statue/crate to stand on
+	_make_water(Rect2(1000, 520, 160, 40))
+	Util.block(self, Rect2(1000, 520, 24, 40))      # re-entry shelf at waterline
 	# cellar side walls so nothing escapes sideways, plus steps back out
 	Util.block(self, Rect2(480, 496, 20, 224))
 	Util.block(self, Rect2(596, 496, 20, 224))
@@ -185,9 +204,114 @@ func _build_test_yard() -> void:
 	odessa.soft_lines = [
 		"Odessa murmurs: \"...Amé? The light... it's warm here...\"",
 	]
+	Util.label(self, Vector2(1010, 380), "stone sinks, flesh floats —\npush something in to cross")
 	_make_chime(Vector2(880, 480))
 	_make_waystone(Vector2(1220, 480))
 	_spawn_player(Vector2(250, 440))
+
+
+# --------------------------------------------------- room 3: village street
+func _build_village_street() -> void:
+	Util.label(self, Vector2(60, 200), "PETRIFIED VILLAGE — the street where it happened")
+	Util.block(self, Rect2(0, 480, 900, 240))
+	Util.block(self, Rect2(900, 400, 380, 320))    # raised lane out of the square
+	var petra := _make_npc(Vector2(300, 464), "kneeler", "Petra")
+	petra.anchored = true
+	petra.stone_lines = [
+		"Petra the Mason, kneeling at her whetstone. The wave took her mid-sharpen.",
+		"Amé: \"Master Petra taught me to read the grain of marble. Her stone is... deep.\"",
+		"Amé: \"I can't reach her. Not yet. Not with this little light.\"",
+	]
+	var lina := _make_npc(Vector2(600, 452), "runner", "Lina")
+	lina.stone_lines = [
+		"Lina. Her best friend. Caught running toward Amé's cellar door, arm outstretched.",
+		"Amé: \"You were coming to warn me. Weren't you.\"",
+	]
+	lina.soft_lines = ["Lina murmurs: \"...run, Amé... it's coming... run...\""]
+	lina.refrozen.connect(func(_npc: StatueNPC) -> void:
+		_skit_once("v1_first_refreeze", [
+			{"who": "ame", "text": "I'm sorry, Lina. I need your shoulders."},
+			{"who": "ame", "text": "I'll come back for you. I promise. I promise."},
+		])
+	)
+	var amulet := Util.area(self, Rect2(708, 440, 24, 24), Color(0.95, 0.85, 0.4))
+	Util.label(amulet, Vector2(-56, -30), "the chisel-amulet")
+	amulet.body_entered.connect(func(body: Node) -> void:
+		if body is Player and not body.soften_enabled:
+			body.soften_enabled = true
+			amulet.queue_free()
+			_skit_once("v1_amulet", [
+				{"who": "narrator", "text": "Master Ida's chisel-amulet hums against Amé's "
+						+ "palm, warm as a kept coal."},
+				{"who": "ame", "text": "It's warm. Like her hands were."},
+				{"who": "narrator", "text": "Near a statue, press E: the amulet can soften "
+						+ "stone — for a few breaths, no more. The softened dream, and "
+						+ "follow its light. F lets you look closer, or speak."},
+			])
+	)
+	var exit := Util.area(self, Rect2(1220, 320, 40, 80), Color(0.9, 0.8, 0.3, 0.4))
+	Util.label(exit, Vector2(-40, -30), "to the well yard →")
+	exit.body_entered.connect(func(body: Node) -> void:
+		if body is Player:
+			_goto_room(4)
+	)
+	_spawn_player(Vector2(80, 440))
+	player.soften_enabled = false
+	player.petrify_enabled = false
+	_skit_once("v1_open", [
+		{"who": "ame", "text": "Dust. Why is everything white— why is everything so quiet?"},
+		{"who": "narrator", "text": "The morning the wave came, Amethyst was underground, "
+				+ "fetching marble for a headstone."},
+		{"who": "ame", "text": "Lina? LINA— ...oh. Oh, no. No, no, no."},
+		{"who": "narrator", "text": "Everyone. Everyone is stone."},
+	])
+
+
+# ------------------------------------------------------ room 4: well yard
+func _build_well_yard() -> void:
+	Util.label(self, Vector2(60, 200), "THE WELL YARD — the first Waystone still glows")
+	Util.label(self, Vector2(60, 230), "(stuck in the pit alone? press R)")
+	Util.block(self, Rect2(0, 480, 700, 240))
+	Util.block(self, Rect2(840, 480, 440, 240))
+	Util.block(self, Rect2(686, 496, 14, 224))     # pit wall left
+	Util.block(self, Rect2(840, 496, 14, 224))     # pit wall right
+	Util.block(self, Rect2(700, 590, 140, 130))    # pit floor
+	_make_waystone(Vector2(140, 480))
+	var marla := _make_npc(Vector2(380, 464), "kneeler", "Marla")
+	marla.stone_lines = [
+		"Marla the baker, kneeling over a dropped basket. Flour, fossilized mid-spill.",
+		"Amé: \"The Waystone still glows. If she could just reach it...\"",
+	]
+	marla.soft_lines = ["Marla murmurs: \"...the bread... I can smell it burning...\""]
+	marla.was_rescued.connect(func(_npc: StatueNPC) -> void:
+		_skit_once("v2_rescue", [
+			{"who": "marla", "text": "—flour. I was carrying flour, and then... "
+					+ "Amé? Why are you crying?"},
+			{"who": "ame", "text": "Welcome back, Marla. Go home. Bake something. "
+					+ "Don't look at the square."},
+			{"who": "narrator", "text": "First rescue. The ledger's first name, crossed out."},
+		])
+	)
+	var sena := _make_npc(Vector2(560, 452), "runner", "Sena")
+	sena.stone_lines = [
+		"Sena, the well-keeper's daughter, frozen sprinting for the yard gate.",
+		"Amé: \"The pit's too wide to jump, too deep to climb. But if she follows me down...\"",
+	]
+	sena.soft_lines = ["Sena whispers: \"...keep going... I'll follow the light...\""]
+	var thesis := Util.area(self, Rect2(1040, 400, 30, 80), Color(0, 0, 0, 0))
+	thesis.body_entered.connect(func(body: Node) -> void:
+		if body is Player:
+			_skit_once("v2_thesis", [
+				{"who": "ame", "text": "One home safe. One left standing at the bottom "
+						+ "of a ditch."},
+				{"who": "ame", "text": "Is that what saving everyone looks like? ...It is. "
+						+ "For now. I'm coming back, Sena."},
+				{"who": "narrator", "text": "End of the M0 story slice. "
+						+ "(Rooms: 1/2 test, 3 restarts the street.)"},
+			])
+	)
+	_spawn_player(Vector2(80, 440))
+	player.petrify_enabled = false
 
 
 # ------------------------------------------------------------------ room 2

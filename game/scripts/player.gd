@@ -11,9 +11,13 @@ const STAMINA_MAX := 100.0
 const STAMINA_DRAIN := 20.0
 const STAMINA_REGEN := 30.0
 const MIN_PETRIFY_STAMINA := 25.0
+const SWIM_JUMP_VELOCITY := -260.0
 const SOFTEN_RANGE := 80.0
-const PUSH_IMPULSE := 12.0
+const PUSH_FORCE := 9000.0     # per second, must beat statue static friction
+const PUSH_TORQUE := 90000.0   # per second, below the statues' restoring torque
 
+var soften_enabled := true
+var petrify_enabled := true
 var stamina := STAMINA_MAX
 var is_stone := false
 var stone_form: RigidBody2D = null
@@ -86,7 +90,8 @@ func _physics_process(delta: float) -> void:
 		buffer_timer = JUMP_BUFFER
 	var can_swim_jump := in_water and global_position.y > water_surface_y - 10.0
 	if buffer_timer > 0.0 and (coyote_timer > 0.0 or can_swim_jump):
-		velocity.y = JUMP_VELOCITY
+		# from solid ground: full jump; treading water: only a weak hop
+		velocity.y = JUMP_VELOCITY if coyote_timer > 0.0 else SWIM_JUMP_VELOCITY
 		coyote_timer = 0.0
 		buffer_timer = 0.0
 
@@ -94,24 +99,32 @@ func _physics_process(delta: float) -> void:
 	_push_bodies()
 
 	if Input.is_action_just_pressed("petrify"):
-		if stamina >= MIN_PETRIFY_STAMINA:
+		if not petrify_enabled:
+			G.say("Only the wave decides who is stone. For now.")
+		elif stamina >= MIN_PETRIFY_STAMINA:
 			_petrify()
 		else:
 			G.say("Too exhausted to hold the stone (stamina %d%%)." % int(stamina))
 	if Input.is_action_just_pressed("soften"):
-		_try_soften_nearest()
+		if soften_enabled:
+			_try_soften_nearest()
+		else:
+			G.say("The stone doesn't answer you. Not with bare hands.")
 
 
 func _push_bodies() -> void:
+	var delta := get_physics_process_delta_time()
 	for i in get_slide_collision_count():
 		var col := get_slide_collision(i)
 		var body := col.get_collider()
 		if body is RigidBody2D and not body.freeze:
 			var n := col.get_normal()
 			if absf(n.x) > 0.5:
-				# apply well above the center of mass so tall statues topple, not slide
-				var lever: Vector2 = body.center_of_mass + Vector2(0, -40)
-				body.apply_impulse(Vector2(-n.x * PUSH_IMPULSE, 0), lever)
+				# strong central push (beats friction, slides the statue) plus a
+				# capped lean torque: statues stay upright on flat ground but
+				# tip over once support is lost at an edge
+				body.apply_central_impulse(Vector2(-n.x * PUSH_FORCE * delta, 0))
+				body.apply_torque_impulse(-n.x * PUSH_TORQUE * delta)
 
 
 func _try_soften_nearest() -> void:
