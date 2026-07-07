@@ -163,6 +163,23 @@ no speculative systems (no save/load, no ledger UI, no enemies, no audio).
 - `docs/AREAS.md` added: unified theme sheets (aesthetic, enemy family,
   puzzle verb, boss, ability) for all seven regions.
 
+## Changes from the sixth round
+
+- **Mason's Grip is obtainable**: the Sanctuary door (room 5) opens once
+  2 NPCs are rescued (Marla + Odile); inside (room 8), placing the
+  amulet on the altar relights the braziers and grants the Grip —
+  persistent, saved, and it reopens the Square's Quarry gate.
+- **Quarry started, deliberately non-linear** (rooms 9–11): Gate
+  Terraces branch into a high scaffold route (Crane Yard) and a low
+  haul road (The Cut), forming a 9⇄10⇄11 triangle. Counterweight
+  puzzle (Hetta), quarry-block-through-cracked-seam cavity, two easy
+  rescues, two anchored set pieces. See `docs/AREA_QUARRY.md`.
+- **Sample rooms 12–15** (reach with `[`/`]`): one idea-proof per later
+  region — Baths sunken valve, Gardens sweeping gaze (new `gaze.gd`,
+  raycast beam blocked by statues and stone-self), Undercroft darkness
+  with lamp + permanent braziers, Palace stone-warden (new `warden.gd`)
+  that re-seals softened NPCs mid-escort.
+
 ## Out of scope for M0
 
 Art beyond the shader, audio, world map, rescue ledger UI, enemies,

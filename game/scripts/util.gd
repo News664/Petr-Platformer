@@ -73,15 +73,17 @@ static func label(parent: Node, pos: Vector2, text: String) -> Label:
 	return l
 
 
-static func crate(parent: Node, pos: Vector2) -> RigidBody2D:
+static func crate(parent: Node, pos: Vector2, size := Vector2(28, 28),
+		mass := 5.0, color := Color(0.6, 0.45, 0.3)) -> RigidBody2D:
 	var b := RigidBody2D.new()
-	b.mass = 5.0
+	b.mass = mass
+	b.lock_rotation = true
 	var shape := CollisionShape2D.new()
 	var rs := RectangleShape2D.new()
-	rs.size = Vector2(28, 28)
+	rs.size = size
 	shape.shape = rs
 	b.add_child(shape)
-	b.add_child(make_sprite(Vector2(28, 28), Color(0.6, 0.45, 0.3)))
+	b.add_child(make_sprite(size, color))
 	b.position = pos
 	parent.add_child(b)
 	return b

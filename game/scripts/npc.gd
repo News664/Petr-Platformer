@@ -122,6 +122,12 @@ func _refreeze() -> void:
 	refrozen.emit(self)
 
 
+func force_refreeze() -> void:
+	# an outside force (stone-warden) seals her early
+	if soft:
+		_refreeze()
+
+
 func _physics_process(delta: float) -> void:
 	# name tags only when Amethyst is close — keeps the screen quiet
 	_tag.visible = G.player_focus().distance_to(global_position) < 140.0

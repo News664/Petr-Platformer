@@ -16,8 +16,9 @@ and promises to come back and save every one of them.
 Controls: **A/D** move · **W/Space** jump · **Q** petrify self ·
 **E** soften / re-freeze nearest statue (also advances dialogue) ·
 **F** look at / speak to a statue · **M** map · **R** reset room (works
-anywhere) · **1–7** switch rooms · **F1** debug long soften ·
-**F2** new game (wipes the autosave; progress saves on every room change).
+anywhere) · **1–7** switch rooms, **[ ]** step through all rooms (8–15:
+Sanctuary, Quarry, and the four area-idea sample rooms) · **F1** debug
+long soften · **F2** new game (progress autosaves on every room change).
 
 The game starts in the story slice: **room 3** (the village street —
 opening skit, the amulet, Lina) → **room 4** (the well yard — first
@@ -26,8 +27,12 @@ steps — climb over anchored Sister Aldith; Odile's long-walk rescue is
 optional) → **room 6** (the square — a breather hub branching to the
 sealed Quarry gate, the flooded Baths stair, and **room 7**, the optional
 bell tower climb). Rooms **1/2** are development test rooms, not part of
-the normal flow. Area design: [`docs/AREA_VILLAGE.md`](docs/AREA_VILLAGE.md);
-all seven region themes: [`docs/AREAS.md`](docs/AREAS.md).
+the normal flow. Rescue two villagers and the Sanctuary opens: **Mason's
+Grip** (pushing) unlocks there, which shifts the Square's gate into the
+non-linear **Quarry** (rooms 9–11). Area design:
+[`docs/AREA_VILLAGE.md`](docs/AREA_VILLAGE.md),
+[`docs/AREA_QUARRY.md`](docs/AREA_QUARRY.md); all seven region themes:
+[`docs/AREAS.md`](docs/AREAS.md).
 
 ## Art pipeline
 

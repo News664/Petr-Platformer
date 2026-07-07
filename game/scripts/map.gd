@@ -16,13 +16,16 @@ const ROOMS := {
 	5: {"rect": Rect2i(4, 1, 1, 2), "label": "Sanctuary\nSteps"},
 	6: {"rect": Rect2i(5, 1, 2, 2), "label": "The Square"},
 	7: {"rect": Rect2i(6, 0, 1, 1), "label": "Bell Tower"},
+	8: {"rect": Rect2i(4, 0, 1, 1), "label": "Sanctuary"},
+	9: {"rect": Rect2i(7, 1, 1, 1), "label": "Gate\nTerraces"},
+	10: {"rect": Rect2i(7, 0, 2, 1), "label": "Crane Yard"},
+	11: {"rect": Rect2i(8, 1, 1, 1), "label": "The Cut"},
 	1: {"rect": Rect2i(0, 0, 1, 1), "label": "dev 1"},
 	2: {"rect": Rect2i(1, 0, 1, 1), "label": "dev 2"},
 }
 # unexplored neighbors: sealed major areas
 const STUBS := [
-	{"rect": Rect2i(4, 0, 1, 1), "label": "Sanctuary (dark)"},
-	{"rect": Rect2i(7, 1, 2, 1), "label": "Quarry (sealed)"},
+	{"rect": Rect2i(9, 1, 1, 1), "label": "Depths"},
 	{"rect": Rect2i(5, 3, 2, 1), "label": "Baths (flooded)"},
 ]
 # hidden spaces: barely-there outlines, no label — the map keeps secrets
@@ -44,7 +47,7 @@ func _ready() -> void:
 	bg.size = Vector2(960, 540)
 	add_child(bg)
 	var title := Label.new()
-	title.text = "LEDGER MAP — Petrified Village        (M to close)"
+	title.text = "LEDGER MAP — Petrified Village & The Quarry        (M to close)"
 	title.position = Vector2(150, 120)
 	add_child(title)
 	_grid = Control.new()

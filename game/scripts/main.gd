@@ -1,6 +1,8 @@
 extends Node2D
 # Bootstraps input, HUD, camera, and room switching.
 
+const MAX_ROOM := 15
+
 var current_room := 1
 var level: Level = null
 var camera: Camera2D = null
@@ -91,6 +93,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		load_room(6)
 	elif event.is_action_pressed("room_7"):
 		load_room(7)
+	elif event.is_action_pressed("room_prev"):
+		load_room(maxi(current_room - 1, 1))
+	elif event.is_action_pressed("room_next"):
+		load_room(mini(current_room + 1, MAX_ROOM))
 	elif event.is_action_pressed("debug_soften"):
 		G.debug_soften = not G.debug_soften
 		G.say("Debug long soften: %s" % ("ON (60 s)" if G.debug_soften else "off"))
@@ -168,6 +174,8 @@ func _setup_input() -> void:
 	_add_key_action("room_5", [KEY_5])
 	_add_key_action("room_6", [KEY_6])
 	_add_key_action("room_7", [KEY_7])
+	_add_key_action("room_prev", [KEY_BRACKETLEFT])
+	_add_key_action("room_next", [KEY_BRACKETRIGHT])
 	_add_key_action("map", [KEY_M])
 	_add_key_action("debug_soften", [KEY_F1])
 	_add_key_action("new_game", [KEY_F2])
