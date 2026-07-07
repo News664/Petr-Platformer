@@ -33,7 +33,7 @@ them oriented.
 | Q7 | Wisp Gallery | planned | quarry wisps drain Chisel Light; light-preservation runs |
 | Q8 | Powder Store | planned, hidden | below the Gallery, behind a cracked wall (Dash) |
 | Q9 | Colossus Shelf | planned | half-carved colossus blocks; rolling-ramp physics; the Witness (Sableth the forewoman) |
-| Q10 | Foredame's Dig | planned | boss: the Foredame |
+| Q10 | **FOREDAME'S DIG** (room 19) | built | boss: the Foredame — telegraphed fist-slams lured onto 3 cracked pillars; win opens the Sanctuary (Wisp Gallery deferred, Switchback routes straight here for now) |
 | Q11 | Quarry Sanctuary | planned | relight → **Chisel Dash** → back-unlocks the Village cellar |
 
 Rescue budget: 3 rescuable (Brona, Rutta, Vess — each with own

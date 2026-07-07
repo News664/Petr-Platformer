@@ -201,6 +201,23 @@ no speculative systems (no save/load, no ledger UI, no enemies, no audio).
   which wakes the amulet. GDD updated (stone-touched heroine; "why did
   she wake?" held as a late-wing question).
 
+## Changes from the eighth round
+
+- **Reset keeps your entry**: R respawns at the door you came in by
+  (`current_entry`), not always the first spawn.
+- **Wrong-side clearability**: room 4 gains a return overpass (east step →
+  overpass → west ground) so eastern entries can backtrack without the
+  pit, without letting western entries skip it; room 9 gains an east-face
+  terrace step for haul-road arrivals. General rule now: every room must
+  be traversable from every door it has, independent of rescue state.
+- **Help overlay (H)**: floating key reference, pauses the game.
+- **Foredame boss graybox** (`foredame.gd`, room 19): a telegraphed
+  fist-slam colossus that can't be damaged — lure her slams onto three
+  cracked pillars to collapse her dig. Win persists and opens the way to
+  the Quarry Sanctuary (Chisel Dash, next slice). The Switchback's east
+  road now leads here (Wisp Gallery deferred).
+- gdlint `max-file-lines` raised for the single graybox room-builder file.
+
 ## Out of scope for M0
 
 Art beyond the shader, audio, world map, rescue ledger UI, enemies,

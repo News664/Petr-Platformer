@@ -15,9 +15,9 @@ and promises to come back and save every one of them.
 
 Controls: **A/D** move · **W/Space** jump · **Q** petrify self ·
 **E** soften / re-freeze nearest statue (also advances dialogue) ·
-**F** look at / speak to a statue · **M** map · **R** reset room (works
-anywhere) · **1–7** switch rooms, **[ ]** step through all rooms (8–15:
-Sanctuary, Quarry, and the four area-idea sample rooms) · **F1** debug
+**F** look at / speak to a statue, enter doorways · **M** map ·
+**H** help (all keys) · **R** reset room (returns to the door you entered
+by) · **1–7** switch rooms, **[ ]** step through all rooms · **F1** debug
 long soften · **F2** new game (progress autosaves on every room change).
 
 The game starts in the story slice: **room 3** (the village street —
