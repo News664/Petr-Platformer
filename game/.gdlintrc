@@ -1,0 +1,3 @@
+# Graybox prototype: all room builders deliberately live in level.gd, so
+# the default 1000-line cap is raised. Revisit when rooms move to scenes.
+max-file-lines: 1600

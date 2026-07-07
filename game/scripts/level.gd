@@ -57,6 +57,8 @@ func _ready() -> void:
 			_build_haul_road()
 		18:
 			_build_switchback()
+		19:
+			_build_foredame_dig()
 		_:
 			_build_sample_palace()
 
@@ -377,8 +379,12 @@ func _build_well_yard() -> void:
 	Util.block(self, Rect2(840, 480, 440, 240))
 	Util.block(self, Rect2(686, 496, 14, 224))     # pit wall left
 	Util.block(self, Rect2(840, 496, 14, 224))     # pit wall right
-	Util.block(self, Rect2(700, 576, 140, 144))    # pit floor: kneeler-viable depth
-	Util.label(self, Vector2(730, 546), "stuck? R")
+	Util.block(self, Rect2(700, 572, 140, 148))    # pit floor: kneeler-viable depth
+	Util.label(self, Vector2(730, 542), "stuck? R")
+	# return overpass: reachable only from the east step, so backtracking
+	# west is always possible, but it can never shortcut the pit eastward
+	Util.block(self, Rect2(860, 416, 40, 12))      # east step up
+	Util.block(self, Rect2(620, 352, 240, 14))     # overpass spanning the pit
 	_make_waystone(Vector2(140, 480))
 	var marla := _make_npc(Vector2(380, 464), "kneeler", "Marla")
 	if marla:
@@ -669,8 +675,11 @@ func _build_quarry_terraces() -> void:
 	# branch room: climb the slabs to the Crane Yard (top-east door) or walk
 	# the lower corridor to The Cut (ground-east door)
 	Util.block(self, Rect2(0, 480, 1280, 240))      # floor
-	Util.block(self, Rect2(300, 432, 50, 48))       # step
+	Util.block(self, Rect2(300, 432, 50, 48))       # step, west face
 	Util.block(self, Rect2(350, 384, 250, 96))      # terrace ledge
+	Util.block(self, Rect2(600, 432, 40, 48))       # step, east face — the
+	# terrace is climbable from both sides, so entering from the haul road
+	# can always reach the west door even with Brona rescued
 	Util.block(self, Rect2(640, 336, 60, 16))       # hop slab
 	Util.block(self, Rect2(700, 288, 300, 16))      # slab B (floating scaffold)
 	Util.block(self, Rect2(960, 240, 50, 16))       # hop slab
@@ -846,19 +855,67 @@ func _build_switchback() -> void:
 	Util.block(self, Rect2(340, 300, 80, 14))
 	Util.block(self, Rect2(200, 240, 80, 14))
 	_make_chisel_mote(Vector2(150, 180))
-	# the Depths, sealed for now
-	Util.block(self, Rect2(1240, 360, 40, 120), Color(0.35, 0.3, 0.28))
-	var seal := Util.area(self, Rect2(1216, 400, 24, 80), Color(0, 0, 0, 0))
-	seal.body_entered.connect(func(body: Node) -> void:
-		if body is Player and not G.seen.get("q_depths", false):
-			G.seen["q_depths"] = true
-			G.say("Beyond: the Wisp Gallery and the deep quarry. The air hums. "
-					+ "(Sealed — end of the current slice.)")
-	)
+	# the Depths: the Wisp Gallery is unbuilt, so the road runs straight
+	# to the dig for now (dev shortcut, noted in AREA_QUARRY.md)
+	_make_door(Rect2(1256, 400, 24, 80), "the dig →", 19, "west")
 	_make_door(Rect2(0, 400, 24, 80), "", 11, "east")
 	_make_door(Rect2(0, 128, 24, 80), "scaffold ↑", 16, "east")
 	_spawn_player({"default": Vector2(60, 460), "bottom": Vector2(60, 460),
-			"top": Vector2(60, 188)})
+			"top": Vector2(60, 188), "east": Vector2(1180, 460)})
+	player.petrify_enabled = false
+	player.push_enabled = G.seen.get("masons_grip", false)
+
+
+# --------------------------------------------- room 19: foredame's dig
+func _build_foredame_dig() -> void:
+	G.say("— The Quarry: Foredame's Dig —")
+	Util.block(self, Rect2(0, 480, 1280, 240))
+	_make_door(Rect2(0, 400, 24, 80), "", 18, "east")
+	if G.seen.get("foredame_down", false):
+		# the dig, collapsed and quiet
+		for x in [420, 660, 900]:
+			var rubble := Util.make_sprite(Vector2(70, 26), Color(0.4, 0.37, 0.34))
+			rubble.position = Vector2(x, 467)
+			add_child(rubble)
+		_make_entrance(Rect2(1150, 400, 48, 80), "Quarry Sanctuary (F)",
+				func() -> void:
+					G.say("The Quarry Sanctuary waits beyond — Chisel Dash. "
+							+ "(Next slice.)"))
+		_spawn_player({"default": Vector2(60, 460), "west": Vector2(60, 460)})
+		player.petrify_enabled = false
+		player.push_enabled = G.seen.get("masons_grip", false)
+		return
+	var boss := Foredame.new()
+	boss.position = Vector2(640, 480)
+	add_child(boss)
+	for x in [400.0, 640.0, 880.0]:
+		var pillar := Util.block(self, Rect2(x - 20, 420, 40, 60), Color(0.55, 0.5, 0.45))
+		Util.label(pillar, Vector2(-30, -46), "cracked pillar")
+		boss.add_pillar(pillar, x)
+	boss.defeated.connect(func() -> void:
+		G.seen["foredame_down"] = true
+		G.save_state(room)
+		_skit_once("q_boss_down", [
+			{"who": "narrator", "text": "The scaffolding shrieks. The half-carved "
+					+ "colossus folds into her own excavation, fist still open."},
+			{"who": "ame", "text": "You were somebody's work. Somebody stood where I'm "
+					+ "standing and carved your face. Rest now."},
+			{"who": "narrator", "text": "In the settling dust, the way to the Quarry "
+					+ "Sanctuary stands clear."},
+		])
+		_make_entrance(Rect2(1150, 400, 48, 80), "Quarry Sanctuary (F)",
+				func() -> void:
+					G.say("The Quarry Sanctuary waits beyond — Chisel Dash. "
+							+ "(Next slice.)"))
+	)
+	_skit_once("q_boss_intro", [
+		{"who": "narrator", "text": "The dig is a cathedral of cut stone. At its head, "
+				+ "a colossus no one finished — and the curse got into what was "
+				+ "carved of her."},
+		{"who": "ame", "text": "She swings like a hammer. And a hammer doesn't care "
+				+ "what it hits — not even its own scaffolding."},
+	])
+	_spawn_player({"default": Vector2(60, 460), "west": Vector2(60, 460)})
 	player.petrify_enabled = false
 	player.push_enabled = G.seen.get("masons_grip", false)
 

@@ -1,12 +1,14 @@
 extends Node2D
 # Bootstraps input, HUD, camera, and room switching.
 
-const MAX_ROOM := 18
+const MAX_ROOM := 19
 
 var current_room := 1
+var current_entry := "default"
 var level: Level = null
 var camera: Camera2D = null
 var map: MapOverlay = null
+var help: HelpOverlay = null
 
 var _msg_label: Label = null
 var _stats_label: Label = null
@@ -32,17 +34,20 @@ func _ready() -> void:
 	G.dialogue = dlg
 	map = MapOverlay.new()
 	add_child(map)
+	help = HelpOverlay.new()
+	add_child(help)
 	G.message.connect(_on_message)
 	var saved_room := G.load_state()
 	load_room(saved_room if saved_room > 0 else 3)
-	G.say("A/D move · W/Space jump · E soften · F look/speak · Q petrify · "
-			+ "M map · R reset room · F2 new game")
+	G.say("A/D move · W/Space jump · E soften · F look/speak/enter · "
+			+ "M map · H help (all keys) · R reset")
 
 
 func load_room(n: int, entry := "default") -> void:
 	if level != null:
 		level.queue_free()
 	current_room = n
+	current_entry = entry
 	G.chisel = 9  # test-mode: every room (re)load restores the budget
 	G.visited[n] = true
 	G.save_state(n)
@@ -71,13 +76,18 @@ func _process(delta: float) -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("map"):
-		if not G.dialogue.is_active():
+		if not G.dialogue.is_active() and not help.open:
 			map.toggle(current_room)
 		return
-	if map.open:
+	if event.is_action_pressed("help"):
+		if not G.dialogue.is_active() and not map.open:
+			help.toggle()
+		return
+	if map.open or help.open:
 		return
 	if event.is_action_pressed("restart"):
-		load_room(current_room)
+		# reset returns to the door the player originally entered by
+		load_room(current_room, current_entry)
 		G.say("Room reset.")
 	elif event.is_action_pressed("room_1"):
 		load_room(1)
@@ -181,6 +191,7 @@ func _setup_input() -> void:
 	_add_key_action("room_prev", [KEY_BRACKETLEFT])
 	_add_key_action("room_next", [KEY_BRACKETRIGHT])
 	_add_key_action("map", [KEY_M])
+	_add_key_action("help", [KEY_H])
 	_add_key_action("debug_soften", [KEY_F1])
 	_add_key_action("new_game", [KEY_F2])
 
