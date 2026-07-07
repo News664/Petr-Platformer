@@ -8,8 +8,8 @@ const SAVE_PATH := "user://petr_save.json"
 var chisel := 9
 var rescued := 0
 var debug_soften := false
-var player: Node2D = null
-var dialogue: CanvasLayer = null
+var player: Player = null
+var dialogue: Dialogue = null
 var seen := {}     # one-shot story beats already shown this session
 var visited := {}  # rooms the player has entered (fills in the map)
 

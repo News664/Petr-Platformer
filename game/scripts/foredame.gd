@@ -83,7 +83,7 @@ func _physics_process(delta: float) -> void:
 
 func _land() -> void:
 	var fist_x := global_position.x + _fist.position.x
-	var player := G.player
+	var player := G.player as Player
 	if player != null and is_instance_valid(player) \
 			and absf(player.global_position.x - fist_x) < HIT_RANGE \
 			and player.global_position.y > 380.0:
