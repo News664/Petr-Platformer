@@ -51,6 +51,12 @@ func _ready() -> void:
 			_build_sample_gardens()
 		14:
 			_build_sample_undercroft()
+		16:
+			_build_scaffold_heights()
+		17:
+			_build_haul_road()
+		18:
+			_build_switchback()
 		_:
 			_build_sample_palace()
 
@@ -104,20 +110,39 @@ func _build_bounds() -> void:
 	Util.block(self, Rect2(ROOM_W, -200, 32, ROOM_H + 400))
 
 
-func _make_waystone(pos: Vector2) -> Area2D:
+func _make_waystone(pos: Vector2, one_soul := true) -> void:
+	# a Waystone holds one passage, then goes dark — so a room can never
+	# be emptied of every statue it needs (the thesis, enforced)
+	var key := "ws_%d_%d" % [room, int(pos.x)]
+	if one_soul and G.seen.get(key, false):
+		var spent := Util.area(self, Rect2(pos.x - 24, pos.y - 64, 48, 64),
+				Color(0.3, 0.34, 0.4, 0.4))
+		Util.label(spent, Vector2(-44, -50), "Waystone (spent)")
+		return
 	var ws := Util.area(self, Rect2(pos.x - 24, pos.y - 64, 48, 64), Color(0.4, 0.8, 0.9, 0.5))
 	Util.label(ws, Vector2(-32, -50), "Waystone")
-	ws.body_entered.connect(_on_waystone_body.bind(ws))
-	return ws
+	ws.body_entered.connect(func(body: Node) -> void:
+		if body is StatueNPC and body.soft:
+			G.rescued += 1
+			G.seen["resc_" + body.npc_name] = true
+			if one_soul:
+				G.seen[key] = true
+				G.say("%s is safe in the Village. The Waystone dims, spent. (Rescued: %d)"
+						% [body.npc_name, G.rescued])
+			else:
+				G.say("%s reaches the Waystone — she is safe. (Rescued: %d)"
+						% [body.npc_name, G.rescued])
+			body.was_rescued.emit(body)
+			body.queue_free()
+	)
 
 
-func _on_waystone_body(body: Node, _ws: Area2D) -> void:
-	if body is StatueNPC and body.soft:
-		G.rescued += 1
-		G.say("%s reaches the Waystone — she is safe in the Village now. (Rescued: %d)"
-				% [body.npc_name, G.rescued])
-		body.was_rescued.emit(body)
-		body.queue_free()
+func _make_entrance(rect: Rect2, text: String, action: Callable) -> void:
+	# interior doorway: entered deliberately with F, never by walking past
+	var e := Util.area(self, rect, Color(0.35, 0.3, 0.45, 0.8))
+	Util.label(e, Vector2(-24, -26), text)
+	e.add_to_group("entrance")
+	e.set_meta("action", action)
 
 
 func _make_goal(rect: Rect2, text: String) -> void:
@@ -204,7 +229,11 @@ func _physics_process(_delta: float) -> void:
 		tw.tween_property(_plate_door, "position:y", _door_closed_pos.y, 0.4)
 
 
-func _make_npc(pos: Vector2, npc_kind: String, npc_name: String) -> StatueNPC:
+func _make_npc(pos: Vector2, npc_kind: String, npc_name: String,
+		persist := true) -> StatueNPC:
+	# a rescued person is home for good; callers must null-check rescuables
+	if persist and G.seen.get("resc_" + npc_name, false):
+		return null
 	var npc := StatueNPC.new()
 	npc.kind = npc_kind
 	npc.npc_name = npc_name
@@ -247,7 +276,7 @@ func _build_test_yard() -> void:
 	Util.crate(self, Vector2(300, 440))
 	Util.label(self, Vector2(270, 420), "crate: too light")
 	# a kneeler to soften and to dunk
-	var odessa := _make_npc(Vector2(940, 460), "kneeler", "Odessa")
+	var odessa := _make_npc(Vector2(940, 460), "kneeler", "Odessa", false)
 	odessa.stone_lines = [
 		"Odessa knelt to pick up her daughter's doll when the wave came.",
 		"Amethyst: \"I'll come back for you, Odessa. I promise.\"",
@@ -257,8 +286,8 @@ func _build_test_yard() -> void:
 	]
 	Util.label(self, Vector2(1010, 380), "stone sinks, flesh floats —\npush something in to cross")
 	_make_chime(Vector2(880, 480))
-	_make_waystone(Vector2(1220, 480))
-	_spawn_player({"default": Vector2(250, 440)})
+	_make_waystone(Vector2(1220, 480), false)
+	_spawn_player({"default": Vector2(250, 460)})
 	player.push_enabled = true
 
 
@@ -301,35 +330,43 @@ func _build_village_street() -> void:
 			{"who": "ame", "text": "I'll come back for you. I promise. I promise."},
 		])
 	)
-	# the amulet is a key item: taken once, forever (survives resets and saves)
+	# Ida's chisel is a key item: taken once, forever; it wakes the amulet
 	if not G.seen.get("v1_amulet_taken", false):
-		var amulet := Util.area(self, Rect2(708, 440, 24, 24), Color(0.95, 0.85, 0.4))
-		Util.label(amulet, Vector2(-56, -30), "the chisel-amulet")
-		amulet.body_entered.connect(func(body: Node) -> void:
+		var chisel := Util.area(self, Rect2(708, 440, 24, 24), Color(0.95, 0.85, 0.4))
+		Util.label(chisel, Vector2(-40, -30), "Ida's chisel")
+		chisel.body_entered.connect(func(body: Node) -> void:
 			if body is Player and not body.soften_enabled:
 				G.seen["v1_amulet_taken"] = true
 				body.soften_enabled = true
-				amulet.queue_free()
+				chisel.queue_free()
 				_skit_once("v1_amulet", [
-					{"who": "narrator", "text": "Master Ida's chisel-amulet hums against "
-							+ "Amethyst's palm, warm as a kept coal."},
-					{"who": "ame", "text": "It's warm. Like her hands were."},
-					{"who": "narrator", "text": "Near a statue, press E: the amulet can soften "
-							+ "stone — for a few breaths, no more. The softened dream, and "
-							+ "follow its light. F lets you look closer, or speak."},
+					{"who": "narrator", "text": "Ida's chisel, laid on the workshop step "
+							+ "as if set down mid-thought. The amulet at Amethyst's "
+							+ "throat flares to meet it."},
+					{"who": "ame", "text": "Chisel and stone. Her two answers to everything. "
+							+ "Ida, where ARE you?"},
+					{"who": "narrator", "text": "Near a statue, press E: the woken amulet can "
+							+ "soften stone — a few breaths, no more. The softened dream, "
+							+ "and follow its light. F lets you look closer, or speak."},
 				])
 		)
-	_make_door(Rect2(1220, 320, 40, 80), "well yard →", 4, "west")
-	_spawn_player({"default": Vector2(80, 440), "east": Vector2(1160, 380)})
+	_make_door(Rect2(1256, 320, 24, 80), "well yard →", 4, "west")
+	_spawn_player({"default": Vector2(80, 460), "east": Vector2(1160, 380)})
 	player.soften_enabled = G.seen.get("v1_amulet_taken", false)
 	player.petrify_enabled = false
 	player.push_enabled = G.seen.get("masons_grip", false)
 	_skit_once("v1_open", [
-		{"who": "ame", "text": "Dust. Why is everything white— why is everything so quiet?"},
-		{"who": "narrator", "text": "The morning the wave came, Amethyst was underground, "
-				+ "fetching marble for a headstone."},
-		{"who": "ame", "text": "Lina? LINA— ...oh. Oh, no. No, no, no."},
-		{"who": "narrator", "text": "Everyone. Everyone is stone."},
+		{"who": "narrator", "text": "Stone. She remembers being stone. A year, a breath — "
+				+ "the dark between doesn't count time."},
+		{"who": "ame", "petrified": true, "text": "(Something is warm at her throat. "
+				+ "One point of heat in a world gone cold.)"},
+		{"who": "narrator", "text": "The amulet flares. The shell cracks and falls away "
+				+ "like plaster. Amethyst breathes."},
+		{"who": "ame", "text": "—AH. Air. Dust. ...An amulet? Whose— these are Ida's "
+				+ "knots. Ida hung this on me. When?"},
+		{"who": "narrator", "text": "No answer. The village is white and silent. And on "
+				+ "the cellar stair, arm outstretched toward where Amethyst slept—"},
+		{"who": "ame", "text": "Lina."},
 	])
 
 
@@ -340,30 +377,35 @@ func _build_well_yard() -> void:
 	Util.block(self, Rect2(840, 480, 440, 240))
 	Util.block(self, Rect2(686, 496, 14, 224))     # pit wall left
 	Util.block(self, Rect2(840, 496, 14, 224))     # pit wall right
-	Util.block(self, Rect2(700, 590, 140, 130))    # pit floor
-	Util.label(self, Vector2(730, 560), "stuck? R")
+	Util.block(self, Rect2(700, 576, 140, 144))    # pit floor: kneeler-viable depth
+	Util.label(self, Vector2(730, 546), "stuck? R")
 	_make_waystone(Vector2(140, 480))
 	var marla := _make_npc(Vector2(380, 464), "kneeler", "Marla")
-	marla.stone_lines = [
-		"Marla the baker, kneeling over a dropped basket. Flour, fossilized mid-spill.",
-		"Amethyst: \"The Waystone still glows. If she could just reach it...\"",
-	]
-	marla.soft_lines = ["Marla murmurs: \"...the bread... I can smell it burning...\""]
-	marla.was_rescued.connect(func(_npc: StatueNPC) -> void:
-		_skit_once("v2_rescue", [
-			{"who": "marla", "text": "—flour. I was carrying flour, and then... "
-					+ "Amethyst? Why are you crying?"},
-			{"who": "ame", "text": "Welcome back, Marla. Go home. Bake something. "
-					+ "Don't look at the square."},
-			{"who": "narrator", "text": "First rescue. The ledger's first name, crossed out."},
-		])
-	)
+	if marla:
+		marla.stone_lines = [
+			"Marla the baker, kneeling over a dropped basket. Flour, fossilized mid-spill.",
+			"Amethyst: \"The Waystone still glows. If she could just reach it...\"",
+		]
+		marla.soft_lines = ["Marla murmurs: \"...the bread... I can smell it burning...\""]
+		marla.was_rescued.connect(func(_npc: StatueNPC) -> void:
+			_skit_once("v2_rescue", [
+				{"who": "marla", "text": "—flour. I was carrying flour, and then... "
+						+ "Amethyst? Why are you crying?"},
+				{"who": "ame", "text": "Welcome back, Marla. Go home. Bake something. "
+						+ "Don't look at the square."},
+				{"who": "narrator", "text": "First rescue. The ledger's first name, "
+						+ "crossed out. The Waystone goes dark — one passage is all "
+						+ "any of them hold."},
+			])
+		)
 	var sena := _make_npc(Vector2(560, 452), "runner", "Sena")
-	sena.stone_lines = [
-		"Sena, the well-keeper's daughter, frozen sprinting for the yard gate.",
-		"Amethyst: \"The pit's too wide to jump, too deep to climb. But if she follows me down...\"",
-	]
-	sena.soft_lines = ["Sena whispers: \"...keep going... I'll follow the light...\""]
+	if sena:
+		sena.stone_lines = [
+			"Sena, the well-keeper's daughter, frozen sprinting for the yard gate.",
+			"Amethyst: \"The pit's too wide to jump, too deep to climb. "
+					+ "But if she follows me down...\"",
+		]
+		sena.soft_lines = ["Sena whispers: \"...keep going... I'll follow the light...\""]
 	var thesis := Util.area(self, Rect2(1040, 400, 30, 80), Color(0, 0, 0, 0))
 	thesis.body_entered.connect(func(body: Node) -> void:
 		if body is Player:
@@ -374,10 +416,10 @@ func _build_well_yard() -> void:
 						+ "For now. I'm coming back, Sena."},
 			])
 	)
-	_make_door(Rect2(0, 400, 20, 80), "", 3, "east")
-	_make_door(Rect2(1240, 400, 40, 80), "steps →", 5, "west")
-	_spawn_player({"default": Vector2(80, 440), "west": Vector2(60, 440),
-			"east": Vector2(1180, 440)})
+	_make_door(Rect2(0, 400, 24, 80), "", 3, "east")
+	_make_door(Rect2(1256, 400, 24, 80), "steps →", 5, "west")
+	_spawn_player({"default": Vector2(80, 460), "west": Vector2(60, 460),
+			"east": Vector2(1180, 460)})
 	player.petrify_enabled = false
 	player.push_enabled = G.seen.get("masons_grip", false)
 
@@ -406,44 +448,44 @@ func _build_sanctuary_steps() -> void:
 	]
 	# Odile — not needed for the climb; she is only there to be saved (or not)
 	var odile := _make_npc(Vector2(550, 452), "runner", "Odile")
-	odile.stone_lines = [
-		"Odile the bell-ringer, frozen sprinting from the chapel, hands over her ears.",
-		"Amethyst: \"The Waystone is a long, long walk from here. Her grace might just cover it.\"",
-	]
-	odile.soft_lines = ["Odile whispers: \"...the bells... did the bells stop?...\""]
-	odile.was_rescued.connect(func(_npc: StatueNPC) -> void:
-		_skit_once("v3_rescue", [
-			{"who": "ame", "text": "Every step of that walk, I was sure the light would "
-					+ "run out. Go home, Odile. Ring nothing."},
-		])
-	)
-	# the Sanctuary wakes for the warmth of the returned: 2 rescues open it
+	if odile:
+		odile.stone_lines = [
+			"Odile the bell-ringer, frozen sprinting from the chapel, hands over her ears.",
+			"Amethyst: \"The Waystone is a long, long walk from here. "
+					+ "Her grace might just cover it.\"",
+		]
+		odile.soft_lines = ["Odile whispers: \"...the bells... did the bells stop?...\""]
+		odile.was_rescued.connect(func(_npc: StatueNPC) -> void:
+			_skit_once("v3_rescue", [
+				{"who": "ame", "text": "Every step of that walk, I was sure the light "
+						+ "would run out. Go home, Odile. Ring nothing."},
+			])
+		)
+	# the Sanctuary wakes for the warmth of the returned: 2 rescues open it.
+	# It is an interior doorway — entered with F, never by walking past.
 	var lit: bool = G.seen.get("masons_grip", false)
-	var door_col := Color(0.55, 0.5, 0.3) if lit else Color(0.3, 0.25, 0.4)
-	var door := Util.area(self, Rect2(1200, 204, 48, 80), door_col)
-	Util.label(door, Vector2(-52, -30), "Sanctuary" if lit else "Sanctuary (dark)")
-	door.body_entered.connect(func(body: Node) -> void:
-		if not body is Player:
-			return
-		if G.rescued >= 2 or G.seen.get("masons_grip", false):
-			_goto_room(8)
-			return
-		_skit_once("v3_door", [
-			{"who": "narrator", "text": "The Sanctuary door is cold. Behind it, "
-					+ "something vast is holding its breath."},
-			{"who": "ame", "text": "Dark. The whole Sanctuary, dark. The amulet flickers "
-					+ "toward it like it wants to go home."},
-			{"who": "ame", "text": "It isn't light it wants. It's warmth. The living kind."},
-			{"who": "narrator", "text": "The door listens for footsteps coming home. "
-					+ "Bring the rescued back to the Village."},
-		])
-		G.say("The door does not move. (Rescued: %d of 2 — the Sanctuary needs warmth.)"
-				% G.rescued)
-	)
-	_make_door(Rect2(0, 400, 20, 80), "", 4, "east")
-	_make_door(Rect2(1246, 184, 20, 96), "square →", 6, "ledge")
-	_spawn_player({"default": Vector2(60, 440), "west": Vector2(60, 440),
-			"porch": Vector2(1180, 262)})
+	_make_entrance(Rect2(1140, 204, 48, 80),
+			"Sanctuary (F)" if lit else "Sanctuary (dark) (F)",
+			func() -> void:
+				if G.rescued >= 2 or G.seen.get("masons_grip", false):
+					_goto_room(8)
+					return
+				_skit_once("v3_door", [
+					{"who": "narrator", "text": "The Sanctuary door is cold. Behind it, "
+							+ "something vast is holding its breath."},
+					{"who": "ame", "text": "Dark. The whole Sanctuary, dark. The amulet "
+							+ "flickers toward it like it wants to go home."},
+					{"who": "ame", "text": "It isn't light it wants. It's warmth. "
+							+ "The living kind."},
+					{"who": "narrator", "text": "The door listens for footsteps coming "
+							+ "home. Bring the rescued back to the Village."},
+				])
+				G.say("The door does not move. (Rescued: %d of 2 — it needs warmth.)"
+						% G.rescued))
+	_make_door(Rect2(0, 400, 24, 80), "", 4, "east")
+	_make_door(Rect2(1256, 204, 24, 80), "square →", 6, "ledge")
+	_spawn_player({"default": Vector2(60, 460), "west": Vector2(60, 460),
+			"porch": Vector2(1180, 264)})
 	player.petrify_enabled = false
 	player.push_enabled = G.seen.get("masons_grip", false)
 
@@ -485,12 +527,13 @@ func _build_square() -> void:
 		v.position = Vector2(610 + (i % 3) * 34, 398 - float(i / 3) * 4)
 		add_child(v)
 	# west, on the ledge: back to the Sanctuary Steps
-	_make_door(Rect2(0, 240, 20, 80), "← steps", 5, "porch")
-	# west, on the ground: the bell tower door
-	_make_door(Rect2(20, 420, 24, 60), "bell tower", 7, "default")
+	_make_door(Rect2(0, 240, 24, 80), "← steps", 5, "porch")
+	# west, on the ground: the bell tower door (interior — F to enter)
+	_make_entrance(Rect2(40, 420, 40, 60), "bell tower (F)",
+			func() -> void: _goto_room(7))
 	# east: the Quarry gate — Mason's Grip shifts the fallen arch
 	if G.seen.get("masons_grip", false):
-		_make_door(Rect2(1240, 400, 40, 80), "quarry →", 9, "west")
+		_make_door(Rect2(1256, 400, 24, 80), "quarry →", 9, "west")
 	else:
 		Util.block(self, Rect2(1240, 360, 40, 120), Color(0.4, 0.36, 0.32))
 		var gate := Util.area(self, Rect2(1216, 400, 24, 80), Color(0, 0, 0, 0))
@@ -507,8 +550,8 @@ func _build_square() -> void:
 			G.seen["v4_stair"] = true
 			G.say("The stair to the Sunken Baths drowns in black water. Not yet.")
 	)
-	_spawn_player({"default": Vector2(300, 440), "ledge": Vector2(80, 300),
-			"tower": Vector2(90, 440), "gate": Vector2(1180, 440)})
+	_spawn_player({"default": Vector2(300, 460), "ledge": Vector2(80, 300),
+			"tower": Vector2(120, 460), "gate": Vector2(1180, 460)})
 	player.petrify_enabled = false
 	player.push_enabled = G.seen.get("masons_grip", false)
 
@@ -544,8 +587,9 @@ func _build_bell_tower() -> void:
 						+ "like it's breathing."},
 			])
 	)
-	_make_door(Rect2(504, 420, 20, 60), "← square", 6, "tower")
-	_spawn_player({"default": Vector2(640, 440)})
+	_make_entrance(Rect2(520, 420, 40, 60), "← square (F)",
+			func() -> void: _goto_room(6, "tower"))
+	_spawn_player({"default": Vector2(640, 460)})
 	player.petrify_enabled = false
 	player.push_enabled = G.seen.get("masons_grip", false)
 
@@ -563,7 +607,7 @@ func _build_chamber() -> void:
 	Util.block(self, Rect2(640, 496, 14, 224))      # pit wall right
 	Util.block(self, Rect2(500, 590, 140, 130))     # pit floor
 	# Maren the Runner, frozen mid-stride, facing the pit
-	var maren := _make_npc(Vector2(340, 452), "runner", "Maren")
+	var maren := _make_npc(Vector2(340, 452), "runner", "Maren", false)
 	maren.stone_lines = [
 		"Maren was running for the bridge when the wave caught her mid-stride.",
 		"Amethyst: \"Forgive me, Maren. I need your shoulders.\"",
@@ -571,12 +615,12 @@ func _build_chamber() -> void:
 	maren.soft_lines = [
 		"Maren whispers: \"...keep going... I'll follow the light...\"",
 	]
-	_make_waystone(Vector2(100, 480))
+	_make_waystone(Vector2(100, 480), false)
 	_make_chime(Vector2(200, 480))
 	_make_goal(Rect2(1180, 400, 60, 80),
 			"Chamber complete. You left her standing at the bottom of the pit. "
 			+ "The ledger remembers. (Or: F1 debug-soften and walk her to the Waystone.)")
-	_spawn_player({"default": Vector2(80, 440)})
+	_spawn_player({"default": Vector2(80, 460)})
 	player.push_enabled = true
 
 
@@ -613,8 +657,8 @@ func _build_sanctuary() -> void:
 						+ "I'm coming."},
 			])
 	)
-	_make_door(Rect2(0, 400, 20, 80), "", 5, "porch")
-	_spawn_player({"default": Vector2(100, 440)})
+	_make_door(Rect2(0, 400, 24, 80), "", 5, "porch")
+	_spawn_player({"default": Vector2(100, 460)})
 	player.petrify_enabled = false
 	player.push_enabled = G.seen.get("masons_grip", false)
 
@@ -641,16 +685,17 @@ func _build_quarry_terraces() -> void:
 		"Amethyst: \"She measured every cut in this cliff. Now the cliff keeps her.\"",
 	]
 	var brona := _make_npc(Vector2(900, 452), "runner", "Brona")
-	brona.stone_lines = [
-		"Brona the hauler, sprinting for the gate with empty hands.",
-		"Amethyst: \"The Waystone hums right there. A short walk. An easy promise.\"",
-	]
-	brona.soft_lines = ["Brona murmurs: \"...drop the load... run...\""]
-	_make_door(Rect2(0, 400, 20, 80), "", 6, "gate")
-	_make_door(Rect2(1240, 128, 40, 80), "crane yard →", 10, "west")
-	_make_door(Rect2(1240, 400, 40, 80), "the cut →", 11, "west")
-	_spawn_player({"default": Vector2(60, 440), "west": Vector2(60, 440),
-			"top": Vector2(1180, 188), "lower": Vector2(1160, 440)})
+	if brona:
+		brona.stone_lines = [
+			"Brona the hauler, sprinting for the gate with empty hands.",
+			"Amethyst: \"The Waystone hums right there. A short walk. An easy promise.\"",
+		]
+		brona.soft_lines = ["Brona murmurs: \"...drop the load... run...\""]
+	_make_door(Rect2(0, 400, 24, 80), "", 6, "gate")
+	_make_door(Rect2(1256, 128, 24, 80), "crane yard →", 10, "west")
+	_make_door(Rect2(1256, 400, 24, 80), "haul road →", 17, "west")
+	_spawn_player({"default": Vector2(60, 460), "west": Vector2(60, 460),
+			"top": Vector2(1180, 188), "lower": Vector2(1160, 460)})
 	player.petrify_enabled = false
 	player.push_enabled = G.seen.get("masons_grip", false)
 
@@ -658,17 +703,28 @@ func _build_quarry_terraces() -> void:
 # ----------------------------------------------- room 10: the crane yard
 func _build_crane_yard() -> void:
 	G.say("— The Quarry: Crane Yard —")
-	# counterweight lesson: only Hetta is heavy enough for the plate
-	Util.block(self, Rect2(0, 480, 1280, 240))
+	# counterweight lesson: only Hetta is heavy enough for the plate.
+	# A jumpable drop shaft east of the plate falls through to the Haul Road.
+	Util.block(self, Rect2(0, 480, 900, 240))
+	Util.block(self, Rect2(1000, 480, 280, 240))
+	var hatch := Util.area(self, Rect2(900, 700, 100, 20), Color(0, 0, 0, 0))
+	hatch.body_entered.connect(func(body: Node) -> void:
+		if body is Player:
+			_goto_room(17, "hatch")
+	)
+	Util.label(self, Vector2(910, 500), "drop shaft")
 	_make_plate_and_door(Vector2(500, 480), Vector2(700, 480))
 	Util.crate(self, Vector2(300, 440))
 	var hetta := _make_npc(Vector2(600, 464), "kneeler", "Hetta")
-	hetta.stone_lines = [
-		"Hetta the crane-hand, kneeling to check a knot that will never slip.",
-		"Amethyst: \"The Waystone is a room away. Too far for a few seconds of grace.\"",
-		"Amethyst: \"But she's heavier than any crate here. Forgive me, Hetta.\"",
-	]
-	hetta.soft_lines = ["Hetta murmurs: \"...the counterweight... mind the counterweight...\""]
+	if hetta:
+		hetta.stone_lines = [
+			"Hetta the crane-hand, kneeling to check a knot that will never slip.",
+			"Amethyst: \"The Waystone is a room away. Too far for a few seconds of grace.\"",
+			"Amethyst: \"But she's heavier than any crate here. Forgive me, Hetta.\"",
+		]
+		hetta.soft_lines = [
+			"Hetta murmurs: \"...the counterweight... mind the counterweight...\"",
+		]
 	# crane decor
 	var mast := Util.make_sprite(Vector2(16, 300), Color(0.45, 0.4, 0.3))
 	mast.position = Vector2(950, 330)
@@ -676,11 +732,11 @@ func _build_crane_yard() -> void:
 	var jib := Util.make_sprite(Vector2(260, 12), Color(0.45, 0.4, 0.3))
 	jib.position = Vector2(950, 190)
 	add_child(jib)
-	_make_chisel_mote(Vector2(900, 440))
-	_make_door(Rect2(0, 400, 20, 80), "", 9, "top")
-	_make_door(Rect2(1240, 400, 40, 80), "the cut ↓", 11, "east")
-	_spawn_player({"default": Vector2(60, 440), "west": Vector2(60, 440),
-			"east": Vector2(1180, 440)})
+	_make_chisel_mote(Vector2(860, 440))
+	_make_door(Rect2(0, 400, 24, 80), "", 9, "top")
+	_make_door(Rect2(1256, 400, 24, 80), "scaffold →", 16, "west")
+	_spawn_player({"default": Vector2(60, 460), "west": Vector2(60, 460),
+			"east": Vector2(1180, 460)})
 	player.petrify_enabled = false
 	player.push_enabled = G.seen.get("masons_grip", false)
 
@@ -707,18 +763,102 @@ func _build_the_cut() -> void:
 		"Amethyst: \"They dug toward each other for luck. The curse liked the shape of it.\"",
 	]
 	var vess := _make_npc(Vector2(1060, 452), "runner", "Vess")
-	vess.stone_lines = [
-		"Vess the powder-girl, running the rim with a fuse that never burned down.",
-		"Amethyst: \"The Waystone's close. For once, an easy one.\"",
-	]
-	vess.soft_lines = ["Vess whispers: \"...cut the fuse... cut it...\""]
+	if vess:
+		vess.stone_lines = [
+			"Vess the powder-girl, running the rim with a fuse that never burned down.",
+			"Amethyst: \"The Waystone's close. For once, an easy one.\"",
+		]
+		vess.soft_lines = ["Vess whispers: \"...cut the fuse... cut it...\""]
 	Util.crate(self, Vector2(350, 440), Vector2(40, 40), 14.0, Color(0.55, 0.5, 0.42))
 	Util.label(self, Vector2(320, 400), "quarry block")
-	_make_waystone(Vector2(1190, 480))
-	_make_door(Rect2(0, 400, 20, 80), "", 9, "lower")
-	_make_door(Rect2(1246, 400, 34, 80), "crane yard ↑", 10, "east")
-	_spawn_player({"default": Vector2(50, 440), "west": Vector2(50, 440),
-			"east": Vector2(1130, 440)})
+	_make_waystone(Vector2(1180, 480))
+	_make_door(Rect2(0, 400, 24, 80), "", 17, "east")
+	_make_door(Rect2(1256, 400, 24, 80), "switchback →", 18, "bottom")
+	_spawn_player({"default": Vector2(50, 460), "west": Vector2(50, 460),
+			"east": Vector2(1130, 460)})
+	player.petrify_enabled = false
+	player.push_enabled = G.seen.get("masons_grip", false)
+
+
+# ------------------------------------------ room 16: scaffold heights
+func _build_scaffold_heights() -> void:
+	G.say("— The Quarry: Scaffold Heights —")
+	# the high route: planks climbing east to the Switchback's upper door
+	Util.block(self, Rect2(0, 480, 1280, 240))      # quarry floor, far below
+	Util.block(self, Rect2(200, 420, 90, 14))
+	Util.block(self, Rect2(360, 360, 90, 14))
+	Util.block(self, Rect2(520, 300, 90, 14))
+	Util.block(self, Rect2(680, 240, 90, 14))
+	Util.block(self, Rect2(840, 208, 440, 14))      # high gallery to the east wall
+	var rigger := _make_npc(Vector2(560, 284), "kneeler", "the rigger")
+	rigger.anchored = true
+	rigger.stone_lines = [
+		"A rigger, kneeling to splice rope forty feet up. Anchored to her perch.",
+		"Amethyst: \"Don't look down. She never did.\"",
+	]
+	_make_chisel_mote(Vector2(400, 330))
+	_make_chisel_mote(Vector2(900, 180))
+	_make_door(Rect2(0, 400, 24, 80), "", 10, "east")
+	_make_door(Rect2(1256, 128, 24, 80), "switchback →", 18, "top")
+	_spawn_player({"default": Vector2(60, 460), "west": Vector2(60, 460),
+			"east": Vector2(1180, 188)})
+	player.petrify_enabled = false
+	player.push_enabled = G.seen.get("masons_grip", false)
+
+
+# ----------------------------------------------- room 17: the haul road
+func _build_haul_road() -> void:
+	G.say("— The Quarry: Haul Road —")
+	# the low route: a long flat road; the Crane Yard's shaft drops in here
+	Util.block(self, Rect2(0, 480, 1280, 240))
+	for x in range(100, 1200, 200):
+		var rail := Util.make_sprite(Vector2(120, 6), Color(0.4, 0.35, 0.28))
+		rail.position = Vector2(x, 474)
+		add_child(rail)
+	Util.crate(self, Vector2(400, 460))
+	Util.crate(self, Vector2(432, 460))
+	Util.label(self, Vector2(600, 380), "shaft overhead")
+	var rutta := _make_npc(Vector2(760, 452), "runner", "Rutta")
+	if rutta:
+		rutta.stone_lines = [
+			"Rutta the ox-girl, hauling a cart that is no longer behind her.",
+			"Amethyst: \"Strongest back in the quarry, and I still can't carry her.\"",
+		]
+		rutta.soft_lines = ["Rutta murmurs: \"...the load's light... too light...\""]
+	_make_waystone(Vector2(940, 480))
+	_make_chisel_mote(Vector2(1100, 440))
+	_make_door(Rect2(0, 400, 24, 80), "", 9, "lower")
+	_make_door(Rect2(1256, 400, 24, 80), "the cut →", 11, "west")
+	_spawn_player({"default": Vector2(60, 460), "west": Vector2(60, 460),
+			"east": Vector2(1180, 460), "hatch": Vector2(640, 460)})
+	player.petrify_enabled = false
+	player.push_enabled = G.seen.get("masons_grip", false)
+
+
+# ---------------------------------------------- room 18: the switchback
+func _build_switchback() -> void:
+	G.say("— The Quarry: The Switchback —")
+	# junction: the high and low routes meet; the Depths continue east
+	Util.block(self, Rect2(0, 480, 1280, 240))      # ground
+	Util.block(self, Rect2(0, 208, 300, 16))        # upper ledge, west
+	Util.block(self, Rect2(340, 420, 80, 14))       # zigzag up
+	Util.block(self, Rect2(200, 360, 80, 14))
+	Util.block(self, Rect2(340, 300, 80, 14))
+	Util.block(self, Rect2(200, 240, 80, 14))
+	_make_chisel_mote(Vector2(150, 180))
+	# the Depths, sealed for now
+	Util.block(self, Rect2(1240, 360, 40, 120), Color(0.35, 0.3, 0.28))
+	var seal := Util.area(self, Rect2(1216, 400, 24, 80), Color(0, 0, 0, 0))
+	seal.body_entered.connect(func(body: Node) -> void:
+		if body is Player and not G.seen.get("q_depths", false):
+			G.seen["q_depths"] = true
+			G.say("Beyond: the Wisp Gallery and the deep quarry. The air hums. "
+					+ "(Sealed — end of the current slice.)")
+	)
+	_make_door(Rect2(0, 400, 24, 80), "", 11, "east")
+	_make_door(Rect2(0, 128, 24, 80), "scaffold ↑", 16, "east")
+	_spawn_player({"default": Vector2(60, 460), "bottom": Vector2(60, 460),
+			"top": Vector2(60, 188)})
 	player.petrify_enabled = false
 	player.push_enabled = G.seen.get("masons_grip", false)
 
@@ -735,12 +875,12 @@ func _build_sample_baths() -> void:
 	# the valve: a plate on the pool floor, the door on dry land
 	_make_plate_and_door(Vector2(460, 620), Vector2(200, 480))
 	_make_chisel_mote(Vector2(120, 440))
-	var attendant := _make_npc(Vector2(330, 464), "kneeler", "the attendant")
+	var attendant := _make_npc(Vector2(330, 464), "kneeler", "the attendant", false)
 	attendant.stone_lines = [
 		"A bath attendant, kneeling with towels that turned to slate.",
 		"Amethyst: \"Stone sinks. The sluice-plate is right below the lip...\"",
 	]
-	_spawn_player({"default": Vector2(60, 440)})
+	_spawn_player({"default": Vector2(60, 460)})
 	player.push_enabled = true
 
 
@@ -751,15 +891,15 @@ func _build_sample_gardens() -> void:
 	var gaze := GazeEmitter.new()
 	gaze.position = Vector2(1100, 450)
 	add_child(gaze)
-	var cover1 := _make_npc(Vector2(400, 464), "kneeler", "a gardener")
+	var cover1 := _make_npc(Vector2(400, 464), "kneeler", "a gardener", false)
 	cover1.stone_lines = ["A gardener, low over her shears. Low enough to hide behind."]
-	var cover2 := _make_npc(Vector2(650, 452), "runner", "a lady-in-waiting")
+	var cover2 := _make_npc(Vector2(650, 452), "runner", "a lady-in-waiting", false)
 	cover2.stone_lines = [
 		"A lady-in-waiting, tall and straight. A walking wall, if walked.",
 	]
 	_make_chisel_mote(Vector2(1220, 440))
 	Util.label(self, Vector2(1180, 380), "reach the mote")
-	_spawn_player({"default": Vector2(60, 440)})
+	_spawn_player({"default": Vector2(60, 460)})
 	player.push_enabled = true
 
 
@@ -778,7 +918,7 @@ func _build_sample_undercroft() -> void:
 	_make_brazier(Vector2(700, 284))
 	_make_brazier(Vector2(880, 224))
 	_make_chisel_mote(Vector2(1100, 440))
-	_spawn_player({"default": Vector2(60, 440)})
+	_spawn_player({"default": Vector2(60, 460)})
 	player.add_child(_make_lamp(0.9))
 	player.push_enabled = true
 
@@ -829,12 +969,12 @@ func _build_sample_palace() -> void:
 	warden.patrol_left = 520.0
 	warden.patrol_right = 920.0
 	add_child(warden)
-	var exhibit := _make_npc(Vector2(350, 452), "runner", "the exhibit")
+	var exhibit := _make_npc(Vector2(350, 452), "runner", "the exhibit", false)
 	exhibit.stone_lines = [
 		"A brass placard at her feet: 'GIRL, RUNNING. Do not touch.'",
 		"Amethyst: \"She has a name. I'll ask it when she's free.\"",
 	]
 	exhibit.soft_lines = ["She whispers: \"...is the tall one looking?...\""]
-	_make_waystone(Vector2(1180, 480))
-	_spawn_player({"default": Vector2(60, 440)})
+	_make_waystone(Vector2(1180, 480), false)
+	_spawn_player({"default": Vector2(60, 460)})
 	player.push_enabled = true

@@ -9,12 +9,17 @@
 
 ## 1. High Concept
 
-You play **Amethyst**, a young stonemason's apprentice in a kingdom turned to
-stone by a gorgon-like calamity. Amethyst was spared, and she carries her
-mentor's chisel-amulet — a relic that can **revert petrification, but only
-briefly and only barely**. From the very first minute her goal is stated
-plainly: *save everyone*. But her power is nowhere near enough. A softened
-friend returns to flesh for mere seconds before the curse reclaims her.
+You play **Amethyst**, a young stonemason's apprentice in a kingdom turned
+to stone by a gorgon-like calamity. Amethyst was *not* spared — she was
+petrified with everyone else. The game opens inside the stone: a point of
+warmth at her throat, her mentor's chisel-amulet, hung on her by hands she
+never saw. The shell cracks. She wakes — **the only one who came back** —
+into a white, silent village, her best friend frozen mid-run toward her
+cellar door, arm outstretched. The amulet that woke her can **revert
+petrification in others, but only briefly and only barely**. From the
+first minute her goal is stated plainly: *save everyone*. But her power is
+nowhere near enough. A softened friend returns to flesh for mere seconds
+before the curse reclaims her.
 
 So Amethyst does the only thing she can: she **uses her petrified friends as
 tools** — climbs them, topples them, drops them onto switches — whispering
@@ -278,10 +283,15 @@ the game's whole argument.
 ## 6. Characters & Tone
 
 - **Amethyst** (full name always — no nickname): early-20s stonemason
-  apprentice; practical, kind,
-  wry. Long purple hair — her visual signature — plus a marble-veined arm
-  that doubles as the self-petrify stamina UI. Her arc: from "I'm sorry, I
-  need your shoulders" to keeping every promise.
+  apprentice; practical, kind, wry. Long purple hair — her visual
+  signature — plus a marble-veined arm that doubles as the self-petrify
+  stamina UI. **She is stone-touched:** she was petrified in the wave and
+  woken by the amulet, and the stone never fully left her — the veins are
+  what it kept, and Self-Petrification (when she later learns it) is not
+  a spell but a *remembering*. Her arc: from "I'm sorry, I need your
+  shoulders" to keeping every promise. Whoever hung the amulet on her —
+  Ida is the obvious, unconfirmed answer — chose *her* to come back; why
+  is a question the game holds until the late wings.
 - **NPCs:** all female — villagers, guards, priestesses; mentor **Master
   Ida** is the final rescue, petrified mid-gesture of shielding Amethyst.
   Every named NPC has a frozen-moment vignette (what was she doing when the
@@ -473,4 +483,11 @@ what makes it not look AI-generated.
 - ~~Heroine rename~~ **Resolved:** the heroine is **Amethyst**, after the
   violet quartz — matching her long purple hair. Full name used
   everywhere; nicknames dropped as awkward to pronounce/type.
+- **Why did Amethyst wake?** Candidate answers to decide by the Palace
+  wing: (a) Ida's last act — she gave her apprentice her own grace;
+  (b) the gorgon's mirror — the first victim and the last waker are
+  linked, which the true ending would pay off; (c) the amulet chooses a
+  mason — someone who reads stone's grain — and Ida knew it. The bad
+  ending ("The Last Statue") reads strongest if Amethyst's waking was
+  *borrowed* time: she seals the curse by giving the loan back.
 - Name/branding pass on the title.

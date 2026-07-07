@@ -19,13 +19,16 @@ const ROOMS := {
 	8: {"rect": Rect2i(4, 0, 1, 1), "label": "Sanctuary"},
 	9: {"rect": Rect2i(7, 1, 1, 1), "label": "Gate\nTerraces"},
 	10: {"rect": Rect2i(7, 0, 2, 1), "label": "Crane Yard"},
-	11: {"rect": Rect2i(8, 1, 1, 1), "label": "The Cut"},
+	16: {"rect": Rect2i(9, 0, 1, 1), "label": "Scaffold"},
+	17: {"rect": Rect2i(8, 1, 1, 1), "label": "Haul Road"},
+	11: {"rect": Rect2i(9, 1, 1, 1), "label": "The Cut"},
+	18: {"rect": Rect2i(10, 0, 1, 2), "label": "Switch-\nback"},
 	1: {"rect": Rect2i(0, 0, 1, 1), "label": "dev 1"},
 	2: {"rect": Rect2i(1, 0, 1, 1), "label": "dev 2"},
 }
 # unexplored neighbors: sealed major areas
 const STUBS := [
-	{"rect": Rect2i(9, 1, 1, 1), "label": "Depths"},
+	{"rect": Rect2i(11, 0, 1, 2), "label": "Wisp\nGallery"},
 	{"rect": Rect2i(5, 3, 2, 1), "label": "Baths (flooded)"},
 ]
 # hidden spaces: barely-there outlines, no label — the map keeps secrets

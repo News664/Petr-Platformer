@@ -1,58 +1,60 @@
 # Area design — The Quarry (Region 1)
 
-First real region. Theme sheet in `docs/AREAS.md` (stone-as-labor:
-terraces, scaffolds, cranes; ochre/rust/bone palette; mortar-slimes and
-quarry wisps; boss: the Foredame; ability: Chisel Dash).
+Theme sheet in `docs/AREAS.md` (stone-as-labor; ochre/rust/bone palette;
+mortar-slimes and quarry wisps; boss: the Foredame; ability: Chisel
+Dash). Entry: the Square's east gate, opened by **Mason's Grip**.
 
-**Structural rule — unlike the Village, the Quarry is not linear.**
-Rooms form loops and offer route choices; the map is what keeps the
-player oriented. Target shape: two parallel routes (high scaffold route,
-low haul-road route) that cross at least twice, with the boss and
-Sanctuary at the far end reachable by either.
+**Structural rule — the Quarry is not linear.** Two parallel routes (the
+high *scaffold line* and the low *haul road*) run east and cross at
+three points: the Gate Terraces (start), the Crane Yard's drop shaft
+(one-way, high→low), and the Switchback (a climbable junction). The
+player picks a route, changes their mind mid-region, and the map keeps
+them oriented.
 
-## Current graph (built rooms in caps)
+## The full graph (11 rooms; built rooms in CAPS)
 
 ```
-                 [CRANE YARD]══════════╗
-                ↗ (up the slabs)       ║ (down)
- Square ══ [GATE TERRACES]══════════[THE CUT]── Depths (stub) → …boss, Sanctuary
-                └─ lower haul road ────┘
+ high:      ┌──[CRANE YARD]────[SCAFFOLD HEIGHTS]──┐
+            │        │drop                          │
+ Square──[GATE       ▼                        [SWITCHBACK]──[Wisp Gallery]──[Colossus Shelf]──[FOREDAME'S DIG]
+          TERRACES]──[HAUL ROAD]───[THE CUT]───────┘               │                                │
+ low:                                                        (Powder Store,                 [QUARRY SANCTUARY]
+                                                              hidden below)                  → Chisel Dash
 ```
 
-- Entry: the Square's east gate, opened by **Mason's Grip**.
-- **Gate Terraces (room 9)** — the branch room. Climb the scaffold slabs
-  to the Crane Yard door (top-east), or walk the lower haul road to The
-  Cut (ground-east). Waystone on the haul road; Brona (rescue, easy);
-  the surveyor (anchored, on the scaffold).
-- **Crane Yard (room 10)** — high route. Counterweight lesson: the gate
-  plate needs more weight than any crate — only Hetta (kneeler) is heavy
-  enough, and the Waystone is a room away: use her, and feel it. Exits
-  west (Terraces top) and east (down into The Cut).
-- **The Cut (room 11)** — low route. A deep excavation with climb-steps
-  on both walls; the digger twins (anchored) at the bottom; Vess
-  (rescue, easy — the region's breather rescue); a **quarry block**
-  pushed off the west lip smashes a cracked seam in the pit floor,
-  opening a mote cavity — the Grip+gravity combo that Chisel Dash will
-  later make trivial. Exits west (Terraces, lower), east-up (Crane
-  Yard), and the sealed **Depths** (rest of the region).
+| # | Room | Route | Content |
+|---|------|-------|---------|
+| Q1 | **GATE TERRACES** (room 9) | branch | climb the slabs (→ Crane Yard) or walk the road (→ Haul Road); Brona (rescue), the surveyor (anchored), Waystone |
+| Q2 | **CRANE YARD** (room 10) | high | counterweight plate — only Hetta is heavy enough; jumpable **drop shaft** falls to the Haul Road (one-way crossing) |
+| Q3 | **SCAFFOLD HEIGHTS** (room 16) | high | plank climb to the high gallery; the rigger (anchored); fall = safe drop to floor, walk back |
+| Q4 | **HAUL ROAD** (room 17) | low | long flat road under the shaft; Rutta (rescue), Waystone |
+| Q5 | **THE CUT** (room 11) | low | deep excavation; quarry block through the cracked seam → hidden cavity; Vess (rescue), the digger twins (anchored), Waystone |
+| Q6 | **SWITCHBACK** (room 18) | junction | zigzag connecting low (bottom door) and high (top door); the Depths seal east |
+| Q7 | Wisp Gallery | planned | quarry wisps drain Chisel Light; light-preservation runs |
+| Q8 | Powder Store | planned, hidden | below the Gallery, behind a cracked wall (Dash) |
+| Q9 | Colossus Shelf | planned | half-carved colossus blocks; rolling-ramp physics; the Witness (Sableth the forewoman) |
+| Q10 | Foredame's Dig | planned | boss: the Foredame |
+| Q11 | Quarry Sanctuary | planned | relight → **Chisel Dash** → back-unlocks the Village cellar |
 
-The 9⇄10⇄11⇄9 triangle means every built room is reachable two ways —
-the non-linearity sample the rest of the region scales up from.
+Rescue budget: 3 rescuable (Brona, Rutta, Vess — each with own
+Waystone) + 1 Witness later; 3 anchored set pieces so no room can be
+emptied of usable stone.
 
-## Planned beyond the slice
+## Door conventions (all areas)
 
-Depths (~8 more rooms): rolling-block ramps, rope elevators (plate-
-driven), the wisp fields (Chisel Light pressure), one Witness (Sableth
-the forewoman), hidden room behind a collapse, the Foredame's dig, and
-the Quarry Sanctuary (Chisel Dash → back-unlocks the Village cellar).
+- **Edge doors**: walk-through, 24×80, flush at x=0 / x=1256, standing
+  on their floor (or ledge). Never two on the same edge at the same
+  height.
+- **Interior doorways** (buildings, shafts into rooms): press **F** to
+  enter, so they can never swallow a player walking past.
+- **Vertical drops**: open shafts, jumpable-across (≤100 px), clearly
+  labeled; falling in is a deliberate route choice.
 
 ## Sample rooms (dev, keys `[`/`]`, rooms 12–15)
-
-One idea-proof room per later region, using the prototype mechanics:
 
 | Room | Region | Proves |
 |---|---|---|
 | 12 | Sunken Baths | statue pushed into a pool sinks onto a submerged valve-plate |
-| 13 | Gorgon Gardens | sweeping petrifying gaze; statues (and stone-self) block it as cover |
-| 14 | Crystal Undercroft | darkness + player lamp; braziers lit permanently stage by stage |
-| 15 | Marble Palace | the stone-warden patrol re-seals softened NPCs mid-escort |
+| 13 | Gorgon Gardens | sweeping petrifying gaze; statues (and stone-self) block it |
+| 14 | Crystal Undercroft | darkness + player lamp; braziers lit permanently in stages |
+| 15 | Marble Palace | the stone-warden re-seals softened NPCs mid-escort |

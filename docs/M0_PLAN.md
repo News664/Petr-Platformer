@@ -180,6 +180,27 @@ no speculative systems (no save/load, no ledger UI, no enemies, no audio).
   with lamp + permanent braziers, Palace stone-warden (new `warden.gd`)
   that re-seals softened NPCs mid-escort.
 
+## Changes from the seventh round
+
+- **Rescues are global and permanent**: a rescued NPC never respawns
+  (per-name flags, saved). Anti-softlock guarantee: **Waystones hold one
+  passage each, then go dark** — a room can never be emptied of every
+  statue it needs, and the Well Yard's save-one-use-one thesis is now
+  mechanically enforced. The Well Yard pit is kneeler-viable (depth 96)
+  so whichever of Marla/Sena remains can be the step.
+- **Door conventions unified** (see `AREA_QUARRY.md`): edge doors are
+  walk-through 24×80 flush at x=0/1256; interior doorways (Sanctuary,
+  Bell Tower, tower exit) are press-F entrances — fixing the porch bug
+  where the Sanctuary doorway swallowed players heading to the Square.
+- **No spawn falls**: every entry point recomputed to feet-on-floor.
+- **Quarry expanded to a 6-of-11-room graph** (rooms 9, 10, 11, 16, 17,
+  18): two parallel routes crossing at the Terraces, the Crane Yard's
+  one-way drop shaft, and the Switchback junction; Depths sealed beyond.
+- **Opening rewritten**: Amethyst wakes *from stone* (the amulet, hung by
+  unseen hands, cracks her shell); the pedestal item is now Ida's chisel,
+  which wakes the amulet. GDD updated (stone-touched heroine; "why did
+  she wake?" held as a late-wing question).
+
 ## Out of scope for M0
 
 Art beyond the shader, audio, world map, rescue ledger UI, enemies,

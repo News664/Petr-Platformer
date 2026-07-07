@@ -1,7 +1,7 @@
 extends Node2D
 # Bootstraps input, HUD, camera, and room switching.
 
-const MAX_ROOM := 15
+const MAX_ROOM := 18
 
 var current_room := 1
 var level: Level = null
@@ -112,6 +112,10 @@ func _interact() -> void:
 	if level == null or level.player == null:
 		return
 	var ppos := level.player.global_position
+	for e in get_tree().get_nodes_in_group("entrance"):
+		if e.global_position.distance_to(ppos) < 60.0:
+			(e.get_meta("action") as Callable).call()
+			return
 	var best: StatueNPC = null
 	var best_d := 100.0
 	for npc in get_tree().get_nodes_in_group("npc"):
