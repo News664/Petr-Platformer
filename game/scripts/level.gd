@@ -418,7 +418,7 @@ func _build_sanctuary_steps() -> void:
 		])
 	)
 	# the Sanctuary wakes for the warmth of the returned: 2 rescues open it
-	var lit := G.seen.get("masons_grip", false)
+	var lit: bool = G.seen.get("masons_grip", false)
 	var door_col := Color(0.55, 0.5, 0.3) if lit else Color(0.3, 0.25, 0.4)
 	var door := Util.area(self, Rect2(1200, 204, 48, 80), door_col)
 	Util.label(door, Vector2(-52, -30), "Sanctuary" if lit else "Sanctuary (dark)")
