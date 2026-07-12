@@ -19,6 +19,16 @@ func say(text: String) -> void:
 	message.emit(text)
 
 
+func soften_window() -> float:
+	# seconds per single soften at the current tier
+	return 25.0 if seen.get("soften2", false) else 8.0
+
+
+func grace_max() -> float:
+	# total soften seconds per person at the current tier
+	return 40.0 if seen.get("soften2", false) else 12.0
+
+
 func save_state(current_room: int) -> void:
 	var f := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
 	if f == null:

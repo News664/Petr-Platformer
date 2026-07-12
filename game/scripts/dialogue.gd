@@ -22,6 +22,10 @@ const CHARS := {
 			"hair": Color(0.9, 0.9, 0.92), "dress": Color(0.25, 0.25, 0.45)},
 	"sableth": {"name": "Sableth", "skin": Color(0.85, 0.68, 0.55),
 			"hair": Color(0.5, 0.5, 0.52), "dress": Color(0.5, 0.32, 0.25)},
+	"nerissa": {"name": "Nerissa", "skin": Color(0.87, 0.7, 0.58),
+			"hair": Color(0.15, 0.2, 0.22), "dress": Color(0.28, 0.42, 0.45)},
+	"ottilie": {"name": "Ottilie", "skin": Color(0.9, 0.74, 0.62),
+			"hair": Color(0.68, 0.55, 0.35), "dress": Color(0.35, 0.55, 0.55)},
 	"narrator": {},
 }
 

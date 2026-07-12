@@ -235,6 +235,22 @@ no speculative systems (no save/load, no ledger UI, no enemies, no audio).
   moment showing her petrified figure. Design rationale in the GDD
   ("The person inside").
 
+## Changes from the tenth round
+
+- **Sunken Baths opened** (rooms 23-26, entered by dashing the cracked
+  grate in the Square's drowned stair): Drowned Vestibule, the Long Soak
+  (valve choice + Witness #2 Ottilie + silt siren intro), the Cisterns
+  (drowned Waystone escort past a siren; a dropped stone kills the
+  song), and the Deep Sanctuary granting **Soften II** (window 25 s,
+  Grace 40 — now tier-driven via G.soften_window()/grace_max()). Boiler
+  gate seals toward Mother Lye (boss, next slice). `siren.gd`: song
+  lures softened NPCs only; dies to dash or falling stone.
+- **The Ledger (L)**: pause screen listing every discovered petrified
+  person — status (safe / anchored / stone-waiting / "I promised." once
+  met), witness stars, location, and the Rescued/Truths counters.
+- `docs/PLAYTEST_CHECKLIST.md`: consolidated checklist of everything
+  shipped since the last play report (rounds 8-10).
+
 ## Out of scope for M0
 
 Art beyond the shader, audio, world map, rescue ledger UI, enemies,

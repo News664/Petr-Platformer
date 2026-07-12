@@ -15,6 +15,7 @@ THE AMULET
 
 WORLD
   M                      ledger map
+  L                      the Ledger — everyone found, and their fate
   R                      reset the room (returns to the door you entered by)
   H                      this help
 

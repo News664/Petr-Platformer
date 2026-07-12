@@ -1,7 +1,7 @@
 extends Node2D
 # Bootstraps input, HUD, camera, and room switching.
 
-const MAX_ROOM := 22
+const MAX_ROOM := 26
 
 var current_room := 1
 var current_entry := "default"
@@ -9,6 +9,7 @@ var level: Level = null
 var camera: Camera2D = null
 var map: MapOverlay = null
 var help: HelpOverlay = null
+var ledger: LedgerOverlay = null
 
 var _msg_label: Label = null
 var _stats_label: Label = null
@@ -36,11 +37,13 @@ func _ready() -> void:
 	add_child(map)
 	help = HelpOverlay.new()
 	add_child(help)
+	ledger = LedgerOverlay.new()
+	add_child(ledger)
 	G.message.connect(_on_message)
 	var saved_room := G.load_state()
 	load_room(saved_room if saved_room > 0 else 3)
 	G.say("A/D move · W/Space jump · E soften · F look/speak/enter · "
-			+ "M map · H help (all keys) · R reset")
+			+ "M map · L ledger · H help (all keys) · R reset")
 
 
 func load_room(n: int, entry := "default") -> void:
@@ -77,14 +80,18 @@ func _process(delta: float) -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("map"):
-		if not G.dialogue.is_active() and not help.open:
+		if not G.dialogue.is_active() and not help.open and not ledger.open:
 			map.toggle(current_room)
 		return
 	if event.is_action_pressed("help"):
-		if not G.dialogue.is_active() and not map.open:
+		if not G.dialogue.is_active() and not map.open and not ledger.open:
 			help.toggle()
 		return
-	if map.open or help.open:
+	if event.is_action_pressed("ledger"):
+		if not G.dialogue.is_active() and not map.open and not help.open:
+			ledger.toggle()
+		return
+	if map.open or help.open or ledger.open:
 		return
 	if event.is_action_pressed("restart"):
 		# reset returns to the door the player originally entered by
@@ -193,6 +200,7 @@ func _setup_input() -> void:
 	_add_key_action("room_prev", [KEY_BRACKETLEFT])
 	_add_key_action("room_next", [KEY_BRACKETRIGHT])
 	_add_key_action("map", [KEY_M])
+	_add_key_action("ledger", [KEY_L])
 	_add_key_action("help", [KEY_H])
 	_add_key_action("debug_soften", [KEY_F1])
 	_add_key_action("new_game", [KEY_F2])

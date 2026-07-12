@@ -10,8 +10,6 @@ extends RigidBody2D
 signal was_rescued(npc: StatueNPC)
 signal refrozen(npc: StatueNPC)
 
-const WINDOW := 8.0          # max seconds per single soften at Soften I
-const GRACE_MAX := 12.0      # total soften seconds per person at Soften I
 const CHISEL_COST := 1
 const FOLLOW_STOP := 34.0
 const GRAVITY := 980.0
@@ -21,7 +19,8 @@ var kind := "runner"  # "runner" | "kneeler"
 var char_id := ""  # dialogue portrait id; first inspect shows her petrified figure
 var soft := false
 var anchored := false  # curse-bound: cannot be softened at all (yet)
-var grace_left := GRACE_MAX
+var grace_left := 12.0  # set from the Soften tier in _ready
+var lure_target: Node2D = null  # a siren's song overrides the follow
 var walk_speed := 90.0
 var body_size := Vector2(26, 55)
 var stone_lines: Array[String] = []
@@ -37,6 +36,7 @@ var _barked := false
 
 
 func _ready() -> void:
+	grace_left = G.grace_max()
 	if kind == "kneeler":
 		body_size = Vector2(48, 32)
 		walk_speed = 60.0
@@ -106,7 +106,7 @@ func try_soften() -> void:
 		G.say("Not enough Chisel Light (need %d, have %d)." % [CHISEL_COST, G.chisel])
 		return
 	G.chisel -= CHISEL_COST
-	var dur := minf(WINDOW, grace_left)
+	var dur := minf(G.soften_window(), grace_left)
 	if G.debug_soften:
 		dur = 60.0
 	soft = true
@@ -121,6 +121,7 @@ func try_soften() -> void:
 
 func _refreeze() -> void:
 	soft = false
+	lure_target = null
 	_soften_timer = 0.0
 	_sprite.self_modulate.a = 1.0
 	Util.animate_petrify(_sprite, 0.0, 1.0, 0.3)
@@ -195,7 +196,17 @@ func _physics_process(delta: float) -> void:
 	else:
 		_sprite.self_modulate.a = 1.0
 
-	var dx := G.player_focus().x - global_position.x
+	# a nearby siren's song overrides the amulet's light
+	var focus := G.player_focus()
+	if lure_target != null:
+		if is_instance_valid(lure_target):
+			focus = lure_target.global_position
+			if not G.seen.get("bark_song", false):
+				G.seen["bark_song"] = true
+				G.say("Her dreaming feet turn toward the song instead of the light.")
+		else:
+			lure_target = null
+	var dx := focus.x - global_position.x
 	var vx := 0.0
 	if absf(dx) > FOLLOW_STOP:
 		vx = signf(dx) * walk_speed

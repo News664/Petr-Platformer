@@ -13,6 +13,7 @@ var player: Player = null
 var _plate_door: StaticBody2D = null
 var _door_closed_pos := Vector2.ZERO
 var _door_open := false
+var _grate: Area2D = null  # the Square's baths grate, dashed open
 
 
 func _init(room_index: int, entry_id := "default") -> void:
@@ -65,6 +66,14 @@ func _ready() -> void:
 			_build_colossus_shelf()
 		22:
 			_build_quarry_sanctuary()
+		23:
+			_build_drowned_vestibule()
+		24:
+			_build_long_soak()
+		25:
+			_build_cisterns()
+		26:
+			_build_deep_sanctuary()
 		_:
 			_build_sample_palace()
 
@@ -220,6 +229,14 @@ func _make_plate_and_door(plate_pos: Vector2, door_pos: Vector2) -> void:
 
 
 func _physics_process(_delta: float) -> void:
+	if _grate != null and is_instance_valid(_grate) and player != null \
+			and player.is_dashing() and _grate.overlaps_body(player):
+		_grate = null
+		G.seen["baths_open"] = true
+		G.say("The grate shatters — the black water roars away down the stair. "
+				+ "The Sunken Baths lie open.")
+		_goto_room(6, "gate")
+		return
 	if _plate_door == null:
 		return
 	var pressed := false
@@ -537,9 +554,18 @@ func _build_square() -> void:
 	# Tower, east the sealed Quarry gate, and the flooded Baths stair.
 	Util.block(self, Rect2(0, 480, 900, 240))       # plaza, west of the stair
 	Util.block(self, Rect2(980, 480, 300, 240))     # plaza, east of the stair
-	# the drowned stair: shallow enough to stand up and climb back out
+	# the drowned stair: shallow enough to stand up and climb back out.
+	# Once the grate below is dashed open, the water drains and the stair
+	# descends into the Sunken Baths.
 	Util.block(self, Rect2(900, 516, 80, 204))
-	_make_water(Rect2(900, 496, 80, 20))
+	if G.seen.get("baths_open", false):
+		_make_door(Rect2(920, 456, 40, 60), "baths ↓", 23, "top")
+	elif G.seen.get("chisel_dash", false):
+		_grate = Util.area(self, Rect2(900, 476, 80, 40), Color(0.3, 0.4, 0.45, 0.6))
+		Util.label(_grate, Vector2(-40, -40), "cracked grate")
+		_make_water(Rect2(900, 496, 80, 20))
+	else:
+		_make_water(Rect2(900, 496, 80, 20))
 	Util.block(self, Rect2(0, 320, 160, 16))        # raised entry from the Steps
 	Util.block(self, Rect2(160, 380, 60, 12))
 	Util.block(self, Rect2(230, 424, 60, 12))       # high enough to walk under
@@ -590,7 +616,8 @@ func _build_square() -> void:
 			G.say("The stair to the Sunken Baths drowns in black water. Not yet.")
 	)
 	_spawn_player({"default": Vector2(300, 460), "ledge": Vector2(80, 300),
-			"tower": Vector2(120, 460), "gate": Vector2(1180, 460)})
+			"tower": Vector2(120, 460), "gate": Vector2(1180, 460),
+			"stair": Vector2(850, 460)})
 	player.petrify_enabled = false
 	player.push_enabled = G.seen.get("masons_grip", false)
 	player.dash_enabled = G.seen.get("chisel_dash", false)
@@ -1065,6 +1092,196 @@ func _build_quarry_sanctuary() -> void:
 	)
 	_make_door(Rect2(0, 400, 24, 80), "", 19, "east")
 	_spawn_player({"default": Vector2(100, 460)})
+	player.petrify_enabled = false
+	player.push_enabled = G.seen.get("masons_grip", false)
+	player.dash_enabled = G.seen.get("chisel_dash", false)
+
+
+# ------------------------------------------ room 23: drowned vestibule
+func _build_drowned_vestibule() -> void:
+	G.say("— The Sunken Baths: Drowned Vestibule —")
+	Util.block(self, Rect2(0, 300, 220, 16))        # entry ledge from the stair
+	Util.block(self, Rect2(260, 420, 40, 12))       # steps back up
+	Util.block(self, Rect2(180, 364, 40, 12))
+	Util.block(self, Rect2(0, 480, 1280, 240))      # hall floor
+	Util.block(self, Rect2(400, 560, 300, 160))     # pool basin
+	_make_water(Rect2(400, 500, 300, 60))
+	Util.block(self, Rect2(400, 520, 24, 40))       # in-pool escape shelves
+	Util.block(self, Rect2(676, 520, 24, 40))
+	_make_chisel_mote(Vector2(550, 532))            # drowned light
+	for x in [340, 760, 1060]:
+		var mosaic := Util.make_sprite(Vector2(120, 8), Color(0.3, 0.5, 0.5))
+		mosaic.position = Vector2(x, 477)
+		add_child(mosaic)
+	var nerissa := _make_npc(Vector2(900, 464), "kneeler", "Nerissa")
+	nerissa.anchored = true
+	nerissa.char_id = "nerissa"
+	nerissa.stone_lines = [
+		"Nerissa the doorkeeper, kneeling at her post with the bath-keys fanned "
+				+ "out like a hand of cards. Anchored.",
+		"Amethyst: \"Still on duty. Of course you are.\"",
+	]
+	_make_door(Rect2(0, 220, 24, 80), "square ↑", 6, "stair")
+	_make_door(Rect2(1256, 400, 24, 80), "the long soak →", 24, "west")
+	_spawn_player({"default": Vector2(60, 280), "top": Vector2(60, 280),
+			"east": Vector2(1180, 460)})
+	player.petrify_enabled = false
+	player.push_enabled = G.seen.get("masons_grip", false)
+	player.dash_enabled = G.seen.get("chisel_dash", false)
+	_skit_once("b_enter", [
+		{"who": "narrator", "text": "The Sunken Baths. Verdigris and black water, "
+				+ "candles drowned in their sconces. Somewhere below, faint and "
+				+ "wet, something is singing."},
+		{"who": "ame", "text": "The softened follow my light. Whatever that is — "
+				+ "they'd follow it too. Careful, now."},
+	])
+
+
+# ---------------------------------------------- room 24: the long soak
+func _build_long_soak() -> void:
+	G.say("— The Sunken Baths: The Long Soak —")
+	# the valve choice: one Waystone, two kneelers — rescue one, the other
+	# opens the sluice. The siren's song only takes the *softened*.
+	Util.block(self, Rect2(0, 480, 300, 240))       # west ground
+	Util.block(self, Rect2(300, 600, 600, 120))     # pool basin
+	_make_water(Rect2(300, 500, 600, 100))
+	Util.block(self, Rect2(300, 520, 24, 40))       # west in-pool shelf
+	Util.block(self, Rect2(852, 496, 24, 24))       # east shelf at the waterline
+	Util.block(self, Rect2(900, 480, 380, 240))     # east ground
+	_make_plate_and_door(Vector2(350, 600), Vector2(1000, 480))
+	_make_waystone(Vector2(150, 480))
+	var ottilie := _make_npc(Vector2(220, 464), "kneeler", "Ottilie")
+	if ottilie:
+		ottilie.char_id = "ottilie"
+		ottilie.stone_lines = [
+			"Ottilie the bath-mistress, kneeling to test water that will never "
+					+ "warm again.",
+			"Amethyst: \"She ran this whole house. She'd know what happened here.\"",
+		]
+		ottilie.soft_lines = ["Ottilie murmurs: \"...the water knew... it knew first...\""]
+		ottilie.was_rescued.connect(func(_npc: StatueNPC) -> void:
+			G.truths += 1
+			_skit_once("witness_ottilie", [
+				{"who": "ottilie", "text": "Truth? The water knew first. The fish "
+						+ "turned to pebbles a full day before the wave."},
+				{"who": "ottilie", "text": "We sent word to the Sanctuary. The "
+						+ "Sanctuary sent back one line: *pray, and do not look "
+						+ "at the water.*"},
+				{"who": "narrator", "text": "Witness testimony recorded (2 of 6)."},
+			])
+		)
+	var casta := _make_npc(Vector2(270, 464), "kneeler", "Casta")
+	if casta:
+		casta.stone_lines = [
+			"Casta the towel-girl, kneeling at the pool lip, forever about to dive.",
+			"Amethyst: \"The sluice-plate is right under her. The stone won't "
+					+ "hear the song — only the softened do.\"",
+		]
+	var siren := Siren.new()
+	siren.position = Vector2(700, 470)
+	add_child(siren)
+	_make_door(Rect2(0, 400, 24, 80), "", 23, "east")
+	_make_door(Rect2(1256, 400, 24, 80), "cisterns →", 25, "west")
+	_spawn_player({"default": Vector2(60, 460), "west": Vector2(60, 460),
+			"east": Vector2(1180, 460)})
+	player.petrify_enabled = false
+	player.push_enabled = G.seen.get("masons_grip", false)
+	player.dash_enabled = G.seen.get("chisel_dash", false)
+
+
+# ------------------------------------------------ room 25: the cisterns
+func _build_cisterns() -> void:
+	G.say("— The Sunken Baths: The Cisterns —")
+	# the drowned Waystone: Brigid must cross the basin floor while Amethyst
+	# hops the maintenance planks above — and the siren mid-basin will steal
+	# her unless a stone is dropped on the song first
+	Util.block(self, Rect2(0, 480, 200, 240))       # west ground
+	Util.block(self, Rect2(200, 620, 800, 100))     # basin floor
+	_make_water(Rect2(200, 496, 800, 124))
+	Util.block(self, Rect2(200, 496, 24, 40))       # in-basin escape shelves
+	Util.block(self, Rect2(976, 496, 24, 40))
+	Util.block(self, Rect2(1000, 480, 280, 240))    # east ground
+	Util.block(self, Rect2(260, 420, 60, 14))       # maintenance planks
+	Util.block(self, Rect2(420, 380, 60, 14))
+	Util.block(self, Rect2(580, 340, 60, 14))
+	Util.block(self, Rect2(740, 380, 60, 14))
+	Util.block(self, Rect2(900, 440, 60, 14))
+	Util.crate(self, Vector2(600, 326), Vector2(40, 40), 14.0, Color(0.55, 0.5, 0.42))
+	Util.label(self, Vector2(560, 292), "loose block")
+	var siren := Siren.new()
+	siren.position = Vector2(640, 560)
+	add_child(siren)
+	var brigid := _make_npc(Vector2(120, 452), "runner", "Brigid")
+	if brigid:
+		brigid.stone_lines = [
+			"Brigid the water-carrier, frozen mid-stride with yokes for two pails "
+					+ "that rolled away weeks ago.",
+			"Amethyst: \"The old Waystone at the basin's bottom still glows. "
+					+ "She could walk the floor to it — if nothing sings her aside.\"",
+		]
+		brigid.soft_lines = ["Brigid murmurs: \"...heavy... why is the water heavy...\""]
+	_make_waystone(Vector2(940, 600))
+	_make_door(Rect2(0, 400, 24, 80), "", 24, "east")
+	_make_door(Rect2(1256, 400, 24, 80), "deep sanctuary →", 26, "west")
+	_spawn_player({"default": Vector2(60, 460), "west": Vector2(60, 460),
+			"east": Vector2(1180, 460)})
+	player.petrify_enabled = false
+	player.push_enabled = G.seen.get("masons_grip", false)
+	player.dash_enabled = G.seen.get("chisel_dash", false)
+
+
+# ---------------------------------------- room 26: sanctuary of the deep
+func _build_deep_sanctuary() -> void:
+	G.say("— The Sanctuary of the Deep —")
+	Util.block(self, Rect2(0, 480, 1280, 240))
+	for x in [260, 460, 860, 1060]:
+		var col := Util.make_sprite(Vector2(30, 240), Color(0.32, 0.45, 0.45))
+		col.position = Vector2(x, 360)
+		add_child(col)
+	var lit: bool = G.seen.get("soften2", false)
+	for x in [540, 780]:
+		var brazier := Util.make_sprite(Vector2(20, 30),
+				Color(0.5, 0.95, 0.85) if lit else Color(0.3, 0.28, 0.34))
+		brazier.position = Vector2(x, 425)
+		add_child(brazier)
+	Util.block(self, Rect2(620, 440, 80, 40), Color(0.45, 0.6, 0.6))  # the altar
+	var altar := Util.area(self, Rect2(600, 400, 120, 40), Color(0, 0, 0, 0))
+	altar.body_entered.connect(func(body: Node) -> void:
+		if body is Player and not G.seen.get("soften2", false):
+			G.seen["soften2"] = true
+			G.save_state(room)
+			_skit_once("b_soften2", [
+				{"who": "narrator", "text": "A drowned mini-sanctuary, older than the "
+						+ "baths above it. The altar takes the amulet's measure — "
+						+ "and gives back more than it took."},
+				{"who": "narrator", "text": "SOFTEN II — half a minute of almost-back. "
+						+ "The window grows to 25 seconds; each person's grace "
+						+ "deepens to 40."},
+				{"who": "ame", "text": "Half a minute. Long enough to walk beside "
+						+ "someone. Long enough to almost forget what happens at "
+						+ "the end of it."},
+			])
+	)
+	var maud := _make_npc(Vector2(900, 452), "runner", "Maud")
+	if maud:
+		maud.stone_lines = [
+			"Maud the stoker, running with an armful of kindling for boilers "
+					+ "that went cold mid-breath.",
+			"Amethyst: \"A long walk to the Waystone. With half a minute — easy.\"",
+		]
+		maud.soft_lines = ["Maud murmurs: \"...the fires... who's minding the fires...\""]
+	_make_waystone(Vector2(1100, 480))
+	# the boiler gate: Mother Lye beyond (boss, next slice)
+	Util.block(self, Rect2(1240, 360, 40, 120), Color(0.3, 0.35, 0.35))
+	var gate := Util.area(self, Rect2(1216, 400, 24, 80), Color(0, 0, 0, 0))
+	gate.body_entered.connect(func(body: Node) -> void:
+		if body is Player and not G.seen.get("b_gate", false):
+			G.seen["b_gate"] = true
+			G.say("The boiler gate. Beyond it, Mother Lye's choir hums through "
+					+ "the wall. (Boss — next slice.)")
+	)
+	_make_door(Rect2(0, 400, 24, 80), "", 25, "east")
+	_spawn_player({"default": Vector2(60, 460), "west": Vector2(60, 460)})
 	player.petrify_enabled = false
 	player.push_enabled = G.seen.get("masons_grip", false)
 	player.dash_enabled = G.seen.get("chisel_dash", false)
