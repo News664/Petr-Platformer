@@ -30,11 +30,11 @@ them oriented.
 | Q4 | **HAUL ROAD** (room 17) | low | long flat road under the shaft; Rutta (rescue), Waystone |
 | Q5 | **THE CUT** (room 11) | low | deep excavation; quarry block through the cracked seam → hidden cavity; Vess (rescue), the digger twins (anchored), Waystone |
 | Q6 | **SWITCHBACK** (room 18) | junction | zigzag connecting low (bottom door) and high (top door); the Depths seal east |
-| Q7 | Wisp Gallery | planned | quarry wisps drain Chisel Light; light-preservation runs |
-| Q8 | Powder Store | planned, hidden | below the Gallery, behind a cracked wall (Dash) |
-| Q9 | Colossus Shelf | planned | half-carved colossus blocks; rolling-ramp physics; the Witness (Sableth the forewoman) |
-| Q10 | **FOREDAME'S DIG** (room 19) | built | boss: the Foredame — telegraphed fist-slams lured onto 3 cracked pillars; win opens the Sanctuary (Wisp Gallery deferred, Switchback routes straight here for now) |
-| Q11 | Quarry Sanctuary | planned | relight → **Chisel Dash** → back-unlocks the Village cellar |
+| Q7 | **WISP GALLERY** (room 20) | built | wisps chase the amulet's glow and sip Chisel Light (dash bursts them; stone carries no light); the sealed powder store (dash-only, return visit) |
+| Q8 | Powder Store | built as hidden alcove in Q7 | behind a cracked wall only Chisel Dash opens |
+| Q9 | **COLOSSUS SHELF** (room 21) | built | push colossus blocks to climb the shelf; **Witness #1: Sableth** — her rescue testimony reveals the Foredame carved her own face ("Truths" counter begins) |
+| Q10 | **FOREDAME'S DIG** (room 19) | built | boss: telegraphed fist-slams lured onto 3 cracked pillars; win opens the Sanctuary |
+| Q11 | **QUARRY SANCTUARY** (room 22) | built | altar grants **CHISEL DASH** (Shift): shatters cracked stone incl. the floor underfoot — back-unlocks the Village cellar (Ida's workshop lore) and the powder store |
 
 Rescue budget: 3 rescuable (Brona, Rutta, Vess — each with own
 Waystone) + 1 Witness later; 3 anchored set pieces so no room can be

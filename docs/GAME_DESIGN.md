@@ -300,12 +300,31 @@ the game's whole argument.
   Petrification is tragic stillness — dignified poses, no body horror, no
   titillation. Target rating E10+/T.
 - **Presentation:** two registers of storytelling. *Ambient* — inspect (F)
-  lines, Amé monologue, softened murmurs, delivered through the message
-  bar without stopping play. *Skits* — gameplay pauses for dialogue with
-  bust/full-body character art (petrified variants via the stone shader
-  in prototype; dedicated stone portraits in production, §8.5). The HUD
-  keeps a persistent full-body Amé figure that petrifies in sync with her
-  state — the normal/petrified pair every character's art already has.
+  lines, Amethyst monologue, softened murmurs, delivered through the
+  message bar without stopping play. *Skits* — gameplay pauses for
+  dialogue with bust/full-body character art (petrified variants via the
+  stone shader in prototype; dedicated stone portraits in production,
+  §8.5). The HUD keeps a persistent full-body Amethyst figure that
+  petrifies in sync with her state.
+- **The person inside (petrified presence):** the game keeps two
+  contradictory readings of every statue alive — *she is a person* and
+  *she is an object* — and switches between them deliberately:
+  - **Near** (arm's reach): the amulet resonates — a soft violet rim
+    glow that breathes on a slow pulse (prototype: `presence` shader
+    uniform). Production adds faint heartbeat audio at close range,
+    drifting dust motes, micro-details in the art (a tear-track of
+    weathering, wind caught in a stone hem).
+  - **First close look** at a named person is a held moment: play pauses
+    and her petrified figure fills the frame with her frozen story
+    (prototype: first F-inspect skit with the petrified portrait).
+    Production: dedicated stone busts (§8.5).
+  - **Used as an object** — pushed, stood on, dropped — the presence
+    glow *dies* for exactly that duration: she reads as pure stone at
+    the precise moment she is treated as stone, and the person returns
+    when the using stops. One-time internal barks land it ("She pushes.
+    The stone doesn't complain. That's the worst part."). Production
+    adds grinding SFX with dust puffs, a heavy camera thunk on topple,
+    and no voice — the silence is the point.
 
 ---
 

@@ -30,6 +30,12 @@ static func set_petrify(node: CanvasItem, value: float) -> void:
 		mat.set_shader_parameter("petrify", value)
 
 
+static func set_presence(node: CanvasItem, value: float) -> void:
+	var mat := node.material as ShaderMaterial
+	if mat != null:
+		mat.set_shader_parameter("presence", value)
+
+
 static func animate_petrify(node: CanvasItem, from_v: float, to_v: float, dur := 0.4) -> void:
 	var tw := node.create_tween()
 	tw.tween_method(func(v: float): set_petrify(node, v), from_v, to_v, dur)

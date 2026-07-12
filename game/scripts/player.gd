@@ -15,10 +15,14 @@ const SWIM_JUMP_VELOCITY := -260.0
 const SOFTEN_RANGE := 80.0
 # pushing sets a constant slow speed — never a force, so no acceleration
 const PUSH_SPEED := 45.0
+const DASH_SPEED := 520.0
+const DASH_TIME := 0.16
+const DASH_COOLDOWN := 0.5
 
 var soften_enabled := true
 var petrify_enabled := true
 var push_enabled := false  # Mason's Grip: unlocked at the Village Sanctuary
+var dash_enabled := false  # Chisel Dash: unlocked at the Quarry Sanctuary
 var stamina := STAMINA_MAX
 var is_stone := false
 var stone_form: RigidBody2D = null
@@ -29,6 +33,13 @@ var water_surface_y := 0.0
 var spawn_point := Vector2.ZERO
 
 var _body_sprite: Sprite2D = null
+var _facing := 1.0
+var _dash_timer := 0.0
+var _dash_cd := 0.0
+
+
+func is_dashing() -> bool:
+	return _dash_timer > 0.0
 
 
 func _ready() -> void:
@@ -73,7 +84,22 @@ func _physics_process(delta: float) -> void:
 	stamina = minf(stamina + STAMINA_REGEN * delta, STAMINA_MAX)
 
 	var dir := Input.get_axis("move_left", "move_right")
+	if dir != 0.0:
+		_facing = signf(dir)
 	velocity.x = dir * SPEED
+	_dash_cd = maxf(_dash_cd - delta, 0.0)
+	if Input.is_action_just_pressed("dash"):
+		if not dash_enabled:
+			if not G.seen.get("dash_hint", false):
+				G.seen["dash_hint"] = true
+				G.say("Her arm remembers a strike it hasn't learned yet.")
+		elif _dash_cd <= 0.0:
+			_dash_timer = DASH_TIME
+			_dash_cd = DASH_COOLDOWN
+	if _dash_timer > 0.0:
+		_dash_timer -= delta
+		velocity.x = _facing * DASH_SPEED
+		velocity.y = 0.0
 
 	if in_water and global_position.y > water_surface_y:
 		# flesh floats: strong buoyancy toward the surface, damped
@@ -98,6 +124,8 @@ func _physics_process(delta: float) -> void:
 
 	move_and_slide()
 	_push_bodies()
+	if _dash_timer > 0.0:
+		_shatter_cracked()
 
 	if Input.is_action_just_pressed("petrify"):
 		if not petrify_enabled:
@@ -111,6 +139,15 @@ func _physics_process(delta: float) -> void:
 			_try_soften_nearest()
 		else:
 			G.say("The stone doesn't answer you. Not with bare hands.")
+
+
+func _shatter_cracked() -> void:
+	# a mason's strike with her whole body behind it: any cracked stone she
+	# touches mid-dash gives way (including the floor under her feet)
+	for i in get_slide_collision_count():
+		var body := get_slide_collision(i).get_collider()
+		if body is Node and (body as Node).is_in_group("cracked"):
+			((body as Node).get_meta("shatter") as Callable).call()
 
 
 func _push_bodies() -> void:

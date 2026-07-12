@@ -16,6 +16,12 @@ const CHARS := {
 			"hair": Color(0.45, 0.3, 0.2), "dress": Color(0.6, 0.5, 0.35)},
 	"sena": {"name": "Sena", "skin": Color(0.92, 0.74, 0.6),
 			"hair": Color(0.2, 0.2, 0.25), "dress": Color(0.55, 0.35, 0.4)},
+	"odile": {"name": "Odile", "skin": Color(0.9, 0.73, 0.6),
+			"hair": Color(0.55, 0.48, 0.4), "dress": Color(0.6, 0.6, 0.62)},
+	"aldith": {"name": "Sister Aldith", "skin": Color(0.88, 0.72, 0.6),
+			"hair": Color(0.9, 0.9, 0.92), "dress": Color(0.25, 0.25, 0.45)},
+	"sableth": {"name": "Sableth", "skin": Color(0.85, 0.68, 0.55),
+			"hair": Color(0.5, 0.5, 0.52), "dress": Color(0.5, 0.32, 0.25)},
 	"narrator": {},
 }
 

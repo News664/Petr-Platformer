@@ -7,6 +7,7 @@ const SAVE_PATH := "user://petr_save.json"
 
 var chisel := 9
 var rescued := 0
+var truths := 0  # Witness testimonies heard (endings currency)
 var debug_soften := false
 var player: Player = null
 var dialogue: Dialogue = null
@@ -25,6 +26,7 @@ func save_state(current_room: int) -> void:
 	f.store_string(JSON.stringify({
 		"room": current_room,
 		"rescued": rescued,
+		"truths": truths,
 		"seen": seen,
 		"visited": visited,
 	}))
@@ -38,6 +40,7 @@ func load_state() -> int:
 	if typeof(data) != TYPE_DICTIONARY:
 		return -1
 	rescued = int(data.get("rescued", 0))
+	truths = int(data.get("truths", 0))
 	seen = data.get("seen", {})
 	visited = {}
 	for k in data.get("visited", {}):
@@ -47,6 +50,7 @@ func load_state() -> int:
 
 func wipe_save() -> void:
 	rescued = 0
+	truths = 0
 	seen = {}
 	visited = {}
 	if FileAccess.file_exists(SAVE_PATH):

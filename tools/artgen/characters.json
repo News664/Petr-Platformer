@@ -38,5 +38,10 @@
     "name": "Master Ida",
     "desc": "tall dignified stonemason master in her 50s, silver-streaked dark hair in a tight bun, fine chisel-scarred hands, deep green work coat, protective stance mid-gesture of shielding someone",
     "identifier": "silver-streaked bun + green coat"
+  },
+  "sableth": {
+    "name": "Sableth",
+    "desc": "weathered quarry forewoman in her 50s, gray-streaked hair in a tight practical braid, rust-red canvas coat, iron whistle on a cord half-raised to her lips, sharp appraising eyes",
+    "identifier": "gray braid + iron whistle"
   }
 }

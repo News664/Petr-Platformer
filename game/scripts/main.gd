@@ -1,7 +1,7 @@
 extends Node2D
 # Bootstraps input, HUD, camera, and room switching.
 
-const MAX_ROOM := 19
+const MAX_ROOM := 22
 
 var current_room := 1
 var current_entry := "default"
@@ -64,8 +64,9 @@ func _process(delta: float) -> void:
 		var goal := 1.0 if level.player.is_stone else 0.0
 		_figure_petrify = move_toward(_figure_petrify, goal, 4.0 * delta)
 		Dialogue.set_figure_petrify(_status_figure, _figure_petrify)
-	_stats_label.text = "Room %d · Chisel Light %d · Rescued %d%s" % [
+	_stats_label.text = "Room %d · Chisel Light %d · Rescued %d%s%s" % [
 		current_room, G.chisel, G.rescued,
+		" · Truths %d" % G.truths if G.truths > 0 else "",
 		" · DEBUG SOFTEN" if G.debug_soften else "",
 	]
 	if _msg_timer > 0.0:
@@ -179,6 +180,7 @@ func _setup_input() -> void:
 	_add_key_action("jump", [KEY_W, KEY_SPACE, KEY_UP])
 	_add_key_action("petrify", [KEY_Q])
 	_add_key_action("soften", [KEY_E])
+	_add_key_action("dash", [KEY_SHIFT])
 	_add_key_action("interact", [KEY_F])
 	_add_key_action("restart", [KEY_R])
 	_add_key_action("room_1", [KEY_1])

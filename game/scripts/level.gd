@@ -59,6 +59,12 @@ func _ready() -> void:
 			_build_switchback()
 		19:
 			_build_foredame_dig()
+		20:
+			_build_wisp_gallery()
+		21:
+			_build_colossus_shelf()
+		22:
+			_build_quarry_sanctuary()
 		_:
 			_build_sample_palace()
 
@@ -185,16 +191,21 @@ func _make_water(rect: Rect2) -> void:
 
 
 func _make_cracked(rect: Rect2) -> void:
+	# breaks under a heavy falling body, or under a Chisel Dash strike
 	var floor_body := Util.block(self, rect, Color(0.55, 0.5, 0.45))
 	Util.label(floor_body, Vector2(-40, -28), "cracked")
 	var sensor := Util.area(self,
 			Rect2(rect.position.x, rect.position.y - 10, rect.size.x, 12),
 			Color(0, 0, 0, 0))
+	var shatter := func() -> void:
+		G.say("The cracked stone shatters!")
+		floor_body.queue_free()
+		sensor.queue_free()
+	floor_body.add_to_group("cracked")
+	floor_body.set_meta("shatter", shatter)
 	sensor.body_entered.connect(func(body: Node) -> void:
 		if body is RigidBody2D and body.mass >= 10.0 and body.linear_velocity.y > 300.0:
-			G.say("The cracked floor shatters under the stone's weight!")
-			floor_body.queue_free()
-			sensor.queue_free()
+			shatter.call()
 	)
 
 
@@ -291,6 +302,7 @@ func _build_test_yard() -> void:
 	_make_waystone(Vector2(1220, 480), false)
 	_spawn_player({"default": Vector2(250, 460)})
 	player.push_enabled = true
+	player.dash_enabled = true
 
 
 # --------------------------------------------------- room 3: village street
@@ -304,6 +316,18 @@ func _build_village_street() -> void:
 	Util.block(self, Rect2(155, 584, 26, 10))      # cellar steps back out
 	Util.block(self, Rect2(196, 540, 26, 10))
 	_make_chisel_mote(Vector2(190, 608))
+	var cellar_lore := Util.area(self, Rect2(150, 580, 80, 40), Color(0, 0, 0, 0))
+	cellar_lore.body_entered.connect(func(body: Node) -> void:
+		if body is Player:
+			_skit_once("v0_cellar", [
+				{"who": "narrator", "text": "Ida's cellar workshop. The bench is lined "
+						+ "with half-carved amethyst geodes, every one worked by the "
+						+ "same patient hand."},
+				{"who": "ame", "text": "These are... me. Every one of them is my face. "
+						+ "Ida — what were you making? And how long before the wave "
+						+ "did you start?"},
+			])
+	)
 	var crack_hint := Util.area(self, Rect2(150, 440, 80, 40), Color(0, 0, 0, 0))
 	crack_hint.body_entered.connect(func(body: Node) -> void:
 		if body is Player and not G.seen.get("v1_crack", false):
@@ -315,12 +339,14 @@ func _build_village_street() -> void:
 	Util.block(self, Rect2(900, 400, 380, 320))    # raised lane out of the square
 	var petra := _make_npc(Vector2(300, 464), "kneeler", "Petra")
 	petra.anchored = true
+	petra.char_id = "petra"
 	petra.stone_lines = [
 		"Petra the Mason, kneeling at her whetstone. The wave took her mid-sharpen.",
 		"Amethyst: \"Master Petra taught me to read the grain of marble. Her stone is... deep.\"",
 		"Amethyst: \"I can't reach her. Not yet. Not with this little light.\"",
 	]
 	var lina := _make_npc(Vector2(600, 452), "runner", "Lina")
+	lina.char_id = "lina"
 	lina.stone_lines = [
 		"Lina. Her best friend. Caught running toward Amethyst's cellar door, arm outstretched.",
 		"Amethyst: \"You were coming to warn me. Weren't you.\"",
@@ -357,6 +383,7 @@ func _build_village_street() -> void:
 	player.soften_enabled = G.seen.get("v1_amulet_taken", false)
 	player.petrify_enabled = false
 	player.push_enabled = G.seen.get("masons_grip", false)
+	player.dash_enabled = G.seen.get("chisel_dash", false)
 	_skit_once("v1_open", [
 		{"who": "narrator", "text": "Stone. She remembers being stone. A year, a breath — "
 				+ "the dark between doesn't count time."},
@@ -388,6 +415,7 @@ func _build_well_yard() -> void:
 	_make_waystone(Vector2(140, 480))
 	var marla := _make_npc(Vector2(380, 464), "kneeler", "Marla")
 	if marla:
+		marla.char_id = "marla"
 		marla.stone_lines = [
 			"Marla the baker, kneeling over a dropped basket. Flour, fossilized mid-spill.",
 			"Amethyst: \"The Waystone still glows. If she could just reach it...\"",
@@ -406,6 +434,7 @@ func _build_well_yard() -> void:
 		)
 	var sena := _make_npc(Vector2(560, 452), "runner", "Sena")
 	if sena:
+		sena.char_id = "sena"
 		sena.stone_lines = [
 			"Sena, the well-keeper's daughter, frozen sprinting for the yard gate.",
 			"Amethyst: \"The pit's too wide to jump, too deep to climb. "
@@ -428,6 +457,7 @@ func _build_well_yard() -> void:
 			"east": Vector2(1180, 460)})
 	player.petrify_enabled = false
 	player.push_enabled = G.seen.get("masons_grip", false)
+	player.dash_enabled = G.seen.get("chisel_dash", false)
 
 
 # ------------------------------------------------ room 5: sanctuary steps
@@ -447,6 +477,7 @@ func _build_sanctuary_steps() -> void:
 	# Sister Aldith, anchored atop the pillar — the stair's missing step, forever
 	var aldith := _make_npc(Vector2(1012, 348), "kneeler", "Sister Aldith")
 	aldith.anchored = true
+	aldith.char_id = "aldith"
 	aldith.stone_lines = [
 		"Sister Aldith of the Sanctuary, kneeling in prayer atop the stair pillar.",
 		"Amethyst: \"Anchored, like Master Petra. The curse holds the pious hardest.\"",
@@ -455,6 +486,7 @@ func _build_sanctuary_steps() -> void:
 	# Odile — not needed for the climb; she is only there to be saved (or not)
 	var odile := _make_npc(Vector2(550, 452), "runner", "Odile")
 	if odile:
+		odile.char_id = "odile"
 		odile.stone_lines = [
 			"Odile the bell-ringer, frozen sprinting from the chapel, hands over her ears.",
 			"Amethyst: \"The Waystone is a long, long walk from here. "
@@ -494,6 +526,7 @@ func _build_sanctuary_steps() -> void:
 			"porch": Vector2(1180, 264)})
 	player.petrify_enabled = false
 	player.push_enabled = G.seen.get("masons_grip", false)
+	player.dash_enabled = G.seen.get("chisel_dash", false)
 
 
 # ------------------------------------------------- room 6: the square (hub)
@@ -560,6 +593,7 @@ func _build_square() -> void:
 			"tower": Vector2(120, 460), "gate": Vector2(1180, 460)})
 	player.petrify_enabled = false
 	player.push_enabled = G.seen.get("masons_grip", false)
+	player.dash_enabled = G.seen.get("chisel_dash", false)
 
 
 # --------------------------------------------- room 7: bell tower (optional)
@@ -598,6 +632,7 @@ func _build_bell_tower() -> void:
 	_spawn_player({"default": Vector2(640, 460)})
 	player.petrify_enabled = false
 	player.push_enabled = G.seen.get("masons_grip", false)
+	player.dash_enabled = G.seen.get("chisel_dash", false)
 
 
 # ------------------------------------------------------------------ room 2
@@ -628,6 +663,7 @@ func _build_chamber() -> void:
 			+ "The ledger remembers. (Or: F1 debug-soften and walk her to the Waystone.)")
 	_spawn_player({"default": Vector2(80, 460)})
 	player.push_enabled = true
+	player.dash_enabled = true
 
 
 # --------------------------------------------- room 8: village sanctuary
@@ -667,6 +703,7 @@ func _build_sanctuary() -> void:
 	_spawn_player({"default": Vector2(100, 460)})
 	player.petrify_enabled = false
 	player.push_enabled = G.seen.get("masons_grip", false)
+	player.dash_enabled = G.seen.get("chisel_dash", false)
 
 
 # ------------------------------------------ room 9: quarry gate terraces
@@ -707,6 +744,7 @@ func _build_quarry_terraces() -> void:
 			"top": Vector2(1180, 188), "lower": Vector2(1160, 460)})
 	player.petrify_enabled = false
 	player.push_enabled = G.seen.get("masons_grip", false)
+	player.dash_enabled = G.seen.get("chisel_dash", false)
 
 
 # ----------------------------------------------- room 10: the crane yard
@@ -748,6 +786,7 @@ func _build_crane_yard() -> void:
 			"east": Vector2(1180, 460)})
 	player.petrify_enabled = false
 	player.push_enabled = G.seen.get("masons_grip", false)
+	player.dash_enabled = G.seen.get("chisel_dash", false)
 
 
 # ---------------------------------------------------- room 11: the cut
@@ -787,6 +826,7 @@ func _build_the_cut() -> void:
 			"east": Vector2(1130, 460)})
 	player.petrify_enabled = false
 	player.push_enabled = G.seen.get("masons_grip", false)
+	player.dash_enabled = G.seen.get("chisel_dash", false)
 
 
 # ------------------------------------------ room 16: scaffold heights
@@ -813,6 +853,7 @@ func _build_scaffold_heights() -> void:
 			"east": Vector2(1180, 188)})
 	player.petrify_enabled = false
 	player.push_enabled = G.seen.get("masons_grip", false)
+	player.dash_enabled = G.seen.get("chisel_dash", false)
 
 
 # ----------------------------------------------- room 17: the haul road
@@ -842,6 +883,7 @@ func _build_haul_road() -> void:
 			"east": Vector2(1180, 460), "hatch": Vector2(640, 460)})
 	player.petrify_enabled = false
 	player.push_enabled = G.seen.get("masons_grip", false)
+	player.dash_enabled = G.seen.get("chisel_dash", false)
 
 
 # ---------------------------------------------- room 18: the switchback
@@ -855,22 +897,21 @@ func _build_switchback() -> void:
 	Util.block(self, Rect2(340, 300, 80, 14))
 	Util.block(self, Rect2(200, 240, 80, 14))
 	_make_chisel_mote(Vector2(150, 180))
-	# the Depths: the Wisp Gallery is unbuilt, so the road runs straight
-	# to the dig for now (dev shortcut, noted in AREA_QUARRY.md)
-	_make_door(Rect2(1256, 400, 24, 80), "the dig →", 19, "west")
+	_make_door(Rect2(1256, 400, 24, 80), "wisp gallery →", 20, "west")
 	_make_door(Rect2(0, 400, 24, 80), "", 11, "east")
 	_make_door(Rect2(0, 128, 24, 80), "scaffold ↑", 16, "east")
 	_spawn_player({"default": Vector2(60, 460), "bottom": Vector2(60, 460),
 			"top": Vector2(60, 188), "east": Vector2(1180, 460)})
 	player.petrify_enabled = false
 	player.push_enabled = G.seen.get("masons_grip", false)
+	player.dash_enabled = G.seen.get("chisel_dash", false)
 
 
 # --------------------------------------------- room 19: foredame's dig
 func _build_foredame_dig() -> void:
 	G.say("— The Quarry: Foredame's Dig —")
 	Util.block(self, Rect2(0, 480, 1280, 240))
-	_make_door(Rect2(0, 400, 24, 80), "", 18, "east")
+	_make_door(Rect2(0, 400, 24, 80), "", 21, "east")
 	if G.seen.get("foredame_down", false):
 		# the dig, collapsed and quiet
 		for x in [420, 660, 900]:
@@ -878,12 +919,12 @@ func _build_foredame_dig() -> void:
 			rubble.position = Vector2(x, 467)
 			add_child(rubble)
 		_make_entrance(Rect2(1150, 400, 48, 80), "Quarry Sanctuary (F)",
-				func() -> void:
-					G.say("The Quarry Sanctuary waits beyond — Chisel Dash. "
-							+ "(Next slice.)"))
-		_spawn_player({"default": Vector2(60, 460), "west": Vector2(60, 460)})
+				func() -> void: _goto_room(22))
+		_spawn_player({"default": Vector2(60, 460), "west": Vector2(60, 460),
+				"east": Vector2(1080, 460)})
 		player.petrify_enabled = false
 		player.push_enabled = G.seen.get("masons_grip", false)
+		player.dash_enabled = G.seen.get("chisel_dash", false)
 		return
 	var boss := Foredame.new()
 	boss.position = Vector2(640, 480)
@@ -904,10 +945,13 @@ func _build_foredame_dig() -> void:
 					+ "Sanctuary stands clear."},
 		])
 		_make_entrance(Rect2(1150, 400, 48, 80), "Quarry Sanctuary (F)",
-				func() -> void:
-					G.say("The Quarry Sanctuary waits beyond — Chisel Dash. "
-							+ "(Next slice.)"))
+				func() -> void: _goto_room(22))
 	)
+	_spawn_player({"default": Vector2(60, 460), "west": Vector2(60, 460),
+			"east": Vector2(1080, 460)})
+	player.petrify_enabled = false
+	player.push_enabled = G.seen.get("masons_grip", false)
+	player.dash_enabled = G.seen.get("chisel_dash", false)
 	_skit_once("q_boss_intro", [
 		{"who": "narrator", "text": "The dig is a cathedral of cut stone. At its head, "
 				+ "a colossus no one finished — and the curse got into what was "
@@ -915,9 +959,115 @@ func _build_foredame_dig() -> void:
 		{"who": "ame", "text": "She swings like a hammer. And a hammer doesn't care "
 				+ "what it hits — not even its own scaffolding."},
 	])
-	_spawn_player({"default": Vector2(60, 460), "west": Vector2(60, 460)})
+
+
+# --------------------------------------------- room 20: wisp gallery
+func _build_wisp_gallery() -> void:
+	G.say("— The Quarry: Wisp Gallery —")
+	# resource pressure: wisps chase the amulet's glow and sip Chisel Light.
+	# Stone-Amethyst carries no light; a Chisel Dash bursts them.
+	Util.block(self, Rect2(0, 480, 1280, 240))
+	for pos in [Vector2(400, 380), Vector2(700, 320), Vector2(1000, 260)]:
+		var wisp := Wisp.new()
+		wisp.position = pos
+		add_child(wisp)
+	_make_chisel_mote(Vector2(500, 440))
+	_make_chisel_mote(Vector2(800, 440))
+	# the sealed powder store: only a Chisel Dash opens it (return visit)
+	_make_cracked(Rect2(880, 400, 20, 80))
+	Util.block(self, Rect2(880, 380, 160, 20))      # store roof
+	Util.block(self, Rect2(1020, 400, 20, 80))      # store far wall
+	Util.label(self, Vector2(920, 356), "sealed store")
+	_make_chisel_mote(Vector2(945, 445))
+	_make_chisel_mote(Vector2(990, 445))
+	_make_door(Rect2(0, 400, 24, 80), "", 18, "east")
+	_make_door(Rect2(1256, 400, 24, 80), "colossus shelf →", 21, "west")
+	_spawn_player({"default": Vector2(60, 460), "west": Vector2(60, 460),
+			"east": Vector2(1180, 460)})
 	player.petrify_enabled = false
 	player.push_enabled = G.seen.get("masons_grip", false)
+	player.dash_enabled = G.seen.get("chisel_dash", false)
+
+
+# ------------------------------------------- room 21: colossus shelf
+func _build_colossus_shelf() -> void:
+	G.say("— The Quarry: Colossus Shelf —")
+	# half-carved colossus blocks; push one against the shelf face to climb.
+	Util.block(self, Rect2(0, 480, 1280, 240))
+	Util.block(self, Rect2(900, 384, 380, 96))      # the shelf
+	for head in [Vector2(460, 410), Vector2(1120, 320)]:
+		var colossus := Util.make_sprite(Vector2(90, 130), Color(0.5, 0.46, 0.42), true)
+		Util.set_petrify(colossus, 1.0)
+		colossus.position = head
+		add_child(colossus)
+	Util.crate(self, Vector2(620, 440), Vector2(40, 40), 14.0, Color(0.55, 0.5, 0.42))
+	Util.crate(self, Vector2(700, 440), Vector2(40, 40), 14.0, Color(0.55, 0.5, 0.42))
+	_make_waystone(Vector2(150, 480))
+	var sableth := _make_npc(Vector2(300, 464), "kneeler", "Sableth")
+	if sableth:
+		sableth.char_id = "sableth"
+		sableth.stone_lines = [
+			"Sableth the forewoman, kneeling with her iron whistle half-raised.",
+			"Amethyst: \"She saw everything on this shelf. She'd have seen the wave come.\"",
+		]
+		sableth.soft_lines = ["Sableth murmurs: \"...off the shelf... whistle them OFF...\""]
+		sableth.was_rescued.connect(func(_npc: StatueNPC) -> void:
+			G.truths += 1
+			_skit_once("witness_sableth", [
+				{"who": "sableth", "text": "You want truth for that ledger, mason? "
+						+ "Here. We never carved the Foredame's face."},
+				{"who": "sableth", "text": "She wore it out of the rock herself. Nights, "
+						+ "we heard her chisel. Tap. Tap. Tap."},
+				{"who": "narrator", "text": "Witness testimony recorded (1 of 6). "
+						+ "Truth is a kind of light."},
+			])
+		)
+	_make_chisel_mote(Vector2(1000, 354))
+	_make_door(Rect2(0, 400, 24, 80), "", 20, "east")
+	_make_door(Rect2(1256, 304, 24, 80), "the dig →", 19, "west")
+	_spawn_player({"default": Vector2(60, 460), "west": Vector2(60, 460),
+			"east": Vector2(1180, 364)})
+	player.petrify_enabled = false
+	player.push_enabled = G.seen.get("masons_grip", false)
+	player.dash_enabled = G.seen.get("chisel_dash", false)
+
+
+# ------------------------------------------ room 22: quarry sanctuary
+func _build_quarry_sanctuary() -> void:
+	G.say("— The Quarry Sanctuary —")
+	Util.block(self, Rect2(0, 480, 1280, 240))
+	for x in [260, 460, 860, 1060]:
+		var col := Util.make_sprite(Vector2(30, 240), Color(0.45, 0.4, 0.34))
+		col.position = Vector2(x, 360)
+		add_child(col)
+	var lit: bool = G.seen.get("chisel_dash", false)
+	for x in [540, 780]:
+		var brazier := Util.make_sprite(Vector2(20, 30),
+				Color(1.0, 0.7, 0.3) if lit else Color(0.3, 0.28, 0.34))
+		brazier.position = Vector2(x, 425)
+		add_child(brazier)
+	Util.block(self, Rect2(620, 440, 80, 40), Color(0.6, 0.55, 0.5))  # the altar
+	var altar := Util.area(self, Rect2(600, 400, 120, 40), Color(0, 0, 0, 0))
+	altar.body_entered.connect(func(body: Node) -> void:
+		if body is Player and not G.seen.get("chisel_dash", false):
+			G.seen["chisel_dash"] = true
+			(body as Player).dash_enabled = true
+			G.save_state(room)
+			_skit_once("q_relight", [
+				{"who": "narrator", "text": "Amethyst lays the amulet and Ida's chisel "
+						+ "on the altar. The Sanctuary reads the chisel's memory: "
+						+ "every strike Ida ever made."},
+				{"who": "narrator", "text": "CHISEL DASH — Shift: a mason's strike with "
+						+ "her whole body behind it. Cracked stone shatters."},
+				{"who": "ame", "text": "The cracked street floor. The cellar. "
+						+ "Ida — I can finally get into your workshop."},
+			])
+	)
+	_make_door(Rect2(0, 400, 24, 80), "", 19, "east")
+	_spawn_player({"default": Vector2(100, 460)})
+	player.petrify_enabled = false
+	player.push_enabled = G.seen.get("masons_grip", false)
+	player.dash_enabled = G.seen.get("chisel_dash", false)
 
 
 # ----------------------------------- room 12: sample — sunken baths idea
@@ -939,6 +1089,7 @@ func _build_sample_baths() -> void:
 	]
 	_spawn_player({"default": Vector2(60, 460)})
 	player.push_enabled = true
+	player.dash_enabled = true
 
 
 # ------------------------------- room 13: sample — gorgon gardens idea
@@ -958,6 +1109,7 @@ func _build_sample_gardens() -> void:
 	Util.label(self, Vector2(1180, 380), "reach the mote")
 	_spawn_player({"default": Vector2(60, 460)})
 	player.push_enabled = true
+	player.dash_enabled = true
 
 
 # ---------------------------- room 14: sample — crystal undercroft idea
@@ -978,6 +1130,7 @@ func _build_sample_undercroft() -> void:
 	_spawn_player({"default": Vector2(60, 460)})
 	player.add_child(_make_lamp(0.9))
 	player.push_enabled = true
+	player.dash_enabled = true
 
 
 func _make_lamp(energy: float) -> PointLight2D:
@@ -1035,3 +1188,4 @@ func _build_sample_palace() -> void:
 	_make_waystone(Vector2(1180, 480), false)
 	_spawn_player({"default": Vector2(60, 460)})
 	player.push_enabled = true
+	player.dash_enabled = true

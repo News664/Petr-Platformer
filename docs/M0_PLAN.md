@@ -218,6 +218,23 @@ no speculative systems (no save/load, no ledger UI, no enemies, no audio).
   road now leads here (Wisp Gallery deferred).
 - gdlint `max-file-lines` raised for the single graybox room-builder file.
 
+## Changes from the ninth round
+
+- **Quarry complete as a slice** (rooms 20–22): Wisp Gallery with the
+  wisp enemy (`wisp.gd` — chases the amulet's light, sips Chisel Light,
+  ignores stone, bursts on dash) and the dash-sealed powder store;
+  Colossus Shelf with the first **Witness** (Sableth — rescue testimony
+  starts the Truths counter, saved and shown in the HUD); the Quarry
+  Sanctuary granting **Chisel Dash** (Shift — shatters any cracked stone
+  touched mid-dash, including the floor underfoot). The Village cellar
+  and its Ida's-workshop lore skit are now reachable via dash backtrack.
+- **Petrified presence**: statues glow with a breathing violet rim when
+  Amethyst stands close (new `presence` shader uniform) — and the glow
+  dies exactly while a statue is pushed or stood on, with one-time
+  monologue barks. First F-inspect of a named NPC pauses for a held
+  moment showing her petrified figure. Design rationale in the GDD
+  ("The person inside").
+
 ## Out of scope for M0
 
 Art beyond the shader, audio, world map, rescue ledger UI, enemies,

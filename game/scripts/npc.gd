@@ -18,6 +18,7 @@ const GRAVITY := 980.0
 
 var npc_name := "Friend"
 var kind := "runner"  # "runner" | "kneeler"
+var char_id := ""  # dialogue portrait id; first inspect shows her petrified figure
 var soft := false
 var anchored := false  # curse-bound: cannot be softened at all (yet)
 var grace_left := GRACE_MAX
@@ -27,6 +28,7 @@ var stone_lines: Array[String] = []
 var soft_lines: Array[String] = []
 
 var _soften_timer := 0.0
+var _presence := 0.0
 var _vy := 0.0
 var _sprite: Sprite2D = null
 var _tag: Label = null
@@ -78,6 +80,13 @@ func talk() -> void:
 	if lines.is_empty():
 		G.say("She is somewhere far away, behind the stone.")
 		return
+	# the first close look at a named person is a held moment: her petrified
+	# figure, full frame, and her frozen story
+	if char_id != "" and not soft and not G.seen.get("met_" + npc_name, false):
+		G.seen["met_" + npc_name] = true
+		G.dialogue.skit([{"who": char_id, "petrified": true, "text": lines[0]}])
+		_line_index = 1
+		return
 	G.say(lines[_line_index % lines.size()])
 	_line_index += 1
 
@@ -128,9 +137,38 @@ func force_refreeze() -> void:
 		_refreeze()
 
 
+func _update_presence(player_dist: float, delta: float) -> void:
+	# the amulet senses the person inside when Amethyst stands close — but
+	# the glow dies the moment the statue is used as an object: pushed
+	# around, or stood on. She reads as a thing exactly when treated as one.
+	var being_pushed := not soft and absf(linear_velocity.x) > 5.0
+	var player := G.player
+	var stood_on := false
+	if player != null and is_instance_valid(player) and player.is_on_floor():
+		var top := global_position.y - body_size.y / 2.0
+		stood_on = absf(player.global_position.x - global_position.x) \
+				< body_size.x / 2.0 + 12.0 \
+				and absf((player.global_position.y + 20.0) - top) < 8.0
+	var used := being_pushed or stood_on
+	if used and npc_name != "Friend":
+		if being_pushed and not G.seen.get("bark_pushed", false):
+			G.seen["bark_pushed"] = true
+			G.say("(She pushes. The stone doesn't complain. That's the worst part.)")
+		elif stood_on and not G.seen.get("bark_stood", false):
+			G.seen["bark_stood"] = true
+			G.say("(Her shoulders hold. They always did.)")
+	var target := 0.0
+	if player_dist < 90.0 and not used:
+		target = 1.0
+	_presence = move_toward(_presence, target, 3.0 * delta)
+	Util.set_presence(_sprite, _presence)
+
+
 func _physics_process(delta: float) -> void:
 	# name tags only when Amethyst is close — keeps the screen quiet
-	_tag.visible = G.player_focus().distance_to(global_position) < 140.0
+	var player_dist := G.player_focus().distance_to(global_position)
+	_tag.visible = player_dist < 140.0
+	_update_presence(player_dist, delta)
 	if not soft:
 		# free rotation only while falling, so drops and edge-pushes topple
 		# but flat-ground shoves never do

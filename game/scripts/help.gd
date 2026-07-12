@@ -11,6 +11,7 @@ THE AMULET
                          (also advances dialogue)
   F                      look at / speak to a statue · enter doorways
   Q                      petrify yourself (once learned)
+  Shift                  chisel dash — shatters cracked stone (once learned)
 
 WORLD
   M                      ledger map
