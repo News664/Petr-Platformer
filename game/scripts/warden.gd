@@ -26,7 +26,11 @@ func _physics_process(delta: float) -> void:
 	velocity.y += GRAVITY * delta
 	velocity.x = _dir * speed
 	move_and_slide()
-	if global_position.x <= patrol_left:
+	# a statue in the path is an obstacle, not a shrine — turn and keep
+	# patrolling instead of pressing against it forever
+	if is_on_wall():
+		_dir = -_dir
+	elif global_position.x <= patrol_left:
 		_dir = 1.0
 	elif global_position.x >= patrol_right:
 		_dir = -1.0

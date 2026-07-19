@@ -40,6 +40,7 @@ func _physics_process(delta: float) -> void:
 		global_position = global_position.move_toward(home, SPEED * 0.6 * delta)
 	if dist < SIP_RANGE and _cooldown <= 0.0 and not player.is_stone:
 		_cooldown = 1.5
-		G.chisel = maxi(G.chisel - 1, 0)
+		if not G.debug_soften:
+			G.chisel = maxi(G.chisel - 1, 0)
 		G.say("A wisp sips at the amulet's light. (-1 Chisel Light)")
 		global_position -= to_player.normalized() * 46.0

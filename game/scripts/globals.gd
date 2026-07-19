@@ -35,6 +35,7 @@ func save_state(current_room: int) -> void:
 		return
 	f.store_string(JSON.stringify({
 		"room": current_room,
+		"chisel": chisel,
 		"rescued": rescued,
 		"truths": truths,
 		"seen": seen,
@@ -49,6 +50,7 @@ func load_state() -> int:
 	var data: Variant = JSON.parse_string(FileAccess.get_file_as_string(SAVE_PATH))
 	if typeof(data) != TYPE_DICTIONARY:
 		return -1
+	chisel = int(data.get("chisel", 9))
 	rescued = int(data.get("rescued", 0))
 	truths = int(data.get("truths", 0))
 	seen = data.get("seen", {})
@@ -59,6 +61,7 @@ func load_state() -> int:
 
 
 func wipe_save() -> void:
+	chisel = 9
 	rescued = 0
 	truths = 0
 	seen = {}

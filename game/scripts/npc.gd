@@ -102,10 +102,11 @@ func try_soften() -> void:
 	if grace_left < 0.5 and not G.debug_soften:
 		G.say("%s's grace is spent — the amulet cannot reach her again. Not yet." % npc_name)
 		return
-	if G.chisel < CHISEL_COST:
-		G.say("Not enough Chisel Light (need %d, have %d)." % [CHISEL_COST, G.chisel])
-		return
-	G.chisel -= CHISEL_COST
+	if not G.debug_soften:
+		if G.chisel < CHISEL_COST:
+			G.say("Not enough Chisel Light (need %d, have %d)." % [CHISEL_COST, G.chisel])
+			return
+		G.chisel -= CHISEL_COST
 	var dur := minf(G.soften_window(), grace_left)
 	if G.debug_soften:
 		dur = 60.0

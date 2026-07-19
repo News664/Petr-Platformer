@@ -27,14 +27,28 @@ func _physics_process(delta: float) -> void:
 	var angle := facing + sin(_t) * sweep
 	var pivot := _beam.get_parent() as Node2D
 	pivot.rotation = angle
+	# beam visual: terminate at the first solid thing along the sweep
 	var to := global_position + Vector2.RIGHT.rotated(angle) * length
 	var query := PhysicsRayQueryParameters2D.create(global_position, to)
 	var hit := get_world_2d().direct_space_state.intersect_ray(query)
 	var hit_dist := length
 	if hit:
 		hit_dist = global_position.distance_to(hit.position)
-		if hit.collider is Player:
-			(hit.collider as Player).respawn("The stone gaze finds her. Cold, then nothing "
-					+ "— then the ward pulls her back.")
 	_beam.scale.x = hit_dist
 	_beam.position = Vector2(hit_dist / 2.0, 0)
+	# the catch: when the gaze is roughly aligned with Amethyst AND has a
+	# clear line to her, she is seen — a thin exact-ray test made it
+	# trivially passable. Statues (and her own stone form) break the line.
+	var player := G.player
+	if player == null or not is_instance_valid(player) or player.is_stone:
+		return
+	var to_player := player.global_position - global_position
+	if to_player.length() > length:
+		return
+	if absf(angle_difference(angle, to_player.angle())) > 0.09:
+		return
+	var los := PhysicsRayQueryParameters2D.create(global_position, player.global_position)
+	var seen := get_world_2d().direct_space_state.intersect_ray(los)
+	if seen and seen.collider is Player:
+		(seen.collider as Player).respawn("The stone gaze finds her. Cold, then "
+				+ "nothing — then the ward pulls her back.")

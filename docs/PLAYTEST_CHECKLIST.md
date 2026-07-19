@@ -1,5 +1,29 @@
 # Playtest checklist — everything untested since the last play report
 
+## Round 11 — bug-fix verification (retest these first)
+
+- [ ] **Chisel Light persists** across rooms (floor of 3 on room load, no
+  more reset-to-9); motes are worth collecting; saved across restarts;
+  F1 debug shows ∞ and skips all costs/drains. Wisp pressure still fair?
+- [ ] **Room 4 Waystone dims immediately** after the first rescue — the
+  second statue cannot be rescued in the same session.
+- [ ] **Room 10**: the taller door can no longer be cleared by standing
+  on Hetta; the plate is the only way through.
+- [ ] **Room 13 gaze actually catches** — walking the corridor openly
+  gets you seen; hiding behind statues and stone-self still work.
+- [ ] **Room 15 warden turns at obstacles** instead of camping against a
+  statue; a refrozen NPC can be softened again once she walks away.
+- [ ] **Foredame aim locks** (marker turns bright red ~0.6 s before the
+  slam) — dodging is now possible, and all three pillars baitable.
+- [ ] **Room 20 is crossable**: the powder store now lies *under* the
+  floor behind a cracked patch (dash to open; 60 px hole is jumpable).
+- [ ] **Room 21**: Sableth now runs the shelf-foot far from the Waystone
+  with her road blocked by the two pushable blocks — testimony earned?
+  (Blocks pushed east double as the shelf climb.)
+- [ ] Connectivity: scripted audit passed (43 links, all rooms reach and
+  return); please still note any door that feels wrong in play.
+
+
 The last playtest covered up to the round-7 fixes (reset entry, wrong-side
 clearability, help request). Everything below shipped after that report
 and has never been played. Ordered roughly by play flow; dev keys `1–7`,

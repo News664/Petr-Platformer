@@ -51,7 +51,9 @@ func load_room(n: int, entry := "default") -> void:
 		level.queue_free()
 	current_room = n
 	current_entry = entry
-	G.chisel = 9  # test-mode: every room (re)load restores the budget
+	# Chisel Light persists (motes matter); the amulet always gathers at
+	# least a little drifting light, so no state can fully brick
+	G.chisel = maxi(G.chisel, 3)
 	G.visited[n] = true
 	G.save_state(n)
 	level = Level.new(n, entry)
@@ -67,8 +69,8 @@ func _process(delta: float) -> void:
 		var goal := 1.0 if level.player.is_stone else 0.0
 		_figure_petrify = move_toward(_figure_petrify, goal, 4.0 * delta)
 		Dialogue.set_figure_petrify(_status_figure, _figure_petrify)
-	_stats_label.text = "Room %d · Chisel Light %d · Rescued %d%s%s" % [
-		current_room, G.chisel, G.rescued,
+	_stats_label.text = "Room %d · Chisel Light %s · Rescued %d%s%s" % [
+		current_room, "∞" if G.debug_soften else str(G.chisel), G.rescued,
 		" · Truths %d" % G.truths if G.truths > 0 else "",
 		" · DEBUG SOFTEN" if G.debug_soften else "",
 	]

@@ -13,6 +13,7 @@ var player: Player = null
 var _plate_door: StaticBody2D = null
 var _door_closed_pos := Vector2.ZERO
 var _door_open := false
+var _door_lift := 80.0
 var _grate: Area2D = null  # the Square's baths grate, dashed open
 
 
@@ -143,7 +144,12 @@ func _make_waystone(pos: Vector2, one_soul := true) -> void:
 			G.rescued += 1
 			G.seen["resc_" + body.npc_name] = true
 			if one_soul:
+				# spend the stone immediately, not just on the next reload
 				G.seen[key] = true
+				ws.queue_free()
+				var spent := Util.area(self, Rect2(pos.x - 24, pos.y - 64, 48, 64),
+						Color(0.3, 0.34, 0.4, 0.4))
+				Util.label(spent, Vector2(-44, -50), "Waystone (spent)")
 				G.say("%s is safe in the Village. The Waystone dims, spent. (Rescued: %d)"
 						% [body.npc_name, G.rescued])
 			else:
@@ -218,8 +224,10 @@ func _make_cracked(rect: Rect2) -> void:
 	)
 
 
-func _make_plate_and_door(plate_pos: Vector2, door_pos: Vector2) -> void:
-	_plate_door = Util.block(self, Rect2(door_pos.x, door_pos.y - 96, 24, 96), Color(0.5, 0.4, 0.2))
+func _make_plate_and_door(plate_pos: Vector2, door_pos: Vector2, door_h := 96.0) -> void:
+	_plate_door = Util.block(self, Rect2(door_pos.x, door_pos.y - door_h, 24, door_h),
+			Color(0.5, 0.4, 0.2))
+	_door_lift = door_h - 16.0
 	_door_closed_pos = _plate_door.position
 	Util.label(_plate_door, Vector2(-20, -64), "door")
 	var plate := Util.area(self,
@@ -252,7 +260,7 @@ func _physics_process(_delta: float) -> void:
 	if pressed and not _door_open:
 		_door_open = true
 		var tw := create_tween()
-		tw.tween_property(_plate_door, "position:y", _door_closed_pos.y - 80.0, 0.4)
+		tw.tween_property(_plate_door, "position:y", _door_closed_pos.y - _door_lift, 0.4)
 	elif not pressed and _door_open:
 		_door_open = false
 		var tw := create_tween()
@@ -787,7 +795,9 @@ func _build_crane_yard() -> void:
 			_goto_room(17, "hatch")
 	)
 	Util.label(self, Vector2(910, 500), "drop shaft")
-	_make_plate_and_door(Vector2(500, 480), Vector2(700, 480))
+	# tall enough that even standing on Hetta can't clear it — the plate
+	# is the only way through
+	_make_plate_and_door(Vector2(500, 480), Vector2(700, 480), 128.0)
 	Util.crate(self, Vector2(300, 440))
 	var hetta := _make_npc(Vector2(600, 464), "kneeler", "Hetta")
 	if hetta:
@@ -993,20 +1003,21 @@ func _build_wisp_gallery() -> void:
 	G.say("— The Quarry: Wisp Gallery —")
 	# resource pressure: wisps chase the amulet's glow and sip Chisel Light.
 	# Stone-Amethyst carries no light; a Chisel Dash bursts them.
-	Util.block(self, Rect2(0, 480, 1280, 240))
+	# the sealed powder store lies UNDER the gallery floor behind a cracked
+	# patch (a wall-vault blocked the hall entirely — this stays passable)
+	Util.block(self, Rect2(0, 480, 900, 240))
+	_make_cracked(Rect2(900, 480, 60, 16))
+	Util.block(self, Rect2(900, 544, 60, 176))      # store floor
+	Util.block(self, Rect2(960, 480, 320, 240))
+	Util.label(self, Vector2(890, 448), "sealed store")
+	_make_chisel_mote(Vector2(915, 528))
+	_make_chisel_mote(Vector2(945, 528))
 	for pos in [Vector2(400, 380), Vector2(700, 320), Vector2(1000, 260)]:
 		var wisp := Wisp.new()
 		wisp.position = pos
 		add_child(wisp)
 	_make_chisel_mote(Vector2(500, 440))
 	_make_chisel_mote(Vector2(800, 440))
-	# the sealed powder store: only a Chisel Dash opens it (return visit)
-	_make_cracked(Rect2(880, 400, 20, 80))
-	Util.block(self, Rect2(880, 380, 160, 20))      # store roof
-	Util.block(self, Rect2(1020, 400, 20, 80))      # store far wall
-	Util.label(self, Vector2(920, 356), "sealed store")
-	_make_chisel_mote(Vector2(945, 445))
-	_make_chisel_mote(Vector2(990, 445))
 	_make_door(Rect2(0, 400, 24, 80), "", 18, "east")
 	_make_door(Rect2(1256, 400, 24, 80), "colossus shelf →", 21, "west")
 	_spawn_player({"default": Vector2(60, 460), "west": Vector2(60, 460),
@@ -1027,15 +1038,19 @@ func _build_colossus_shelf() -> void:
 		Util.set_petrify(colossus, 1.0)
 		colossus.position = head
 		add_child(colossus)
-	Util.crate(self, Vector2(620, 440), Vector2(40, 40), 14.0, Color(0.55, 0.5, 0.42))
-	Util.crate(self, Vector2(700, 440), Vector2(40, 40), 14.0, Color(0.55, 0.5, 0.42))
+	# the blocks start in the escort corridor: clear her path or climb with
+	# them — the same stones serve both, and the testimony walk is earned
+	Util.crate(self, Vector2(400, 440), Vector2(40, 40), 14.0, Color(0.55, 0.5, 0.42))
+	Util.crate(self, Vector2(500, 440), Vector2(40, 40), 14.0, Color(0.55, 0.5, 0.42))
 	_make_waystone(Vector2(150, 480))
-	var sableth := _make_npc(Vector2(300, 464), "kneeler", "Sableth")
+	var sableth := _make_npc(Vector2(820, 452), "runner", "Sableth")
 	if sableth:
 		sableth.char_id = "sableth"
 		sableth.stone_lines = [
-			"Sableth the forewoman, kneeling with her iron whistle half-raised.",
-			"Amethyst: \"She saw everything on this shelf. She'd have seen the wave come.\"",
+			"Sableth the forewoman, striding the shelf-foot mid-order, iron "
+					+ "whistle half-raised.",
+			"Amethyst: \"The Waystone is the whole shelf away — and her road "
+					+ "is blocked with her own stone.\"",
 		]
 		sableth.soft_lines = ["Sableth murmurs: \"...off the shelf... whistle them OFF...\""]
 		sableth.was_rescued.connect(func(_npc: StatueNPC) -> void:

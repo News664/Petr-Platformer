@@ -54,10 +54,17 @@ func _physics_process(delta: float) -> void:
 				_timer = AIM_TIME
 				_marker.visible = true
 		"aim":
-			# the fist shadows Amethyst until the last instant
-			var target_x: float = G.player_focus().x - global_position.x
-			_fist.position.x = target_x
-			_marker.position = Vector2(target_x, FIST_FLOOR_Y - 480.0 + 32.0)
+			# the fist shadows Amethyst for the first part of the aim, then
+			# LOCKS — the locked window is the player's chance to step aside
+			# (or to have stood where a pillar is). Continuous tracking made
+			# every slam unavoidable.
+			if _timer > AIM_TIME * 0.6:
+				var target_x: float = G.player_focus().x - global_position.x
+				_fist.position.x = target_x
+				_marker.position = Vector2(target_x, FIST_FLOOR_Y - 480.0 + 32.0)
+				_marker.modulate = Color(1, 1, 1, 0.6)
+			else:
+				_marker.modulate = Color(1.6, 0.7, 0.7, 1.0)  # locked: bright red
 			if _timer <= 0.0:
 				_state = "slam"
 				_timer = SLAM_TIME
